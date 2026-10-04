@@ -1,0 +1,14 @@
+bcrypt
+fastapi
+httpx
+numpy
+openpyxl
+pandas
+passlib
+pydantic
+pydantic-settings
+pymongo
+python-dotenv
+python-jose
+reportlab
+uvicorn
