@@ -156,7 +156,7 @@ function FundingIntelligence() {
           value={statistics.project_count.toLocaleString()}
           icon={FileText}
           subtext="NIH RePORTER records"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -164,7 +164,7 @@ function FundingIntelligence() {
           value={formatMoney(statistics.total_funding)}
           icon={DollarSign}
           subtext="Cumulative grant funding"
-          color="#10b981"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -172,7 +172,7 @@ function FundingIntelligence() {
           value={formatMoney(statistics.average_funding)}
           icon={Award}
           subtext="Per project award mean"
-          color="#c084fc"
+          color="#4C8DFF"
         />
       </div>
 
@@ -242,22 +242,22 @@ function FundingIntelligence() {
 
                     <div style={styles.metaGrid}>
                       <div style={styles.metaItem}>
-                        <Building2 size={13} color="#64748b" />
+                        <Building2 size={13} color="#98A4B5" />
                         <span><strong>Organization:</strong> {p.organization || p.agency || "N/A"}</span>
                       </div>
 
                       <div style={styles.metaItem}>
-                        <Layers size={13} color="#64748b" />
+                        <Layers size={13} color="#98A4B5" />
                         <span><strong>Mechanism:</strong> {p.funding_mechanism || p.agency || "N/A"}</span>
                       </div>
 
                       <div style={styles.metaItem}>
-                        <User size={13} color="#64748b" />
+                        <User size={13} color="#98A4B5" />
                         <span><strong>Principal Investigator:</strong> {formatPIs(p.contact_pi_name || p.principal_investigators)}</span>
                       </div>
 
                       <div style={styles.metaItem}>
-                        <Hash size={13} color="#64748b" />
+                        <Hash size={13} color="#98A4B5" />
                         <span><strong>Project #:</strong> {p.project_number || p.application_id || "N/A"}</span>
                       </div>
                     </div>
@@ -294,7 +294,7 @@ function FundingIntelligence() {
               data={orgChartData}
               dataKey="value"
               nameKey="name"
-              color="#10b981"
+              color="#4C8DFF"
               height={260}
             />
           )}
@@ -302,7 +302,7 @@ function FundingIntelligence() {
           {/* Top Organizations Table Card */}
           <div style={styles.orgCard}>
             <div style={styles.orgHeader}>
-              <Building2 size={16} color="#60a5fa" />
+              <Building2 size={16} color="#4C8DFF" />
               <h4 style={styles.orgTitle}>Top Grant Awardees</h4>
             </div>
 
@@ -329,12 +329,12 @@ const styles = {
     padding: "32px 40px",
     maxWidth: "1400px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   refreshBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -376,15 +376,15 @@ const styles = {
   sectionTitle: {
     fontSize: "16px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   resultBadge: {
     fontSize: "11px",
     fontWeight: "600",
-    color: "#34d399",
-    background: "rgba(16, 185, 129, 0.15)",
-    border: "1px solid rgba(16, 185, 129, 0.3)",
+    color: "#35C98A",
+    background: "rgba(53, 201, 138, 0.12)",
+    border: "1px solid rgba(53, 201, 138, 0.3)",
     padding: "2px 8px",
     borderRadius: "6px"
   },
@@ -394,14 +394,14 @@ const styles = {
     gap: "14px"
   },
   grantCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "12px",
     padding: "16px 18px",
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-    boxShadow: "0 4px 14px rgba(0,0,0,0.2)"
+    boxShadow: "0 4px 12px rgba(0,0,0,0.35)"
   },
   cardHeader: {
     display: "flex",
@@ -416,9 +416,9 @@ const styles = {
     marginBottom: "6px"
   },
   sourceTag: {
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
+    color: "#4C8DFF",
     fontSize: "10px",
     fontWeight: "700",
     padding: "2px 7px",
@@ -427,16 +427,16 @@ const styles = {
     alignItems: "center"
   },
   codeTag: {
-    background: "#1e293b",
-    color: "#cbd5e1",
+    background: "#0B0F17",
+    color: "#98A4B5",
     fontSize: "10px",
     fontWeight: "600",
     padding: "2px 6px",
     borderRadius: "4px"
   },
   yearTag: {
-    background: "rgba(245, 158, 11, 0.15)",
-    color: "#fbbf24",
+    background: "rgba(217, 164, 65, 0.12)",
+    color: "#D9A441",
     fontSize: "10px",
     fontWeight: "700",
     padding: "2px 6px",
@@ -445,13 +445,13 @@ const styles = {
   grantTitle: {
     fontSize: "15px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0,
     lineHeight: "1.4"
   },
   amountBox: {
-    background: "rgba(16, 185, 129, 0.12)",
-    border: "1px solid rgba(16, 185, 129, 0.25)",
+    background: "rgba(53, 201, 138, 0.1)",
+    border: "1px solid rgba(53, 201, 138, 0.25)",
     borderRadius: "10px",
     padding: "8px 12px",
     display: "flex",
@@ -461,21 +461,21 @@ const styles = {
   },
   amountLabel: {
     fontSize: "10px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     fontWeight: "500"
   },
   amountVal: {
     fontSize: "16px",
     fontWeight: "700",
     letterSpacing: "-0.02em",
-    color: "#34d399"
+    color: "#35C98A"
   },
   metaGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: "8px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "10px",
     padding: "12px 14px",
     fontSize: "12px"
@@ -484,16 +484,16 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "6px",
-    color: "#cbd5e1"
+    color: "#98A4B5"
   },
   abstractSection: {
-    borderTop: "1px solid #1e293b",
+    borderTop: "1px solid #202A38",
     paddingTop: "10px"
   },
   toggleAbstractBtn: {
     background: "transparent",
     border: "none",
-    color: "#60a5fa",
+    color: "#4C8DFF",
     fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
@@ -504,20 +504,20 @@ const styles = {
   },
   abstractContent: {
     marginTop: "8px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px",
     padding: "12px",
     fontSize: "12px",
-    color: "#cbd5e1",
+    color: "#98A4B5",
     lineHeight: "1.5"
   },
   abstractText: {
     margin: 0
   },
   orgCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "18px",
     display: "flex",
@@ -528,13 +528,13 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     paddingBottom: "10px"
   },
   orgTitle: {
     fontSize: "14px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   orgList: {
@@ -548,26 +548,26 @@ const styles = {
     justifyContent: "space-between",
     gap: "8px",
     padding: "8px 10px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px"
   },
   orgName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
   },
   orgSub: {
     fontSize: "10px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
   orgAmount: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#34d399",
+    color: "#35C98A",
     whiteSpace: "nowrap"
   }
 };

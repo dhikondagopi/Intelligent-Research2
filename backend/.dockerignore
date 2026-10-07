@@ -1,0 +1,26 @@
+# Python runtime artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment & secrets (never bake into image)
+.env
+.env.*
+
+# Dev/test artefacts
+tests/
+scratch/
+scripts/
+
+# Editor
+.vscode/
+.idea/

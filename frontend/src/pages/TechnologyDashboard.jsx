@@ -102,7 +102,7 @@ function TechnologyDashboard() {
           value={Number(data?.total_patents || 0).toLocaleString()}
           icon={FileText}
           subtext="Patent repository"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -110,7 +110,7 @@ function TechnologyDashboard() {
           value={fields.length.toString()}
           icon={Cpu}
           subtext="Categorized fields"
-          color="#7c3aed"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -118,7 +118,7 @@ function TechnologyDashboard() {
           value={sectors.length.toString()}
           icon={Layers}
           subtext="Identified sectors"
-          color="#c084fc"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -126,7 +126,7 @@ function TechnologyDashboard() {
           value={organizations.length.toString()}
           icon={Building2}
           subtext="Patent holders"
-          color="#10b981"
+          color="#4C8DFF"
         />
       </div>
 
@@ -139,7 +139,7 @@ function TechnologyDashboard() {
           data={fieldsChartData}
           dataKey="patents"
           nameKey="name"
-          color="#2563eb"
+          color="#4C8DFF"
           height={260}
         />
 
@@ -150,7 +150,7 @@ function TechnologyDashboard() {
           data={sectorChartData}
           dataKey="value"
           nameKey="name"
-          color="#7c3aed"
+          color="#4C8DFF"
           height={260}
         />
       </div>
@@ -164,7 +164,7 @@ function TechnologyDashboard() {
               <h3 style={styles.cardTitle}>Leading Patent Assignee Organizations</h3>
               <p style={styles.cardSub}>Top corporate and academic holders</p>
             </div>
-            <Building2 size={18} color="#60a5fa" />
+            <Building2 size={18} color="#4C8DFF" />
           </div>
 
           <div style={styles.tableWrapper}>
@@ -179,7 +179,7 @@ function TechnologyDashboard() {
                 {organizations.slice(0, 10).map((org, idx) => (
                   <tr key={idx} style={idx % 2 === 0 ? styles.trEven : styles.trOdd}>
                     <td style={styles.tdBold}>{org.organization}</td>
-                    <td style={{ ...styles.td, color: "#34d399", fontWeight: "700" }}>
+                    <td style={{ ...styles.td, color: "#35C98A", fontWeight: "700" }}>
                       {Number(org.patent_count).toLocaleString()}
                     </td>
                   </tr>
@@ -196,7 +196,7 @@ function TechnologyDashboard() {
               <h3 style={styles.cardTitle}>CPC Technology Sections</h3>
               <p style={styles.cardSub}>Cooperative patent classification areas</p>
             </div>
-            <Layers size={18} color="#c084fc" />
+            <Layers size={18} color="#4C8DFF" />
           </div>
 
           <div style={styles.cpcGrid}>
@@ -218,10 +218,10 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   emergingBtn: {
-    background: "linear-gradient(135deg, #7c3aed, #4c1d95)",
+    background: "#4C8DFF",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -234,9 +234,9 @@ const styles = {
     gap: "6px"
   },
   refreshBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -260,17 +260,12 @@ const styles = {
   },
   layoutGrid: {
     display: "grid",
-    gridTemplateColumns: "1.2fr 1fr",
-    gap: "20px"
-  },
-  layoutGrid: {
-    display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
     gap: "20px"
   },
   card: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "16px",
     padding: "24px",
     display: "flex",
@@ -285,12 +280,12 @@ const styles = {
   cardTitle: {
     fontSize: "15px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 2px 0"
   },
   cardSub: {
     fontSize: "11px",
-    color: "#64748b",
+    color: "#98A4B5",
     margin: 0
   },
   tableWrapper: {
@@ -303,22 +298,22 @@ const styles = {
     textAlign: "left"
   },
   th: {
-    background: "#0b0f19",
-    color: "#94a3b8",
+    background: "#0B0F17",
+    color: "#98A4B5",
     fontWeight: "600",
     padding: "10px 14px",
-    borderBottom: "1px solid #1e293b"
+    borderBottom: "1px solid #202A38"
   },
   td: {
     padding: "10px 14px",
-    color: "#cbd5e1",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)"
+    color: "#98A4B5",
+    borderBottom: "1px solid #202A38"
   },
   tdBold: {
     padding: "10px 14px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontWeight: "600",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)"
+    borderBottom: "1px solid #202A38"
   },
   trEven: {
     background: "transparent"
@@ -332,8 +327,8 @@ const styles = {
     gap: "10px"
   },
   cpcItem: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "10px",
     padding: "12px",
     display: "flex",
@@ -343,11 +338,11 @@ const styles = {
   cpcTitle: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#c084fc"
+    color: "#4C8DFF"
   },
   cpcValue: {
     fontSize: "11px",
-    color: "#94a3b8"
+    color: "#98A4B5"
   }
 };
 

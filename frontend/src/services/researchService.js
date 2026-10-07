@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL } from "./api";
 
-const API_URL = "http://127.0.0.1:8000/api/research";
+const API_URL = `${API_BASE_URL}/api/research`;
 
 export const searchResearch = async (query) => {
   const response = await axios.get(`${API_URL}/search`, {

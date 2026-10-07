@@ -116,21 +116,21 @@ function ResearchIntelligence() {
           value={results.length.toString()}
           icon={BookOpen}
           subtext="Matching search query"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
         <StatCard
           title="Cumulative Citations"
           value={totalCitations.toLocaleString()}
           icon={Award}
           subtext="Indexed citation count"
-          color="#7c3aed"
+          color="#4C8DFF"
         />
         <StatCard
           title="Avg Citation Impact"
           value={avgCitations.toString()}
           icon={TrendingUp}
           subtext="Mean citations per paper"
-          color="#10b981"
+          color="#4C8DFF"
         />
       </div>
 

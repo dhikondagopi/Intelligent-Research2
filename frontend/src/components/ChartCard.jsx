@@ -14,7 +14,7 @@ import {
   CartesianGrid
 } from "recharts";
 
-const COLORS = ["#2563eb", "#7c3aed", "#06b6d4", "#10b981", "#f59e0b", "#f43f5e", "#c084fc"];
+const COLORS = ["#4C8DFF", "#35C98A", "#D9A441", "#38bdf8", "#818cf8", "#E05B61"];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div style={styles.tooltip}>
         <p style={styles.tooltipLabel}>{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color || "#60a5fa", margin: 0, fontSize: "12px" }}>
+          <p key={index} style={{ color: entry.color || "#4C8DFF", margin: 0, fontSize: "12px" }}>
             {`${entry.name}: ${typeof entry.value === "number" ? entry.value.toLocaleString() : entry.value}`}
           </p>
         ))}
@@ -39,7 +39,7 @@ function ChartCard({
   data = [],
   dataKey = "value",
   nameKey = "name",
-  color = "#3b82f6",
+  color = "#4C8DFF",
   height = 260
 }) {
   return (
@@ -56,11 +56,11 @@ function ChartCard({
           <ResponsiveContainer width="100%" height="100%">
             {type === "line" ? (
               <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey={nameKey} stroke="#64748b" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#202A38" />
+                <XAxis dataKey={nameKey} stroke="#98A4B5" fontSize={11} tickLine={false} />
+                <YAxis stroke="#98A4B5" fontSize={11} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2.5} dot={{ r: 4, fill: color }} />
+                <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={{ r: 3, fill: color }} />
               </LineChart>
             ) : type === "pie" ? (
               <PieChart>
@@ -73,9 +73,9 @@ function ChartCard({
               </PieChart>
             ) : (
               <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey={nameKey} stroke="#64748b" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#202A38" />
+                <XAxis dataKey={nameKey} stroke="#98A4B5" fontSize={11} tickLine={false} />
+                <YAxis stroke="#98A4B5" fontSize={11} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey={dataKey} fill={color} radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -83,7 +83,7 @@ function ChartCard({
           </ResponsiveContainer>
         ) : (
           <div style={styles.emptyBox}>
-            <span style={{ color: "#64748b", fontSize: "12px" }}>No chart data available</span>
+            <span style={{ color: "#98A4B5", fontSize: "12px" }}>No chart data available</span>
           </div>
         )}
       </div>
@@ -93,13 +93,14 @@ function ChartCard({
 
 const styles = {
   card: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "14px",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "12px",
     padding: "20px",
     display: "flex",
     flexDirection: "column",
-    gap: "14px"
+    gap: "14px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
   header: {
     display: "flex",
@@ -109,16 +110,16 @@ const styles = {
   title: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   subtitle: {
     fontSize: "11px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
   tooltip: {
-    background: "#020617",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px",
     padding: "8px 12px",
     boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
@@ -126,7 +127,7 @@ const styles = {
   tooltipLabel: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 4px 0"
   },
   emptyBox: {

@@ -1,22 +1,43 @@
 import React from "react";
 
-function StatCard({ title, value, icon: Icon, trend, subtext, badge, color = "#3b82f6" }) {
+function StatCard({
+  title,
+  value,
+  icon,
+  trend,
+  subtext,
+  badge,
+  badgeText,
+  color = "#4C8DFF"
+}) {
   const displayValue = typeof value === "number" ? value.toLocaleString() : value;
+  const displayBadge = badge || badgeText;
+
+  const renderIcon = () => {
+    if (!icon) return null;
+
+    if (React.isValidElement(icon)) {
+      return icon;
+    }
+
+    const IconComponent = icon;
+    return <IconComponent size={18} color={color} />;
+  };
 
   return (
     <div style={styles.card}>
       <div style={styles.topRow}>
         <span style={styles.title}>{title}</span>
-        {Icon && (
-          <div style={{ ...styles.iconBox, background: `${color}18`, border: `1px solid ${color}30` }}>
-            <Icon size={18} color={color} />
+        {icon && (
+          <div style={{ ...styles.iconBox, background: `rgba(76, 141, 255, 0.1)`, border: `1px solid #202A38` }}>
+            {renderIcon()}
           </div>
         )}
       </div>
 
       <div style={styles.valueRow}>
         <span style={styles.value}>{displayValue}</span>
-        {badge && <span style={styles.badge}>{badge}</span>}
+        {displayBadge && <span style={styles.badge}>{displayBadge}</span>}
       </div>
 
       {(trend || subtext) && (
@@ -31,14 +52,14 @@ function StatCard({ title, value, icon: Icon, trend, subtext, badge, color = "#3
 
 const styles = {
   card: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "14px",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "12px",
     padding: "20px",
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-    boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
     transition: "all 0.2s ease"
   },
   topRow: {
@@ -49,13 +70,13 @@ const styles = {
   title: {
     fontSize: "12px",
     fontWeight: "500",
-    color: "#94a3b8",
+    color: "#98A4B5",
     letterSpacing: "0.1px"
   },
   iconBox: {
     width: "36px",
     height: "36px",
-    borderRadius: "10px",
+    borderRadius: "8px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
@@ -68,17 +89,17 @@ const styles = {
   value: {
     fontSize: "24px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     letterSpacing: "-0.02em"
   },
   badge: {
     fontSize: "10px",
     fontWeight: "500",
-    color: "#60a5fa",
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.25)",
     padding: "2px 6px",
-    borderRadius: "6px"
+    borderRadius: "4px"
   },
   bottomRow: {
     display: "flex",
@@ -88,10 +109,10 @@ const styles = {
   },
   trend: {
     fontWeight: "600",
-    color: "#34d399"
+    color: "#35C98A"
   },
   subtext: {
-    color: "#64748b"
+    color: "#98A4B5"
   }
 };
 

@@ -18,6 +18,10 @@ export const API_BASE_URL = rawUrl.endsWith("/api")
   ? rawUrl.slice(0, -4)
   : rawUrl;
 
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+});
+
 // Request Interceptor: Automatically attach Bearer token to request headers if available
 axios.interceptors.request.use(
   (config) => {
@@ -47,4 +51,5 @@ axios.interceptors.response.use(
   }
 );
 
-export default API_BASE_URL;
+export default api;
+

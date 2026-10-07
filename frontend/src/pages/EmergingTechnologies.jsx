@@ -55,12 +55,24 @@ function EmergingTechnologies() {
         title="Emerging Technology Signals"
         description="Identify breakthrough domains with high patenting velocity, organizational focus, and technical momentum."
         badgeText="Technology Radar"
-        badgeIcon={<Zap className="w-3.5 h-3.5 text-amber-400" />}
+        badgeIcon={<Zap className="w-3.5 h-3.5 text-blue-400" />}
         actionButton={
           <button
             onClick={loadTechnologies}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-navy-800 border border-slate-700 hover:bg-navy-700 text-slate-200 transition-all cursor-pointer shadow-sm"
+            style={{
+              background: "#101620",
+              border: "1px solid #202A38",
+              color: "#F2F5F8",
+              padding: "8px 14px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: "600",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh Signals
@@ -69,17 +81,30 @@ function EmergingTechnologies() {
       />
 
       {/* Methodology Banner */}
-      <div className="bg-navy-900/80 border border-blue-500/20 rounded-xl p-5 backdrop-blur-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 translate-x-4 -translate-y-4 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+      <div style={{
+        background: "#101620",
+        border: "1px solid #202A38",
+        borderRadius: "12px",
+        padding: "20px",
+        position: "relative",
+        overflow: "hidden"
+      }}>
         <div className="flex items-start gap-3.5">
-          <div className="p-2.5 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 shrink-0">
+          <div style={{
+            padding: "10px",
+            background: "rgba(76, 141, 255, 0.12)",
+            border: "1px solid rgba(76, 141, 255, 0.3)",
+            borderRadius: "8px",
+            color: "#4C8DFF",
+            flexShrink: 0
+          }}>
             <Info className="w-5 h-5" />
           </div>
           <div className="space-y-1">
-            <h4 className="text-sm font-semibold text-slate-200">
+            <h4 style={{ fontSize: "14px", fontWeight: "600", color: "#F2F5F8" }}>
               Evidence-Based Signals Methodology
             </h4>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-4xl">
+            <p style={{ fontSize: "12px", color: "#98A4B5", lineHeight: "1.6", margin: 0 }}>
               This index uses multi-source activity signals—patent velocity, organizational filings, and inventor growth—as dynamic proxies for emerging field momentum. Records are synthesized from cross-institution patent publications.
             </p>
           </div>
@@ -92,21 +117,23 @@ function EmergingTechnologies() {
           title="Monitored Domains"
           value={loading ? "..." : technologies.length}
           trend={technologies.length > 0 ? "High Growth" : null}
-          trendDirection="up"
-          icon={<Cpu className="w-5 h-5 text-indigo-400" />}
-          badgeText="Active Fields"
+          icon={Cpu}
+          color="#4C8DFF"
+          badge="Active Fields"
         />
         <StatCard
           title="Aggregated Patent Volume"
           value={loading ? "..." : totalPatents.toLocaleString()}
-          icon={<Database className="w-5 h-5 text-cyan-400" />}
-          badgeText="2025 Data"
+          icon={Database}
+          color="#4C8DFF"
+          badge="2025 Data"
         />
         <StatCard
           title="Active Organizations"
           value={loading ? "..." : totalOrgs.toLocaleString()}
-          icon={<Users className="w-5 h-5 text-emerald-400" />}
-          badgeText="Assignees"
+          icon={Users}
+          color="#4C8DFF"
+          badge="Assignees"
         />
       </div>
 
@@ -134,60 +161,95 @@ function EmergingTechnologies() {
           {technologies.map((technology, index) => (
             <div
               key={technology.technology || technology._id || index}
-              className="group bg-navy-900/60 border border-slate-800 hover:border-blue-500/40 rounded-xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-0.5 flex flex-col justify-between"
+              style={{
+                background: "#101620",
+                border: "1px solid #202A38",
+                borderRadius: "14px",
+                padding: "24px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between"
+              }}
             >
               <div>
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div>
-                    <span className="text-xs font-mono text-slate-500 font-medium">
+                    <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#98A4B5", fontWeight: "600" }}>
                       SIGNAL #{String(index + 1).padStart(2, '0')}
                     </span>
-                    <h3 className="text-lg font-semibold text-slate-100 group-hover:text-blue-400 transition-colors mt-0.5 leading-snug">
+                    <h3 style={{ fontSize: "17px", fontWeight: "700", color: "#F2F5F8", marginTop: "2px", lineHeight: "1.3" }}>
                       {technology.technology || "Unknown Domain"}
                     </h3>
                   </div>
-                  <div className="p-2.5 bg-navy-800 border border-slate-700/60 rounded-lg text-blue-400 group-hover:border-blue-500/30 transition-all shrink-0">
+                  <div style={{
+                    padding: "10px",
+                    background: "#0B0F17",
+                    border: "1px solid #202A38",
+                    borderRadius: "8px",
+                    color: "#4C8DFF",
+                    flexShrink: 0
+                  }}>
                     <TrendingUp className="w-5 h-5" />
                   </div>
                 </div>
 
                 {/* Badge */}
                 <div className="mb-5">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                  <span style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 10px",
+                    borderRadius: "20px",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    background: "rgba(76, 141, 255, 0.12)",
+                    color: "#4C8DFF",
+                    border: "1px solid rgba(76, 141, 255, 0.3)"
+                  }}>
                     <Zap className="w-3 h-3" />
                     {technology.indicator || "High Patent Velocity"}
                   </span>
                 </div>
 
                 {/* Activity Stats */}
-                <div className="grid grid-cols-2 gap-3 p-3.5 bg-navy-950/70 border border-slate-800/80 rounded-lg mb-4">
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "12px",
+                  padding: "14px",
+                  background: "#0B0F17",
+                  border: "1px solid #202A38",
+                  borderRadius: "10px",
+                  marginBottom: "16px"
+                }}>
                   <div>
                     <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
                       <Database className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Patents</span>
+                      <span style={{ color: "#98A4B5" }}>Patents</span>
                     </div>
-                    <p className="text-base font-bold text-slate-100 font-mono tracking-tight">
+                    <p style={{ fontSize: "16px", fontWeight: "700", color: "#F2F5F8", fontFamily: "var(--font-mono)" }}>
                       {(technology.patent_count || 0).toLocaleString()}
                     </p>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
                       <Users className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Organizations</span>
+                      <span style={{ color: "#98A4B5" }}>Organizations</span>
                     </div>
-                    <p className="text-base font-bold text-slate-100 font-mono tracking-tight">
+                    <p style={{ fontSize: "16px", fontWeight: "700", color: "#F2F5F8", fontFamily: "var(--font-mono)" }}>
                       {(technology.organization_count || 0).toLocaleString()}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-400 px-1 mb-5">
-                  <span className="flex items-center gap-1 text-slate-500">
+                  <span className="flex items-center gap-1" style={{ color: "#98A4B5" }}>
                     <UserCheck className="w-3.5 h-3.5" />
                     Active Inventors
                   </span>
-                  <span className="font-medium text-slate-200 font-mono">
+                  <span style={{ fontWeight: "600", color: "#F2F5F8", fontFamily: "var(--font-mono)" }}>
                     {(technology.inventor_count || 0).toLocaleString()}
                   </span>
                 </div>
@@ -196,7 +258,21 @@ function EmergingTechnologies() {
               {/* Action */}
               <Link
                 to={`/technology/${encodeURIComponent(technology.technology)}`}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-navy-800 hover:bg-blue-600 text-slate-200 hover:text-white border border-slate-700/80 hover:border-blue-500 text-xs font-semibold transition-all duration-200 shadow-sm"
+                style={{
+                  width: "100%",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  padding: "10px 16px",
+                  borderRadius: "8px",
+                  background: "#4C8DFF",
+                  color: "#ffffff",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  textDecoration: "none",
+                  transition: "all 0.2s ease"
+                }}
               >
                 <span>Analyze Domain</span>
                 <ArrowRight className="w-4 h-4" />

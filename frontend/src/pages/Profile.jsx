@@ -143,11 +143,11 @@ function Profile() {
 
           <div style={styles.userMetaBox}>
             <div style={styles.metaRow}>
-              <Building2 size={14} color="#64748b" />
+              <Building2 size={14} color="#98A4B5" />
               <span>{form.affiliation || "Affiliation not set"}</span>
             </div>
             <div style={styles.metaRow}>
-              <Globe size={14} color="#64748b" />
+              <Globe size={14} color="#98A4B5" />
               <span>ORCID: {form.orcid || "Not linked"}</span>
             </div>
           </div>
@@ -257,11 +257,11 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   unauthCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "40px",
     textAlign: "center",
@@ -278,8 +278,8 @@ const styles = {
     gap: "24px"
   },
   userCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "16px",
     padding: "28px 20px",
     display: "flex",
@@ -291,32 +291,33 @@ const styles = {
     width: "72px",
     height: "72px",
     borderRadius: "50%",
-    background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-    color: "#ffffff",
+    background: "#0B0F17",
+    border: "2px solid #4C8DFF",
+    color: "#4C8DFF",
     fontSize: "28px",
     fontWeight: "700",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: "14px",
-    boxShadow: "0 8px 25px rgba(37, 99, 235, 0.3)"
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
   userName: {
     fontSize: "18px",
     fontWeight: "700",
     letterSpacing: "-0.015em",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 2px 0"
   },
   userEmail: {
     fontSize: "12px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     marginBottom: "12px"
   },
   roleBadge: {
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
+    color: "#4C8DFF",
     fontSize: "11px",
     fontWeight: "500",
     padding: "4px 10px",
@@ -327,7 +328,7 @@ const styles = {
   userMetaDivider: {
     width: "100%",
     height: "1px",
-    background: "#1e293b",
+    background: "#202A38",
     margin: "18px 0"
   },
   userMetaBox: {
@@ -341,11 +342,11 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    color: "#cbd5e1"
+    color: "#98A4B5"
   },
   formCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "16px",
     padding: "28px",
     display: "flex",
@@ -355,28 +356,28 @@ const styles = {
   formTitle: {
     fontSize: "16px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0,
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     paddingBottom: "12px"
   },
   successBanner: {
-    background: "rgba(16, 185, 129, 0.15)",
-    border: "1px solid rgba(16, 185, 129, 0.3)",
+    background: "rgba(53, 201, 138, 0.12)",
+    border: "1px solid rgba(53, 201, 138, 0.3)",
     borderRadius: "10px",
     padding: "12px 16px",
-    color: "#34d399",
+    color: "#35C98A",
     fontSize: "13px",
     display: "flex",
     alignItems: "center",
     gap: "8px"
   },
   errorBanner: {
-    background: "rgba(127, 29, 29, 0.25)",
-    border: "1px solid #7f1d1d",
+    background: "rgba(224, 91, 97, 0.12)",
+    border: "1px solid #E05B61",
     borderRadius: "10px",
     padding: "12px 16px",
-    color: "#fca5a5",
+    color: "#E05B61",
     fontSize: "13px",
     display: "flex",
     alignItems: "center",
@@ -400,30 +401,30 @@ const styles = {
   label: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#cbd5e1"
+    color: "#F2F5F8"
   },
   input: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px",
     padding: "10px 12px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontSize: "13px",
     outline: "none"
   },
   textarea: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px",
     padding: "10px 12px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontSize: "13px",
     outline: "none",
     resize: "vertical"
   },
   fieldHelp: {
     fontSize: "11px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
   formFooter: {
     display: "flex",
@@ -431,7 +432,7 @@ const styles = {
     paddingTop: "10px"
   },
   saveBtn: {
-    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+    background: "#4C8DFF",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -442,7 +443,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)"
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   }
 };
 

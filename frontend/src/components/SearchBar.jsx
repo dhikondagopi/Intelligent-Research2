@@ -54,15 +54,15 @@ const styles = {
   icon: {
     position: "absolute",
     left: "14px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
   input: {
     width: "100%",
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "10px",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "8px",
     padding: "11px 36px 11px 40px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontSize: "14px",
     outline: "none",
     transition: "border 0.2s ease"
@@ -72,15 +72,15 @@ const styles = {
     right: "12px",
     background: "transparent",
     border: "none",
-    color: "#64748b",
+    color: "#98A4B5",
     cursor: "pointer",
     padding: "4px"
   },
   button: {
-    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+    background: "#4C8DFF",
     color: "#ffffff",
     border: "none",
-    borderRadius: "10px",
+    borderRadius: "8px",
     padding: "0 22px",
     fontSize: "13px",
     fontWeight: "600",
@@ -88,7 +88,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
     transition: "all 0.2s ease",
     whiteSpace: "nowrap"
   }

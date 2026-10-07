@@ -33,6 +33,8 @@ function PatentIntelligence() {
     top_cpc_sections: []
   });
 
+  const [dataSource, setDataSource] = useState("USPTO Live Data");
+  const [isCached, setIsCached] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -47,6 +49,8 @@ function PatentIntelligence() {
       ]);
 
       setResults(Array.isArray(patentResponse?.results) ? patentResponse.results : []);
+      setDataSource(patentResponse?.source || (patentResponse?.is_cached ? "MongoDB Cache" : "USPTO Live Data"));
+      setIsCached(Boolean(patentResponse?.is_cached));
       setStatistics({
         total_patents: Number(statisticsResponse?.total_patents) || 0,
         top_organizations: Array.isArray(statisticsResponse?.top_organizations)
@@ -95,7 +99,7 @@ function PatentIntelligence() {
           value={statistics.total_patents.toLocaleString()}
           icon={FileText}
           subtext="Patent repository documents"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -103,7 +107,7 @@ function PatentIntelligence() {
           value={statistics.top_organizations.length.toString()}
           icon={Building2}
           subtext="Active patent assignees"
-          color="#7c3aed"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -111,7 +115,7 @@ function PatentIntelligence() {
           value={statistics.top_cpc_sections.length.toString()}
           icon={Layers}
           subtext="Patent classification areas"
-          color="#c084fc"
+          color="#4C8DFF"
         />
       </div>
 
@@ -125,7 +129,7 @@ function PatentIntelligence() {
             data={orgChartData}
             dataKey="value"
             nameKey="name"
-            color="#7c3aed"
+            color="#4C8DFF"
             height={240}
           />
         )}
@@ -133,13 +137,13 @@ function PatentIntelligence() {
         {/* CPC Technology Classification Card */}
         <div style={styles.sidebarCard}>
           <div style={styles.sidebarHeader}>
-            <Layers size={16} color="#c084fc" />
+            <Layers size={16} color="#4C8DFF" />
             <h4 style={styles.sidebarTitle}>CPC Technology Sections</h4>
           </div>
 
           <div style={styles.cpcList}>
             {statistics.top_cpc_sections.length === 0 ? (
-              <p style={{ color: "#64748b", fontSize: "12px", margin: 0 }}>No classification data available.</p>
+              <p style={{ color: "#98A4B5", fontSize: "12px", margin: 0 }}>No classification data available.</p>
             ) : (
               statistics.top_cpc_sections.slice(0, 6).map((cpc, i) => (
                 <div key={i} style={styles.cpcItem}>
@@ -172,7 +176,12 @@ function PatentIntelligence() {
       <div style={styles.resultsSection}>
         <div style={styles.sectionHeaderRow}>
           <h3 style={styles.sectionTitle}>Patent Records</h3>
-          <span style={styles.resultBadge}>{results.length} Patents Found</span>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <span style={isCached ? styles.cachedBadge : styles.sourceBadge}>
+              {dataSource}
+            </span>
+            <span style={styles.resultBadge}>{results.length} Patents Found</span>
+          </div>
         </div>
 
         {loading ? (
@@ -235,7 +244,7 @@ function PatentIntelligence() {
                             : patent.patent_abstract}
                         </span>
                       ) : (
-                        <span style={{ color: "#475569" }}>No abstract summary</span>
+                        <span style={{ color: "#98A4B5" }}>No abstract summary</span>
                       )}
                     </td>
                   </tr>
@@ -254,12 +263,12 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   refreshBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -285,8 +294,8 @@ const styles = {
     marginBottom: "24px"
   },
   resultsSection: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "20px",
     display: "flex",
@@ -301,15 +310,33 @@ const styles = {
   sectionTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   resultBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#60a5fa",
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
+    padding: "2px 8px",
+    borderRadius: "6px"
+  },
+  sourceBadge: {
+    fontSize: "11px",
+    fontWeight: "600",
+    color: "#35C98A",
+    background: "rgba(53, 201, 138, 0.12)",
+    border: "1px solid rgba(53, 201, 138, 0.3)",
+    padding: "2px 8px",
+    borderRadius: "6px"
+  },
+  cachedBadge: {
+    fontSize: "11px",
+    fontWeight: "600",
+    color: "#D9A441",
+    background: "rgba(217, 164, 65, 0.12)",
+    border: "1px solid rgba(217, 164, 65, 0.3)",
     padding: "2px 8px",
     borderRadius: "6px"
   },
@@ -325,38 +352,38 @@ const styles = {
   th: {
     textAlign: "left",
     padding: "10px 14px",
-    background: "#0b0f19",
-    color: "#94a3b8",
+    background: "#0B0F17",
+    color: "#98A4B5",
     fontWeight: "500",
     fontSize: "12px",
-    borderBottom: "1px solid #1e293b"
+    borderBottom: "1px solid #202A38"
   },
   tr: {
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     transition: "background 0.15s ease"
   },
   tdTitleCell: {
     padding: "12px 14px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     minWidth: "260px"
   },
   td: {
     padding: "12px 14px",
-    borderBottom: "1px solid #1e293b",
-    color: "#cbd5e1",
+    borderBottom: "1px solid #202A38",
+    color: "#98A4B5",
     verticalAlign: "top"
   },
   tdDate: {
     padding: "12px 14px",
-    borderBottom: "1px solid #1e293b",
-    color: "#94a3b8",
+    borderBottom: "1px solid #202A38",
+    color: "#98A4B5",
     whiteSpace: "nowrap",
     verticalAlign: "top"
   },
   tdAbstract: {
     padding: "12px 14px",
-    borderBottom: "1px solid #1e293b",
-    color: "#94a3b8",
+    borderBottom: "1px solid #202A38",
+    color: "#98A4B5",
     fontSize: "12px",
     maxWidth: "320px",
     verticalAlign: "top"
@@ -364,16 +391,16 @@ const styles = {
   patentTitle: {
     fontSize: "13px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     marginBottom: "4px",
     lineHeight: "1.4"
   },
   idBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#c084fc",
-    background: "rgba(192, 132, 252, 0.15)",
-    border: "1px solid rgba(192, 132, 252, 0.3)",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
     padding: "2px 6px",
     borderRadius: "4px",
     display: "inline-flex",
@@ -382,9 +409,9 @@ const styles = {
   typeBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#38bdf8",
-    background: "rgba(56, 189, 248, 0.15)",
-    border: "1px solid rgba(56, 189, 248, 0.3)",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
     padding: "2px 6px",
     borderRadius: "4px"
   },
@@ -398,8 +425,8 @@ const styles = {
     lineHeight: "1.4"
   },
   sidebarCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "18px",
     display: "flex",
@@ -410,13 +437,13 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     paddingBottom: "10px"
   },
   sidebarTitle: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   cpcList: {
@@ -429,26 +456,26 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "8px 10px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px"
   },
   cpcBadge: {
     fontSize: "11px",
     fontWeight: "600",
-    color: "#c084fc",
-    background: "rgba(192, 132, 252, 0.15)",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
     padding: "2px 6px",
     borderRadius: "4px"
   },
   cpcName: {
     fontSize: "12px",
     fontWeight: "500",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   cpcCount: {
     fontSize: "11px",
-    color: "#60a5fa"
+    color: "#4C8DFF"
   }
 };
 

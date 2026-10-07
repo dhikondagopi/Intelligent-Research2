@@ -98,27 +98,27 @@ function Commercialization() {
           value={Number(evidence.patent_count || 0).toLocaleString()}
           icon={Database}
           subtext="Patent evidence base"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
         <StatCard
           title="Engaged Organizations"
           value={Number(evidence.organization_count || 0).toLocaleString()}
           icon={Building2}
           subtext="Commercial ecosystem"
-          color="#7c3aed"
+          color="#4C8DFF"
         />
         <StatCard
           title="Inventor Activity"
           value={Number(evidence.inventor_count || 0).toLocaleString()}
           icon={Users}
           subtext="Active inventors"
-          color="#10b981"
+          color="#4C8DFF"
         />
       </div>
 
       {/* Disclaimers & Methodology Banner */}
       <div style={styles.noticeBox}>
-        <Info size={18} color="#60a5fa" style={{ flexShrink: 0, marginTop: 2 }} />
+        <Info size={18} color="#4C8DFF" style={{ flexShrink: 0, marginTop: 2 }} />
         <div>
           <h4 style={styles.noticeTitle}>Opportunity Screening Disclaimer</h4>
           <p style={styles.noticeText}>
@@ -132,28 +132,28 @@ function Commercialization() {
         <PathwayCard
           title="Productization Pathway"
           icon={Package}
-          color="#3b82f6"
+          color="#4C8DFF"
           data={pathways.productization}
         />
 
         <PathwayCard
           title="Licensing Pathway"
           icon={FileText}
-          color="#7c3aed"
+          color="#4C8DFF"
           data={pathways.licensing}
         />
 
         <PathwayCard
           title="Startup Creation"
           icon={Rocket}
-          color="#f59e0b"
+          color="#4C8DFF"
           data={pathways.startup}
         />
 
         <PathwayCard
           title="Industry Partnership"
           icon={Building2}
-          color="#10b981"
+          color="#4C8DFF"
           data={pathways.industry_partnership}
         />
       </div>
@@ -167,8 +167,8 @@ function PathwayCard({ title, icon: Icon, color, data }) {
   return (
     <div style={styles.pathwayCard}>
       <div style={styles.pathwayHeader}>
-        <div style={{ ...styles.iconBox, background: `${color}18`, border: `1px solid ${color}30` }}>
-          <Icon size={20} color={color} />
+        <div style={styles.iconBox}>
+          <Icon size={20} color="#4C8DFF" />
         </div>
         <div>
           <h3 style={styles.pathwayTitle}>{title}</h3>
@@ -181,7 +181,7 @@ function PathwayCard({ title, icon: Icon, color, data }) {
         <div style={styles.tagsRow}>
           {(data.signals || []).map((sig, i) => (
             <span key={i} style={styles.signalTag}>
-              <CheckCircle2 size={11} style={{ marginRight: 4 }} /> {sig}
+              <CheckCircle2 size={11} style={{ marginRight: 4, color: "#35C98A" }} /> {sig}
             </span>
           ))}
         </div>
@@ -212,12 +212,12 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   backBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -228,9 +228,9 @@ const styles = {
     gap: "6px"
   },
   refreshBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -247,8 +247,8 @@ const styles = {
     marginBottom: "24px"
   },
   noticeBox: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "16px 20px",
     display: "flex",
@@ -258,12 +258,12 @@ const styles = {
   noticeTitle: {
     fontSize: "14px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 4px 0"
   },
   noticeText: {
     fontSize: "12px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     margin: 0,
     lineHeight: "1.5"
   },
@@ -273,8 +273,8 @@ const styles = {
     gap: "20px"
   },
   pathwayCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "16px",
     padding: "24px",
     display: "flex",
@@ -285,13 +285,15 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "14px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     paddingBottom: "16px"
   },
   iconBox: {
     width: "44px",
     height: "44px",
     borderRadius: "12px",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -300,15 +302,15 @@ const styles = {
   pathwayTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 4px 0"
   },
   readinessBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#34d399",
-    background: "rgba(16, 185, 129, 0.15)",
-    border: "1px solid rgba(16, 185, 129, 0.3)",
+    color: "#35C98A",
+    background: "rgba(53, 201, 138, 0.12)",
+    border: "1px solid rgba(53, 201, 138, 0.3)",
     padding: "2px 8px",
     borderRadius: "6px"
   },
@@ -320,7 +322,7 @@ const styles = {
   sectionHeader: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#94a3b8",
+    color: "#98A4B5",
     margin: 0
   },
   tagsRow: {
@@ -329,9 +331,9 @@ const styles = {
     gap: "6px"
   },
   signalTag: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
+    color: "#98A4B5",
     fontSize: "11px",
     padding: "4px 9px",
     borderRadius: "6px",
@@ -342,22 +344,22 @@ const styles = {
     margin: 0,
     paddingLeft: "18px",
     fontSize: "12px",
-    color: "#cbd5e1",
+    color: "#F2F5F8",
     lineHeight: "1.6"
   },
   actionItem: {
     marginBottom: "4px"
   },
   noteBox: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px",
     padding: "10px 12px",
     marginTop: "auto"
   },
   noteText: {
     fontSize: "11px",
-    color: "#64748b",
+    color: "#98A4B5",
     lineHeight: "1.4"
   }
 };

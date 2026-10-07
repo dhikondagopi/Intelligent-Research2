@@ -13,10 +13,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  Bell,
   Shield
 } from "lucide-react";
-import NotificationMenu from "./NotificationMenu";
 
 function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
   const location = useLocation();
@@ -164,7 +162,7 @@ function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
                       <Icon
                         size={18}
                         style={{
-                          color: active ? "#60a5fa" : "#64748b",
+                          color: active ? "#4C8DFF" : "#98A4B5",
                           flexShrink: 0
                         }}
                       />
@@ -199,7 +197,7 @@ function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
             <User
               size={18}
               style={{
-                color: isProfileActive ? "#60a5fa" : "#64748b",
+                color: isProfileActive ? "#4C8DFF" : "#98A4B5",
                 flexShrink: 0
               }}
             />
@@ -232,7 +230,7 @@ function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
               title="Sign Out"
               aria-label="Sign Out"
             >
-              <LogOut size={16} color="#94a3b8" />
+              <LogOut size={16} color="#98A4B5" />
             </button>
           </div>
         </div>
@@ -245,7 +243,7 @@ const styles = {
   mobileOverlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(2, 6, 23, 0.75)",
+    background: "rgba(8, 11, 18, 0.8)",
     backdropFilter: "blur(4px)",
     zIndex: 999
   },
@@ -254,8 +252,8 @@ const styles = {
     position: "sticky",
     top: 0,
     height: "100vh",
-    background: "#080c16",
-    borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+    background: "#0B0F17",
+    borderRight: "1px solid #202A38",
     display: "flex",
     flexDirection: "column",
     flexShrink: 0,
@@ -280,7 +278,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+    borderBottom: "1px solid #202A38",
     flexShrink: 0
   },
 
@@ -295,15 +293,14 @@ const styles = {
   logo: {
     width: "36px",
     height: "36px",
-    borderRadius: "10px",
-    background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+    borderRadius: "8px",
+    background: "#4C8DFF",
     color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.35)",
     flexShrink: 0
   },
 
@@ -316,7 +313,7 @@ const styles = {
   brandTitle: {
     fontSize: "13px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     lineHeight: "1.2",
     letterSpacing: "-0.015em",
     whiteSpace: "nowrap",
@@ -327,14 +324,14 @@ const styles = {
   brandSubtitle: {
     fontSize: "9px",
     fontWeight: "400",
-    color: "#64748b",
+    color: "#98A4B5",
     whiteSpace: "nowrap"
   },
 
   collapseBtn: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    color: "#94a3b8",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#98A4B5",
     borderRadius: "6px",
     padding: "6px",
     cursor: "pointer",
@@ -348,7 +345,7 @@ const styles = {
     display: "none",
     background: "transparent",
     border: "none",
-    color: "#94a3b8",
+    color: "#98A4B5",
     cursor: "pointer",
     padding: "6px"
   },
@@ -370,16 +367,16 @@ const styles = {
 
   sectionHeader: {
     fontSize: "10px",
-    fontWeight: "500",
+    fontWeight: "600",
     letterSpacing: "0.5px",
-    color: "#475569",
+    color: "#5c6b7f",
     padding: "4px 10px 6px 10px",
     textTransform: "uppercase"
   },
 
   sectionDivider: {
     height: "1px",
-    background: "rgba(255, 255, 255, 0.06)",
+    background: "#202A38",
     margin: "6px 0"
   },
 
@@ -396,7 +393,7 @@ const styles = {
     gap: "12px",
     padding: "9px 12px",
     borderRadius: "8px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     fontSize: "13px",
     fontWeight: "500",
     textDecoration: "none",
@@ -410,9 +407,9 @@ const styles = {
   },
 
   navItemActive: {
-    color: "#ffffff",
-    background: "rgba(37, 99, 235, 0.16)",
-    boxShadow: "inset 0 0 0 1px rgba(59, 130, 246, 0.25)"
+    color: "#F2F5F8",
+    background: "rgba(76, 141, 255, 0.12)",
+    boxShadow: "inset 0 0 0 1px rgba(76, 141, 255, 0.25)"
   },
 
   activeIndicator: {
@@ -422,27 +419,26 @@ const styles = {
     bottom: "6px",
     width: "3px",
     borderRadius: "0 3px 3px 0",
-    background: "#3b82f6",
-    boxShadow: "0 0 8px #3b82f6"
+    background: "#4C8DFF"
   },
 
   itemText: {
     fontSize: "13px",
     fontWeight: "500",
-    color: "#94a3b8",
+    color: "#98A4B5",
     whiteSpace: "nowrap"
   },
 
   itemTextActive: {
     fontSize: "13px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     whiteSpace: "nowrap"
   },
 
   bottomSection: {
     padding: "12px 10px 16px 10px",
-    borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+    borderTop: "1px solid #202A38",
     flexShrink: 0
   },
 
@@ -451,9 +447,9 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     padding: "8px 10px",
-    background: "rgba(255, 255, 255, 0.03)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: "10px"
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "8px"
   },
 
   userInfoCardCollapsed: {
@@ -465,9 +461,9 @@ const styles = {
     width: "32px",
     height: "32px",
     borderRadius: "50%",
-    background: "linear-gradient(135deg, #1e293b, #334155)",
-    border: "1px solid #334155",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.15)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
+    color: "#4C8DFF",
     fontSize: "13px",
     fontWeight: "600",
     display: "flex",
@@ -486,7 +482,7 @@ const styles = {
   userName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
@@ -494,7 +490,7 @@ const styles = {
 
   userRole: {
     fontSize: "10px",
-    color: "#64748b",
+    color: "#98A4B5",
     whiteSpace: "nowrap",
     display: "flex",
     alignItems: "center"

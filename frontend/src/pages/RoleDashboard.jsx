@@ -1,36 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
-  ArrowRight,
-  Users,
+  FileText,
   Building2,
   Cpu,
-  Lightbulb,
-  FileText,
-  RefreshCw,
-  AlertCircle,
-  Sparkles,
-  TrendingUp,
+  Users,
   Award,
-  Layers,
-  CheckCircle2
+  ArrowRight,
+  Sparkles,
+  RefreshCw,
+  LayoutDashboard
 } from "lucide-react";
 
 import { getRoleDashboard } from "../services/dashboardService";
 import StatCard from "../components/StatCard";
 import ChartCard from "../components/ChartCard";
-import SectionHeader from "../components/SectionHeader";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import ErrorState from "../components/ErrorState";
 
 function RoleDashboard() {
   const { role } = useParams();
-
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const loadDashboard = async () => {
     try {
@@ -40,6 +32,9 @@ function RoleDashboard() {
       setDashboard(data);
     } catch (err) {
       console.error(err);
+      if (err.response?.status === 401) {
+        return;
+      }
       setError(err.response?.data?.detail || "Failed to load dashboard statistics.");
     } finally {
       setLoading(false);
@@ -89,19 +84,19 @@ function RoleDashboard() {
       {/* Welcome Banner Header */}
       <div style={styles.welcomeBanner}>
         <div>
-          <div style={styles.greetingBadge}>
-            <Sparkles size={13} style={{ marginRight: 6 }} />
-            {formatRole(dashboard.role)} Dashboard
+          <div style={styles.welcomeBadge}>
+            <LayoutDashboard size={12} style={{ marginRight: 4 }} />
+            Enterprise Intelligence Workspace
           </div>
           <h1 style={styles.welcomeTitle}>
-            Good day, {user.name || "Researcher"}
+            {formatRole(dashboard.role)} Dashboard
           </h1>
           <p style={styles.welcomeSub}>{dashboard.title}</p>
         </div>
 
         <button onClick={loadDashboard} style={styles.refreshBtn}>
-          <RefreshCw size={15} />
-          <span>Refresh Data</span>
+          <RefreshCw size={14} />
+          <span>Refresh Workspace</span>
         </button>
       </div>
 
@@ -112,7 +107,7 @@ function RoleDashboard() {
           value={Number(statistics.total_patents || 0).toLocaleString()}
           icon={FileText}
           subtext="USPTO & WIPO database"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -120,7 +115,7 @@ function RoleDashboard() {
           value={Number(statistics.total_organizations || 0).toLocaleString()}
           icon={Building2}
           subtext="Active research assignees"
-          color="#7c3aed"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -128,7 +123,7 @@ function RoleDashboard() {
           value={Number(statistics.total_technologies || 0).toLocaleString()}
           icon={Cpu}
           subtext="Categorized sectors"
-          color="#c084fc"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -136,7 +131,7 @@ function RoleDashboard() {
           value={Number(statistics.total_inventors || 0).toLocaleString()}
           icon={Users}
           subtext="Registered contributors"
-          color="#10b981"
+          color="#4C8DFF"
         />
 
         {statistics.total_users !== undefined && (
@@ -145,69 +140,69 @@ function RoleDashboard() {
             value={Number(statistics.total_users || 0).toLocaleString()}
             icon={Award}
             subtext="Active platform accounts"
-            color="#f59e0b"
+            color="#4C8DFF"
           />
         )}
       </div>
 
-      {/* Columns: Focus Areas & Quick Actions */}
+      {/* Main Content Columns */}
       <div style={styles.columns}>
-        {/* Focus Areas Section */}
+        {/* Left Column: Strategic Focus */}
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div>
-              <h3 style={styles.cardTitle}>Focus Areas</h3>
-              <p style={styles.cardSub}>Strategic priorities for your role</p>
+              <h3 style={styles.cardTitle}>Strategic Focus Areas</h3>
+              <p style={styles.cardSub}>Key research and monitoring priorities for your role</p>
             </div>
-            <Lightbulb size={20} color="#f59e0b" />
+            <Sparkles size={18} color="#4C8DFF" />
           </div>
 
           <div style={styles.focusList}>
             {(dashboard.focus || []).map((item, index) => (
               <div key={index} style={styles.focusItem}>
                 <div style={styles.focusNum}>{index + 1}</div>
-                <span style={styles.focusText}>{item}</span>
+                <div style={styles.focusText}>{item}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Quick Actions Section */}
+        {/* Right Column: Recommended Actions */}
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div>
-              <h3 style={styles.cardTitle}>Quick Actions</h3>
-              <p style={styles.cardSub}>Direct navigation to platform modules</p>
+              <h3 style={styles.cardTitle}>Quick Workflows</h3>
+              <p style={styles.cardSub}>Direct access to intelligence tools</p>
             </div>
-            <ArrowRight size={20} color="#60a5fa" />
+            <Award size={18} color="#4C8DFF" />
           </div>
 
           <div style={styles.actionGrid}>
             {(dashboard.quick_actions || []).map((action, index) => (
-              <Link key={index} to={action.route} style={styles.actionItem}>
+              <Link key={index} to={action.link} style={styles.actionItem}>
                 <div>
                   <h4 style={styles.actionTitle}>{action.title}</h4>
-                  <span style={styles.actionSub}>Open module & analytics</span>
+                  <p style={styles.actionSub}>Launch module analysis</p>
                 </div>
-                <ArrowRight size={16} color="#60a5fa" />
+                <ArrowRight size={16} color="#98A4B5" />
               </Link>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Role Distribution Chart if available */}
+      {/* Platform User Distribution Chart if available */}
       {userRolesData.length > 0 && (
         <div style={{ marginTop: "24px" }}>
           <ChartCard
-            title="User Role Distribution"
-            subtitle="Platform registered users grouped by institutional role"
+            title="Platform Role Distribution"
+            subtitle="Registered accounts across research roles"
             type="bar"
             data={userRolesData}
             dataKey="count"
             nameKey="name"
-            color="#2563eb"
-            height={240}
+            color="#4C8DFF"
+            height={220}
           />
         </div>
       )}
@@ -220,53 +215,58 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
 
   welcomeBanner: {
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "12px",
+    padding: "24px 28px",
+    marginBottom: "24px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: "28px",
     flexWrap: "wrap",
-    gap: "16px"
+    gap: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
 
-  greetingBadge: {
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
-    color: "#60a5fa",
-    fontSize: "12px",
-    fontWeight: "500",
-    padding: "4px 12px",
-    borderRadius: "20px",
+  welcomeBadge: {
     display: "inline-flex",
     alignItems: "center",
+    fontSize: "11px",
+    fontWeight: "600",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.25)",
+    padding: "2px 8px",
+    borderRadius: "6px",
     marginBottom: "8px"
   },
 
   welcomeTitle: {
-    fontSize: "26px",
+    fontSize: "24px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 4px 0",
     letterSpacing: "-0.02em"
   },
 
   welcomeSub: {
     fontSize: "14px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     margin: 0
   },
 
   refreshBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "500",
     padding: "9px 16px",
-    borderRadius: "10px",
+    borderRadius: "8px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
@@ -278,7 +278,7 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: "16px",
-    marginBottom: "28px"
+    marginBottom: "24px"
   },
 
   columns: {
@@ -288,13 +288,14 @@ const styles = {
   },
 
   card: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "16px",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "12px",
     padding: "24px",
     display: "flex",
     flexDirection: "column",
-    gap: "18px"
+    gap: "18px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
 
   cardHeader: {
@@ -306,13 +307,13 @@ const styles = {
   cardTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 2px 0"
   },
 
   cardSub: {
     fontSize: "12px",
-    color: "#64748b",
+    color: "#98A4B5",
     margin: 0
   },
 
@@ -326,9 +327,9 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
-    borderRadius: "10px",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
+    borderRadius: "8px",
     padding: "12px 14px"
   },
 
@@ -336,8 +337,8 @@ const styles = {
     width: "26px",
     height: "26px",
     borderRadius: "50%",
-    background: "rgba(37, 99, 235, 0.2)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.15)",
+    color: "#4C8DFF",
     fontSize: "12px",
     fontWeight: "700",
     display: "flex",
@@ -348,7 +349,7 @@ const styles = {
 
   focusText: {
     fontSize: "13px",
-    color: "#cbd5e1",
+    color: "#F2F5F8",
     lineHeight: "1.4"
   },
 
@@ -362,9 +363,9 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
-    borderRadius: "10px",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
+    borderRadius: "8px",
     padding: "14px 16px",
     textDecoration: "none",
     transition: "all 0.2s ease"
@@ -373,13 +374,14 @@ const styles = {
   actionTitle: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 2px 0"
   },
 
   actionSub: {
-    fontSize: "11px",
-    color: "#64748b"
+    fontSize: "12px",
+    color: "#98A4B5",
+    margin: 0
   }
 };
 

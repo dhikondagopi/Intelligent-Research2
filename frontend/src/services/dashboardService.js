@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL } from "./api";
 
-const API_URL = "http://127.0.0.1:8000/api/dashboard";
+const API_URL = `${API_BASE_URL}/api/dashboard`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("access_token");

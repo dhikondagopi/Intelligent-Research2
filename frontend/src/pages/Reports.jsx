@@ -198,7 +198,7 @@ function Reports() {
                 ...(isActive ? styles.tabBtnActive : {})
               }}
             >
-              <Icon size={16} style={{ color: isActive ? "#60a5fa" : "#64748b" }} />
+              <Icon size={16} style={{ color: isActive ? "#4C8DFF" : "#98A4B5" }} />
               <span>{t.label}</span>
             </button>
           );
@@ -208,7 +208,7 @@ function Reports() {
       {/* Filters Bar */}
       <div style={styles.filterCard}>
         <div style={styles.filterHeader}>
-          <Filter size={16} style={{ color: "#60a5fa" }} />
+          <Filter size={16} style={{ color: "#4C8DFF" }} />
           <h3 style={styles.filterTitle}>Report Filters & Parameters</h3>
           <button onClick={handleClearFilters} style={styles.clearBtn}>
             Clear Filters
@@ -343,7 +343,7 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
 
   banner: {
@@ -356,14 +356,14 @@ const styles = {
   pageTitle: {
     fontSize: "26px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 6px 0",
     letterSpacing: "-0.02em"
   },
 
   pageSubtitle: {
     fontSize: "14px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     margin: 0
   },
 
@@ -373,10 +373,10 @@ const styles = {
   },
 
   pdfExportBtn: {
-    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+    background: "#4C8DFF",
     color: "#ffffff",
     border: "none",
-    borderRadius: "10px",
+    borderRadius: "8px",
     padding: "10px 18px",
     fontSize: "13px",
     fontWeight: "600",
@@ -384,15 +384,15 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
     transition: "all 0.2s ease"
   },
 
   excelExportBtn: {
-    background: "linear-gradient(135deg, #059669, #047857)",
+    background: "#35C98A",
     color: "#ffffff",
     border: "none",
-    borderRadius: "10px",
+    borderRadius: "8px",
     padding: "10px 18px",
     fontSize: "13px",
     fontWeight: "600",
@@ -400,7 +400,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 14px rgba(5, 150, 105, 0.3)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
     transition: "all 0.2s ease"
   },
 
@@ -408,16 +408,16 @@ const styles = {
     display: "flex",
     gap: "8px",
     marginBottom: "24px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     paddingBottom: "12px",
     overflowX: "auto"
   },
 
   tabBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "10px",
-    color: "#94a3b8",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "8px",
+    color: "#98A4B5",
     fontSize: "13px",
     fontWeight: "600",
     padding: "10px 16px",
@@ -430,14 +430,14 @@ const styles = {
   },
 
   tabBtnActive: {
-    background: "rgba(37, 99, 235, 0.16)",
-    borderColor: "#3b82f6",
-    color: "#ffffff"
+    background: "rgba(76, 141, 255, 0.14)",
+    borderColor: "#4C8DFF",
+    color: "#F2F5F8"
   },
 
   filterCard: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "20px",
     marginBottom: "28px"
@@ -453,7 +453,7 @@ const styles = {
   filterTitle: {
     fontSize: "14px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0,
     flex: 1
   },
@@ -461,7 +461,7 @@ const styles = {
   clearBtn: {
     background: "transparent",
     border: "none",
-    color: "#64748b",
+    color: "#98A4B5",
     fontSize: "12px",
     cursor: "pointer",
     textDecoration: "underline"
@@ -482,7 +482,7 @@ const styles = {
   label: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#94a3b8"
+    color: "#98A4B5"
   },
 
   inputWrapper: {
@@ -494,23 +494,23 @@ const styles = {
   inputIcon: {
     position: "absolute",
     left: "12px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
 
   input: {
     width: "100%",
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "8px",
     padding: "9px 12px 9px 34px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontSize: "13px",
     outline: "none",
     boxSizing: "border-box"
   },
 
   applyBtn: {
-    background: "#2563eb",
+    background: "#4C8DFF",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -524,11 +524,11 @@ const styles = {
   },
 
   errorCard: {
-    background: "rgba(127, 29, 29, 0.2)",
-    border: "1px solid #7f1d1d",
+    background: "rgba(224, 91, 97, 0.12)",
+    border: "1px solid #E05B61",
     borderRadius: "12px",
     padding: "20px",
-    color: "#fca5a5",
+    color: "#E05B61",
     fontSize: "13px",
     display: "flex",
     alignItems: "center",
@@ -537,7 +537,7 @@ const styles = {
 
   retryBtn: {
     marginLeft: "auto",
-    background: "#dc2626",
+    background: "#E05B61",
     color: "#ffffff",
     border: "none",
     borderRadius: "6px",
@@ -547,8 +547,8 @@ const styles = {
   },
 
   loadingCard: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "14px",
     padding: "60px 20px",
     textAlign: "center",
@@ -559,13 +559,13 @@ const styles = {
 
   loadingText: {
     fontSize: "14px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     marginTop: "12px"
   },
 
   spinner: {
     animation: "spin 1s linear infinite",
-    color: "#60a5fa"
+    color: "#4C8DFF"
   }
 };
 

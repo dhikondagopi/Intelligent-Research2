@@ -96,7 +96,7 @@ function Register() {
           <div style={styles.featuresList}>
             <div style={styles.featureItem}>
               <div style={styles.featureIconBox}>
-                <BookOpen size={16} color="#60a5fa" />
+                <BookOpen size={16} color="#4C8DFF" />
               </div>
               <div>
                 <div style={styles.featureTitle}>Role-Tailored Dashboards</div>
@@ -106,7 +106,7 @@ function Register() {
 
             <div style={styles.featureItem}>
               <div style={styles.featureIconBox}>
-                <DollarSign size={16} color="#34d399" />
+                <DollarSign size={16} color="#4C8DFF" />
               </div>
               <div>
                 <div style={styles.featureTitle}>Grant & Award Intelligence</div>
@@ -116,7 +116,7 @@ function Register() {
 
             <div style={styles.featureItem}>
               <div style={styles.featureIconBox}>
-                <Cpu size={16} color="#c084fc" />
+                <Cpu size={16} color="#4C8DFF" />
               </div>
               <div>
                 <div style={styles.featureTitle}>Automated Executive Reports</div>
@@ -131,7 +131,7 @@ function Register() {
           <div style={styles.authCard}>
             <div style={styles.cardHeader}>
               <div style={styles.userIconBox}>
-                <User size={20} color="#60a5fa" />
+                <User size={20} color="#4C8DFF" />
               </div>
               <h2 style={styles.cardTitle}>Create Account</h2>
               <p style={styles.cardSub}>Enter your information to register a platform user account</p>
@@ -240,7 +240,7 @@ function Register() {
             </div>
 
             <div style={styles.securityNote}>
-              <ShieldCheck size={14} style={{ color: "#34d399", flexShrink: 0 }} />
+              <ShieldCheck size={14} style={{ color: "#35C98A", flexShrink: 0 }} />
               <span>Compliant with institutional security policies</span>
             </div>
           </div>
@@ -254,7 +254,7 @@ const styles = {
   page: {
     minHeight: "100vh",
     width: "100%",
-    background: "#020617",
+    background: "#080B12",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -271,7 +271,7 @@ const styles = {
     width: "500px",
     height: "500px",
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, rgba(2, 6, 23, 0) 70%)",
+    background: "radial-gradient(circle, rgba(76, 141, 255, 0.12) 0%, rgba(8, 11, 18, 0) 70%)",
     pointerEvents: "none"
   },
 
@@ -282,7 +282,7 @@ const styles = {
     width: "500px",
     height: "500px",
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(124, 58, 237, 0.18) 0%, rgba(2, 6, 23, 0) 70%)",
+    background: "radial-gradient(circle, rgba(76, 141, 255, 0.12) 0%, rgba(8, 11, 18, 0) 70%)",
     pointerEvents: "none"
   },
 
@@ -312,25 +312,26 @@ const styles = {
     width: "44px",
     height: "44px",
     borderRadius: "12px",
-    background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-    color: "#ffffff",
+    background: "#101620",
+    border: "1px solid #4C8DFF",
+    color: "#4C8DFF",
     fontSize: "18px",
     fontWeight: "700",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 8px 25px rgba(37, 99, 235, 0.3)"
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
 
   brandTitle: {
     fontSize: "16px",
     fontWeight: "700",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
 
   brandSubtitle: {
     fontSize: "11px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
 
   badgeRow: {
@@ -338,9 +339,9 @@ const styles = {
   },
 
   platformBadge: {
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
+    color: "#4C8DFF",
     fontSize: "12px",
     fontWeight: "500",
     padding: "4px 12px",
@@ -353,20 +354,18 @@ const styles = {
     fontSize: "36px",
     fontWeight: "700",
     lineHeight: "1.2",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     letterSpacing: "-0.02em",
     margin: 0
   },
 
   headlineGradient: {
-    background: "linear-gradient(135deg, #60a5fa, #c084fc)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent"
+    color: "#4C8DFF"
   },
 
   description: {
     fontSize: "14px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     lineHeight: "1.6",
     margin: 0
   },
@@ -381,8 +380,8 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    background: "rgba(15, 23, 42, 0.6)",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     padding: "12px 16px",
     borderRadius: "12px"
   },
@@ -391,7 +390,7 @@ const styles = {
     width: "32px",
     height: "32px",
     borderRadius: "8px",
-    background: "#1e293b",
+    background: "#0B0F17",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -401,12 +400,12 @@ const styles = {
   featureTitle: {
     fontSize: "13px",
     fontWeight: "600",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
 
   featureSub: {
     fontSize: "11px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
 
   rightCol: {
@@ -417,11 +416,11 @@ const styles = {
   authCard: {
     width: "100%",
     maxWidth: "440px",
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "20px",
     padding: "32px",
-    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
     display: "flex",
     flexDirection: "column",
     gap: "18px"
@@ -438,8 +437,8 @@ const styles = {
     width: "48px",
     height: "48px",
     borderRadius: "14px",
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -450,32 +449,32 @@ const styles = {
     fontSize: "22px",
     fontWeight: "700",
     letterSpacing: "-0.015em",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: "0 0 4px 0"
   },
 
   cardSub: {
     fontSize: "12px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     margin: 0
   },
 
   errorBox: {
-    background: "rgba(127, 29, 29, 0.25)",
-    border: "1px solid #7f1d1d",
+    background: "rgba(224, 91, 97, 0.12)",
+    border: "1px solid #E05B61",
     borderRadius: "10px",
     padding: "10px 14px",
-    color: "#fca5a5",
+    color: "#E05B61",
     fontSize: "12px",
     textAlign: "center"
   },
 
   successBox: {
-    background: "rgba(16, 185, 129, 0.15)",
-    border: "1px solid rgba(16, 185, 129, 0.3)",
+    background: "rgba(53, 201, 138, 0.12)",
+    border: "1px solid rgba(53, 201, 138, 0.3)",
     borderRadius: "10px",
     padding: "10px 14px",
-    color: "#34d399",
+    color: "#35C98A",
     fontSize: "12px",
     textAlign: "center"
   },
@@ -495,7 +494,7 @@ const styles = {
   label: {
     fontSize: "12px",
     fontWeight: "500",
-    color: "#cbd5e1"
+    color: "#F2F5F8"
   },
 
   inputWrapper: {
@@ -507,16 +506,16 @@ const styles = {
   inputIcon: {
     position: "absolute",
     left: "14px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
 
   input: {
     width: "100%",
-    background: "#020617",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "10px",
     padding: "10px 40px 10px 40px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontSize: "13px",
     outline: "none",
     boxSizing: "border-box"
@@ -524,11 +523,11 @@ const styles = {
 
   select: {
     width: "100%",
-    background: "#020617",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "10px",
     padding: "10px 14px 10px 40px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontSize: "13px",
     outline: "none",
     boxSizing: "border-box",
@@ -540,13 +539,13 @@ const styles = {
     right: "12px",
     background: "transparent",
     border: "none",
-    color: "#64748b",
+    color: "#98A4B5",
     cursor: "pointer",
     padding: "4px"
   },
 
   submitBtn: {
-    background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+    background: "#4C8DFF",
     color: "#ffffff",
     border: "none",
     borderRadius: "10px",
@@ -559,7 +558,7 @@ const styles = {
     justifyContent: "center",
     gap: "8px",
     marginTop: "6px",
-    boxShadow: "0 4px 16px rgba(37, 99, 235, 0.35)"
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
 
   spinner: {
@@ -575,11 +574,11 @@ const styles = {
   },
 
   footerText: {
-    color: "#64748b"
+    color: "#98A4B5"
   },
 
   link: {
-    color: "#60a5fa",
+    color: "#4C8DFF",
     fontWeight: "600",
     textDecoration: "none"
   },
@@ -590,8 +589,8 @@ const styles = {
     justifyContent: "center",
     gap: "6px",
     fontSize: "11px",
-    color: "#64748b",
-    borderTop: "1px solid #1e293b",
+    color: "#98A4B5",
+    borderTop: "1px solid #202A38",
     paddingTop: "12px"
   }
 };

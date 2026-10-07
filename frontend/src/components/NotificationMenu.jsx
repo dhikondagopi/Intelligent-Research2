@@ -325,9 +325,9 @@ const styles = {
 
   bellButton: {
     position: "relative",
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "10px",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "8px",
     padding: "8px 11px",
     cursor: "pointer",
     display: "flex",
@@ -340,13 +340,12 @@ const styles = {
     position: "absolute",
     top: "-5px",
     right: "-5px",
-    background: "#ef4444",
+    background: "#E05B61",
     color: "#ffffff",
     fontSize: "10px",
     fontWeight: "600",
     padding: "2px 6px",
     borderRadius: "10px",
-    boxShadow: "0 0 8px rgba(239, 68, 68, 0.6)",
     lineHeight: "1"
   },
 
@@ -356,9 +355,9 @@ const styles = {
     top: "calc(100% + 10px)",
     width: "420px",
     maxHeight: "540px",
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    borderRadius: "14px",
+    background: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "12px",
     boxShadow: "0 14px 40px rgba(0, 0, 0, 0.6)",
     zIndex: 2000,
     display: "flex",
@@ -368,24 +367,24 @@ const styles = {
 
   header: {
     padding: "16px 18px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid #202A38",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    background: "#0b0f19"
+    background: "#0B0F17"
   },
 
   headerTitle: {
     fontSize: "15px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
 
   headerUnreadBadge: {
-    background: "rgba(37, 99, 235, 0.2)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.25)",
+    color: "#4C8DFF",
     fontSize: "11px",
     fontWeight: "500",
     padding: "2px 7px",
@@ -394,8 +393,8 @@ const styles = {
 
   headerActionBtn: {
     background: "transparent",
-    border: "1px solid #334155",
-    color: "#cbd5e1",
+    border: "1px solid #202A38",
+    color: "#98A4B5",
     fontSize: "11px",
     fontWeight: "500",
     padding: "5px 9px",
@@ -409,7 +408,7 @@ const styles = {
   closeBtn: {
     background: "transparent",
     border: "none",
-    color: "#64748b",
+    color: "#98A4B5",
     cursor: "pointer",
     padding: "4px",
     display: "flex",
@@ -420,15 +419,15 @@ const styles = {
     display: "flex",
     gap: "4px",
     padding: "8px 12px",
-    background: "#0f172a",
-    borderBottom: "1px solid #1e293b",
+    background: "#101620",
+    borderBottom: "1px solid #202A38",
     overflowX: "auto"
   },
 
   tabBtn: {
     background: "transparent",
     border: "none",
-    color: "#64748b",
+    color: "#98A4B5",
     fontSize: "12px",
     fontWeight: "500",
     padding: "6px 10px",
@@ -438,8 +437,8 @@ const styles = {
   },
 
   tabBtnActive: {
-    background: "rgba(37, 99, 235, 0.2)",
-    color: "#60a5fa"
+    background: "rgba(76, 141, 255, 0.14)",
+    color: "#4C8DFF"
   },
 
   listBody: {

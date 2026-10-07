@@ -99,7 +99,7 @@ function InnovationScoring() {
           value={technologies.length.toString()}
           icon={Layers}
           subtext="Active tech domains"
-          color="#3b82f6"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -107,7 +107,7 @@ function InnovationScoring() {
           value={`${avgScore} / 100`}
           icon={Sparkles}
           subtext="Cross-domain index"
-          color="#c084fc"
+          color="#4C8DFF"
         />
 
         <StatCard
@@ -115,14 +115,14 @@ function InnovationScoring() {
           value={technologies[0]?.technology || "N/A"}
           icon={Award}
           subtext={`Score: ${technologies[0]?.innovation_score || 0}`}
-          color="#10b981"
+          color="#4C8DFF"
         />
       </div>
 
       {/* Formula Explanation Banner */}
       <div style={styles.formulaCard}>
         <div style={styles.formulaHeader}>
-          <Info size={18} color="#60a5fa" />
+          <Info size={18} color="#4C8DFF" />
           <h3 style={styles.formulaTitle}>Explainable Innovation Scoring Model</h3>
         </div>
         <p style={styles.formulaDesc}>
@@ -130,11 +130,11 @@ function InnovationScoring() {
         </p>
 
         <div style={styles.factorGrid}>
-          <FactorCard name="Research Novelty" weight="30%" desc="Citation velocity & publication freshness" color="#3b82f6" />
-          <FactorCard name="Patent Strength" weight="20%" desc="Patent portfolio volume & claims" color="#7c3aed" />
-          <FactorCard name="Market Potential" weight="20%" desc="Industry assignee concentration" color="#06b6d4" />
-          <FactorCard name="Tech Maturity" weight="15%" desc="Growth stage (Early -> Established)" color="#c084fc" />
-          <FactorCard name="Funding Relevance" weight="15%" desc="NIH grant alignment & awards" color="#10b981" />
+          <FactorCard name="Research Novelty" weight="30%" desc="Citation velocity & publication freshness" color="#4C8DFF" />
+          <FactorCard name="Patent Strength" weight="20%" desc="Patent portfolio volume & claims" color="#4C8DFF" />
+          <FactorCard name="Market Potential" weight="20%" desc="Industry assignee concentration" color="#4C8DFF" />
+          <FactorCard name="Tech Maturity" weight="15%" desc="Growth stage (Early -> Established)" color="#4C8DFF" />
+          <FactorCard name="Funding Relevance" weight="15%" desc="NIH grant alignment & awards" color="#4C8DFF" />
         </div>
       </div>
 
@@ -148,7 +148,7 @@ function InnovationScoring() {
             data={chartData}
             dataKey="score"
             nameKey="name"
-            color="#c084fc"
+            color="#4C8DFF"
             height={260}
           />
         </div>
@@ -193,7 +193,7 @@ function InnovationScoring() {
                     </td>
                     <td style={styles.td}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                        <Database size={13} color="#64748b" />
+                        <Database size={13} color="#98A4B5" />
                         {Number(t.patent_count || 0).toLocaleString()}
                       </span>
                     </td>
@@ -231,12 +231,12 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   backBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -247,9 +247,9 @@ const styles = {
     gap: "6px"
   },
   refreshBtn: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
-    color: "#cbd5e1",
+    background: "#101620",
+    border: "1px solid #202A38",
+    color: "#F2F5F8",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -266,8 +266,8 @@ const styles = {
     marginBottom: "28px"
   },
   formulaCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "16px",
     padding: "24px",
     marginBottom: "28px",
@@ -283,12 +283,12 @@ const styles = {
   formulaTitle: {
     fontSize: "15px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   formulaDesc: {
     fontSize: "13px",
-    color: "#94a3b8",
+    color: "#98A4B5",
     margin: 0,
     lineHeight: "1.5"
   },
@@ -299,8 +299,8 @@ const styles = {
     marginTop: "8px"
   },
   factorItem: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "#0B0F17",
+    border: "1px solid #202A38",
     borderRadius: "10px",
     padding: "14px",
     display: "flex",
@@ -315,7 +315,7 @@ const styles = {
   factorName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#f8fafc"
+    color: "#F2F5F8"
   },
   factorWeight: {
     fontSize: "14px",
@@ -324,11 +324,11 @@ const styles = {
   },
   factorDesc: {
     fontSize: "11px",
-    color: "#64748b"
+    color: "#98A4B5"
   },
   tableCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "#101620",
+    border: "1px solid #202A38",
     borderRadius: "16px",
     padding: "24px",
     display: "flex",
@@ -343,15 +343,15 @@ const styles = {
   tableTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     margin: 0
   },
   countBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#c084fc",
-    background: "rgba(192, 132, 252, 0.15)",
-    border: "1px solid rgba(192, 132, 252, 0.3)",
+    color: "#4C8DFF",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
     padding: "2px 8px",
     borderRadius: "6px"
   },
@@ -365,22 +365,22 @@ const styles = {
     textAlign: "left"
   },
   th: {
-    background: "#0b0f19",
-    color: "#94a3b8",
+    background: "#0B0F17",
+    color: "#98A4B5",
     fontWeight: "600",
     padding: "12px 14px",
-    borderBottom: "1px solid #1e293b"
+    borderBottom: "1px solid #202A38"
   },
   td: {
     padding: "12px 14px",
-    color: "#cbd5e1",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)"
+    color: "#98A4B5",
+    borderBottom: "1px solid #202A38"
   },
   tdBold: {
     padding: "12px 14px",
-    color: "#f8fafc",
+    color: "#F2F5F8",
     fontWeight: "600",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)"
+    borderBottom: "1px solid #202A38"
   },
   trEven: {
     background: "transparent"
@@ -389,9 +389,9 @@ const styles = {
     background: "rgba(255, 255, 255, 0.015)"
   },
   scoreBadge: {
-    background: "rgba(192, 132, 252, 0.15)",
-    border: "1px solid rgba(192, 132, 252, 0.3)",
-    color: "#c084fc",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.3)",
+    color: "#4C8DFF",
     fontWeight: "700",
     letterSpacing: "-0.02em",
     fontSize: "12px",
@@ -399,15 +399,15 @@ const styles = {
     borderRadius: "6px"
   },
   signalBadge: {
-    background: "rgba(16, 185, 129, 0.15)",
-    color: "#34d399",
+    background: "rgba(53, 201, 138, 0.12)",
+    color: "#35C98A",
     fontSize: "11px",
     fontWeight: "500",
     padding: "3px 8px",
     borderRadius: "4px"
   },
   detailLink: {
-    color: "#60a5fa",
+    color: "#4C8DFF",
     fontWeight: "600",
     textDecoration: "none",
     display: "inline-flex",
