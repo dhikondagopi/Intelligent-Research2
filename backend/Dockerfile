@@ -1,6 +1,6 @@
 # ---- Backend Dockerfile ----
-# FastAPI + Uvicorn on Python 3.11-slim
-FROM python:3.11-slim
+# FastAPI + Uvicorn on Python 3.12-slim (matches Render runtime)
+FROM python:3.12-slim
 
 # Prevent .pyc files and enable unbuffered logs
 ENV PYTHONDONTWRITEBYTECODE=1 \
