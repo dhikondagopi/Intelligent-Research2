@@ -67,7 +67,6 @@ export default function Login() {
 
       setApiSuccess("Authentication verified. Loading your workspace...");
 
-      // Short delay for visual feedback before navigation
       setTimeout(() => {
         navigate(`/dashboard/${role}`);
       }, 600);
@@ -96,14 +95,13 @@ export default function Login() {
     }
 
     setForgotStatus({ loading: true, message: "", isSuccess: false });
-    // Simulate secure recovery request
     setTimeout(() => {
       setForgotStatus({
         loading: false,
         message: `Password reset instructions have been dispatched to ${forgotEmail}. Please check your inbox.`,
         isSuccess: true,
       });
-    }, 800);
+    }, 700);
   };
 
   return (
@@ -112,7 +110,6 @@ export default function Login() {
         {!showForgotModal ? (
           <>
             <AuthHeader
-              badge="Secure Workspace Access"
               heading="Welcome back"
               subtitle="Sign in to continue to your research intelligence workspace."
             />
@@ -138,7 +135,7 @@ export default function Login() {
               <FormField
                 id="login-email"
                 name="email"
-                label="Email address"
+                label="Email"
                 type="email"
                 value={form.email}
                 onChange={handleChange}
@@ -151,7 +148,7 @@ export default function Login() {
                 autoFocus
               />
 
-              {/* Password */}
+              {/* Password with Visibility Toggle */}
               <PasswordField
                 id="login-password"
                 name="password"
@@ -178,7 +175,7 @@ export default function Login() {
                 }
               />
 
-              {/* Submit CTA */}
+              {/* Sign In button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -195,18 +192,18 @@ export default function Login() {
                   </>
                 ) : (
                   <>
-                    <span>Sign in to workspace</span>
+                    <span>Sign In</span>
                     <ArrowRight size={15} style={{ marginLeft: 6 }} />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Secondary CTA */}
+            {/* Don't have an account? Create account */}
             <div style={styles.secondaryRow}>
               <span style={styles.secondaryText}>Don't have an account?</span>
               <Link to="/register" style={styles.secondaryLink}>
-                Create an account
+                Create account
               </Link>
             </div>
           </>
@@ -294,6 +291,10 @@ export default function Login() {
         .auth-spin {
           animation: spin 1s linear infinite;
         }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
       `}</style>
     </AuthShell>
   );
@@ -305,6 +306,7 @@ const styles = {
     flexDirection: "column",
     gap: "18px",
     marginTop: "6px",
+    width: "100%",
   },
   forgotBtn: {
     background: "none",
@@ -328,9 +330,10 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    transition: "all 0.18s ease",
+    transition: "background-color 0.18s ease, transform 0.1s ease",
     boxShadow: "0 2px 10px rgba(76, 141, 255, 0.3)",
     marginTop: "6px",
+    cursor: "pointer",
   },
   secondaryRow: {
     display: "flex",

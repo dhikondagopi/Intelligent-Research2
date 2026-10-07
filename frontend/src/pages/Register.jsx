@@ -3,45 +3,32 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   User,
   Mail,
-  Building,
-  GraduationCap,
-  Sparkles,
+  Briefcase,
+  ChevronDown,
   ArrowRight,
-  ArrowLeft,
   RefreshCw,
   AlertCircle,
   CheckCircle2,
-  Tag,
-  Check,
+  ShieldAlert,
 } from "lucide-react";
 import AuthShell from "../components/auth/AuthShell";
 import AuthCard from "../components/auth/AuthCard";
 import AuthHeader from "../components/auth/AuthHeader";
 import FormField from "../components/auth/FormField";
 import PasswordField from "../components/auth/PasswordField";
-import RoleSelector from "../components/auth/RoleSelector";
 import { registerUser, loginUser } from "../services/authService";
-import { updateProfile } from "../services/profileService";
 
 export default function Register() {
   const navigate = useNavigate();
-
-  // Active step (1: Account, 2: Role, 3: Optional Profile)
-  const [currentStep, setCurrentStep] = useState(1);
 
   // Form states
   const [form, setForm] = useState({
     name: "",
     email: "",
+    role: "researcher",
     password: "",
     confirmPassword: "",
-    role: "researcher",
     adminInviteCode: "",
-    // Optional profile fields
-    affiliation: "",
-    department: "",
-    researchInterests: "",
-    skills: "",
   });
 
   // UI & Feedback states
@@ -59,7 +46,7 @@ export default function Register() {
     if (apiError) setApiError("");
   };
 
-  const validateStep1 = () => {
+  const validate = () => {
     const errs = {};
     if (!form.name.trim()) {
       errs.name = "Full name is required";
@@ -69,6 +56,10 @@ export default function Register() {
       errs.email = "Email address is required";
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
       errs.email = "Please enter a valid email address";
+    }
+
+    if (!form.role) {
+      errs.role = "Please select a role";
     }
 
     if (!form.password) {
@@ -87,42 +78,21 @@ export default function Register() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleNextStep = () => {
-    if (currentStep === 1) {
-      if (!validateStep1()) return;
-      setCurrentStep(2);
-    } else if (currentStep === 2) {
-      setCurrentStep(3);
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = async (e, skipOptional = false) => {
-    if (e && e.preventDefault) e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setApiError("");
     setApiSuccess("");
 
-    if (!validateStep1()) {
-      setCurrentStep(1);
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
 
     // SECURITY ENFORCEMENT:
-    // Backend remains authoritative. If 'admin' was chosen, check if an invite code is provided.
-    // Client defaults unverified admin registrations to 'researcher' with an administrative verification request,
-    // ensuring no unauthenticated client-side privilege escalation occurs.
+    // Backend remains authoritative. If 'admin' was chosen without an invite code,
+    // provision account as researcher to prevent unauthenticated client-side privilege escalation.
     let safeRole = form.role;
-    if (form.role === "admin") {
-      if (!form.adminInviteCode.trim()) {
-        safeRole = "researcher";
-      }
+    if (form.role === "admin" && !form.adminInviteCode.trim()) {
+      safeRole = "researcher";
     }
 
     try {
@@ -134,50 +104,24 @@ export default function Register() {
         role: safeRole,
       });
 
-      setApiSuccess("Account created successfully! Authenticating workspace...");
+      setApiSuccess("Account created successfully. Authenticating workspace...");
 
       // 2. Automatically log in to obtain JWT access token
       try {
-        const loginData = await loginUser({
+        await loginUser({
           email: form.email.trim(),
           password: form.password,
         });
 
-        // 3. Save optional profile details if supplied
-        if (!skipOptional && loginData?.user_id) {
-          const interestsList = form.researchInterests
-            ? form.researchInterests.split(",").map((s) => s.trim()).filter(Boolean)
-            : [];
-          const skillsList = form.skills
-            ? form.skills.split(",").map((s) => s.trim()).filter(Boolean)
-            : [];
-
-          if (form.affiliation || form.department || interestsList.length || skillsList.length) {
-            try {
-              await updateProfile(loginData.user_id, {
-                affiliation: form.affiliation.trim(),
-                department: form.department.trim(),
-                bio: "",
-                research_interests: interestsList,
-                skills: skillsList,
-                orcid: "",
-              });
-            } catch (profileErr) {
-              console.warn("Optional profile update failed:", profileErr);
-            }
-          }
-        }
-
-        // 4. Redirect to personal role dashboard
+        // 3. Redirect to designated dashboard
         setTimeout(() => {
           navigate(`/dashboard/${safeRole}`);
-        }, 800);
+        }, 600);
       } catch (loginErr) {
         console.warn("Auto-login error:", loginErr);
-        // Fallback to login page if auto-login encounters an issue
         setTimeout(() => {
           navigate("/login");
-        }, 1000);
+        }, 800);
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -185,10 +129,6 @@ export default function Register() {
         error.response?.data?.detail ||
         "Registration failed. Please check your information and try again.";
       setApiError(detail);
-      // If email was duplicated, bring user back to step 1
-      if (detail.toLowerCase().includes("email")) {
-        setCurrentStep(1);
-      }
     } finally {
       setLoading(false);
     }
@@ -198,21 +138,8 @@ export default function Register() {
     <AuthShell activePage="register">
       <AuthCard>
         <AuthHeader
-          badge={
-            currentStep === 1
-              ? "Account Setup"
-              : currentStep === 2
-              ? "Role Configuration"
-              : "Profile Enrichment"
-          }
-          heading="Create your workspace"
-          subtitle="Set up your research intelligence profile."
-          step={currentStep}
-          totalSteps={3}
-          onStepClick={(targetStep) => {
-            if (targetStep < currentStep) setCurrentStep(targetStep);
-            else if (targetStep === 2 && validateStep1()) setCurrentStep(2);
-          }}
+          heading="Create your account"
+          subtitle="Set up your workspace for research, funding, and patent intelligence."
         />
 
         {/* API Error Alert */}
@@ -231,223 +158,171 @@ export default function Register() {
           </div>
         )}
 
-        <form onSubmit={(e) => e.preventDefault()} style={styles.form} noValidate>
-          {/* STEP 1: Basic Account Information */}
-          {currentStep === 1 && (
-            <div style={styles.stepBlock}>
-              <FormField
-                id="reg-name"
-                name="name"
-                label="Full name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Dr. Eleanor Vance"
-                icon={User}
-                error={errors.name}
-                required
-                disabled={loading}
-                autoComplete="name"
-                autoFocus
-              />
+        <form onSubmit={handleSubmit} style={styles.form} noValidate>
+          {/* Full Name */}
+          <FormField
+            id="reg-name"
+            name="name"
+            label="Full Name"
+            type="text"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Dr. Eleanor Vance"
+            icon={User}
+            error={errors.name}
+            required
+            disabled={loading}
+            autoComplete="name"
+            autoFocus
+          />
 
-              <FormField
-                id="reg-email"
-                name="email"
-                label="Institutional or work email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="name@institution.edu"
-                icon={Mail}
-                error={errors.email}
-                required
-                disabled={loading}
-                autoComplete="email"
-              />
+          {/* Email */}
+          <FormField
+            id="reg-email"
+            name="email"
+            label="Email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="name@institution.edu"
+            icon={Mail}
+            error={errors.email}
+            required
+            disabled={loading}
+            autoComplete="email"
+          />
 
-              <PasswordField
-                id="reg-password"
-                name="password"
-                label="Create password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Minimum 8 characters"
-                error={errors.password}
-                required
-                disabled={loading}
-                autoComplete="new-password"
-                showStrength
-              />
+          {/* Role */}
+          <div style={styles.fieldContainer}>
+            <div style={styles.labelRow}>
+              <label htmlFor="reg-role" style={styles.label}>
+                Role <span style={styles.requiredMark} aria-hidden="true">*</span>
+              </label>
+            </div>
 
-              <PasswordField
-                id="reg-confirm-password"
-                name="confirmPassword"
-                label="Confirm password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                placeholder="Re-enter password"
-                error={errors.confirmPassword}
-                required
-                disabled={loading}
-                autoComplete="new-password"
-              />
+            <div
+              style={{
+                ...styles.selectWrapper,
+                borderColor: errors.role ? "#E05B61" : "#202A38",
+                backgroundColor: loading ? "#0B0F17" : "#151D29",
+                opacity: loading ? 0.65 : 1,
+              }}
+            >
+              <div style={styles.selectIconBox} aria-hidden="true">
+                <Briefcase size={16} color={errors.role ? "#E05B61" : "#98A4B5"} />
+              </div>
 
-              <button
-                type="button"
-                onClick={handleNextStep}
-                style={styles.submitButton}
+              <select
+                id="reg-role"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                disabled={loading}
+                style={styles.selectInput}
               >
-                <span>Continue to Role Selection</span>
+                <option value="researcher">Researcher / Academic</option>
+                <option value="founder">Startup Founder</option>
+                <option value="manager">Innovation Manager</option>
+                <option value="admin">Administrator</option>
+              </select>
+
+              <div style={styles.selectChevronBox} aria-hidden="true">
+                <ChevronDown size={16} color="#98A4B5" />
+              </div>
+            </div>
+
+            <div style={styles.roleHint}>
+              {form.role === "researcher" && "Scholarly publications, literature velocity, grant tracking & citations."}
+              {form.role === "founder" && "Patent defensibility, IP landscape, venture capital & market readiness."}
+              {form.role === "manager" && "TRL portfolio maturity, institutional research pipelines & commercialization."}
+              {form.role === "admin" && "Institutional governance, audit logging, API controls & user management."}
+            </div>
+
+            {errors.role && (
+              <div style={styles.errorMessage} role="alert">
+                {errors.role}
+              </div>
+            )}
+          </div>
+
+          {/* Conditional Admin Invite Code */}
+          {form.role === "admin" && (
+            <div style={styles.adminBox}>
+              <div style={styles.adminHeader}>
+                <ShieldAlert size={15} color="#D9A441" />
+                <span style={styles.adminTitle}>Institutional Verification</span>
+              </div>
+              <p style={styles.adminDesc}>
+                Enter your institutional authorization code below, or continue to provision standard researcher access.
+              </p>
+              <input
+                type="text"
+                name="adminInviteCode"
+                value={form.adminInviteCode}
+                onChange={handleChange}
+                placeholder="Authorization code (optional)"
+                disabled={loading}
+                style={styles.adminInput}
+                aria-label="Institutional Admin Code"
+              />
+            </div>
+          )}
+
+          {/* Password with Visibility Toggle */}
+          <PasswordField
+            id="reg-password"
+            name="password"
+            label="Password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Minimum 8 characters"
+            error={errors.password}
+            required
+            disabled={loading}
+            autoComplete="new-password"
+            showStrength={true}
+          />
+
+          {/* Confirm Password with Visibility Toggle */}
+          <PasswordField
+            id="reg-confirm-password"
+            name="confirmPassword"
+            label="Confirm Password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            placeholder="Re-enter password"
+            error={errors.confirmPassword}
+            required
+            disabled={loading}
+            autoComplete="new-password"
+            showStrength={false}
+          />
+
+          {/* Create Account button */}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              ...styles.submitButton,
+              opacity: loading ? 0.75 : 1,
+              cursor: loading ? "wait" : "pointer",
+            }}
+          >
+            {loading ? (
+              <>
+                <RefreshCw size={15} className="auth-spin" style={{ marginRight: 8 }} />
+                <span>Creating account...</span>
+              </>
+            ) : (
+              <>
+                <span>Create Account</span>
                 <ArrowRight size={15} style={{ marginLeft: 6 }} />
-              </button>
-            </div>
-          )}
-
-          {/* STEP 2: Role Selection & Authorization */}
-          {currentStep === 2 && (
-            <div style={styles.stepBlock}>
-              <RoleSelector
-                selectedRole={form.role}
-                onSelectRole={(role) => setForm((prev) => ({ ...prev, role }))}
-                adminInviteCode={form.adminInviteCode}
-                onAdminInviteCodeChange={(adminInviteCode) =>
-                  setForm((prev) => ({ ...prev, adminInviteCode }))
-                }
-              />
-
-              <div style={styles.buttonRow}>
-                <button
-                  type="button"
-                  onClick={handlePrevStep}
-                  style={styles.secondaryStepButton}
-                >
-                  <ArrowLeft size={14} style={{ marginRight: 6 }} />
-                  <span>Back</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  style={{ ...styles.submitButton, flex: 1, marginTop: 0 }}
-                >
-                  <span>Continue to Profile</span>
-                  <ArrowRight size={15} style={{ marginLeft: 6 }} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: Optional Professional Profile Enrichment */}
-          {currentStep === 3 && (
-            <div style={styles.stepBlock}>
-              <div style={styles.optionalBanner}>
-                <Sparkles size={15} color="#4C8DFF" style={{ flexShrink: 0 }} />
-                <span style={styles.optionalBannerText}>
-                  Enrich your profile now or configure it later from account settings.
-                </span>
-              </div>
-
-              <FormField
-                id="reg-affiliation"
-                name="affiliation"
-                label="Organization / University"
-                value={form.affiliation}
-                onChange={handleChange}
-                placeholder="e.g. Stanford University, BioHealth R&D"
-                icon={Building}
-                optional
-                disabled={loading}
-                autoComplete="organization"
-              />
-
-              <FormField
-                id="reg-department"
-                name="department"
-                label="Research domains / Department"
-                value={form.department}
-                onChange={handleChange}
-                placeholder="e.g. Department of Computer Science & AI"
-                icon={GraduationCap}
-                optional
-                disabled={loading}
-              />
-
-              <FormField
-                id="reg-interests"
-                name="researchInterests"
-                label="Research interests"
-                value={form.researchInterests}
-                onChange={handleChange}
-                placeholder="e.g. Quantum Computing, Genomics, Solid State Batteries"
-                icon={Tag}
-                optional
-                disabled={loading}
-                helpText="Separate multiple keywords with commas"
-              />
-
-              <FormField
-                id="reg-skills"
-                name="skills"
-                label="Technology focus areas"
-                value={form.skills}
-                onChange={handleChange}
-                placeholder="e.g. TRL 4-7, Machine Learning, Patent Strategy"
-                icon={Tag}
-                optional
-                disabled={loading}
-                helpText="Key methodology or technology areas you specialize in"
-              />
-
-              <div style={styles.actionColumn}>
-                <button
-                  type="button"
-                  onClick={(e) => handleSubmit(e, false)}
-                  disabled={loading}
-                  style={{
-                    ...styles.submitButton,
-                    opacity: loading ? 0.75 : 1,
-                    cursor: loading ? "wait" : "pointer",
-                  }}
-                >
-                  {loading ? (
-                    <>
-                      <RefreshCw size={15} className="auth-spin" style={{ marginRight: 8 }} />
-                      <span>Creating workspace...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Create my workspace</span>
-                      <Check size={15} style={{ marginLeft: 6 }} strokeWidth={2.5} />
-                    </>
-                  )}
-                </button>
-
-                <div style={styles.buttonRow}>
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    disabled={loading}
-                    style={styles.secondaryStepButton}
-                  >
-                    <ArrowLeft size={14} style={{ marginRight: 6 }} />
-                    <span>Back</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => handleSubmit(e, true)}
-                    disabled={loading}
-                    style={styles.skipButton}
-                  >
-                    Skip & Complete
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </button>
         </form>
 
-        {/* Secondary Navigation CTA */}
+        {/* Already have an account? Sign in */}
         <div style={styles.secondaryRow}>
           <span style={styles.secondaryText}>Already have an account?</span>
           <Link to="/login" style={styles.secondaryLink}>
@@ -460,6 +335,10 @@ export default function Register() {
         .auth-spin {
           animation: spin 1s linear infinite;
         }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
       `}</style>
     </AuthShell>
   );
@@ -469,25 +348,124 @@ const styles = {
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "18px",
+    gap: "16px",
     marginTop: "6px",
+    width: "100%",
   },
-  stepBlock: {
+  fieldContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "16px",
+    gap: "6px",
+    width: "100%",
   },
-  buttonRow: {
+  labelRow: {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
-    marginTop: "4px",
+    justifyContent: "space-between",
   },
-  actionColumn: {
+  label: {
+    fontSize: "13px",
+    fontWeight: "500",
+    color: "#F2F5F8",
+    display: "flex",
+    alignItems: "center",
+    gap: "3px",
+  },
+  requiredMark: {
+    color: "#E05B61",
+    fontSize: "14px",
+  },
+  selectWrapper: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    borderRadius: "8px",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    transition: "border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
+  },
+  selectIconBox: {
+    position: "absolute",
+    left: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "none",
+    zIndex: 1,
+  },
+  selectChevronBox: {
+    position: "absolute",
+    right: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "none",
+    zIndex: 1,
+  },
+  selectInput: {
+    width: "100%",
+    height: "40px",
+    paddingLeft: "38px",
+    paddingRight: "36px",
+    backgroundColor: "transparent",
+    border: "none",
+    color: "#F2F5F8",
+    fontSize: "14px",
+    fontFamily: "inherit",
+    outline: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    appearance: "none",
+    WebkitAppearance: "none",
+    MozAppearance: "none",
+  },
+  roleHint: {
+    fontSize: "12px",
+    color: "#98A4B5",
+    lineHeight: 1.35,
+    marginTop: "2px",
+  },
+  errorMessage: {
+    fontSize: "12px",
+    color: "#E05B61",
+    lineHeight: 1.3,
+  },
+  adminBox: {
+    backgroundColor: "rgba(217, 164, 65, 0.08)",
+    border: "1px solid rgba(217, 164, 65, 0.25)",
+    borderRadius: "8px",
+    padding: "10px 12px",
     display: "flex",
     flexDirection: "column",
-    gap: "10px",
-    marginTop: "6px",
+    gap: "6px",
+  },
+  adminHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  adminTitle: {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#D9A441",
+  },
+  adminDesc: {
+    fontSize: "11.5px",
+    color: "#98A4B5",
+    lineHeight: 1.35,
+    margin: 0,
+  },
+  adminInput: {
+    width: "100%",
+    height: "34px",
+    padding: "0 10px",
+    backgroundColor: "#101620",
+    border: "1px solid #202A38",
+    borderRadius: "6px",
+    color: "#F2F5F8",
+    fontSize: "12.5px",
+    outline: "none",
+    boxSizing: "border-box",
   },
   submitButton: {
     width: "100%",
@@ -501,55 +479,10 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    transition: "all 0.18s ease",
+    transition: "background-color 0.18s ease, transform 0.1s ease",
     boxShadow: "0 2px 10px rgba(76, 141, 255, 0.3)",
-    cursor: "pointer",
     marginTop: "6px",
-  },
-  secondaryStepButton: {
-    height: "40px",
-    padding: "0 16px",
-    borderRadius: "8px",
-    border: "1px solid #202A38",
-    backgroundColor: "#151D29",
-    color: "#F2F5F8",
-    fontSize: "13px",
-    fontWeight: "500",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
     cursor: "pointer",
-    transition: "background-color 0.18s ease",
-  },
-  skipButton: {
-    flex: 1,
-    height: "40px",
-    borderRadius: "8px",
-    border: "1px dashed #202A38",
-    backgroundColor: "transparent",
-    color: "#98A4B5",
-    fontSize: "13px",
-    fontWeight: "500",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    transition: "all 0.18s ease",
-  },
-  optionalBanner: {
-    backgroundColor: "rgba(76, 141, 255, 0.08)",
-    border: "1px solid rgba(76, 141, 255, 0.2)",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    fontSize: "12px",
-    color: "#F2F5F8",
-    lineHeight: 1.4,
-  },
-  optionalBannerText: {
-    color: "#98A4B5",
   },
   secondaryRow: {
     display: "flex",

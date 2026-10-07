@@ -1,49 +1,12 @@
 import { Link } from "react-router-dom";
-import {
-  BookOpen,
-  DollarSign,
-  FileText,
-  Cpu,
-  TrendingUp,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
 import AuthFooter from "./AuthFooter";
-
-const CAPABILITIES = [
-  {
-    title: "Research Intelligence",
-    description: "Literature velocity, citation trends & scientific impact metrics.",
-    icon: BookOpen,
-  },
-  {
-    title: "Funding Intelligence",
-    description: "Multi-agency grants, venture funding & proposal matching.",
-    icon: DollarSign,
-  },
-  {
-    title: "Patent Intelligence",
-    description: "USPTO patent landscapes, claims analysis & defensibility scoring.",
-    icon: FileText,
-  },
-  {
-    title: "Technology Intelligence",
-    description: "TRL maturity tracking, emerging tech clusters & radar signals.",
-    icon: Cpu,
-  },
-  {
-    title: "Innovation & Commercialization",
-    description: "Composite viability scoring, licensing pathways & market timing.",
-    icon: TrendingUp,
-  },
-];
 
 export default function AuthShell({ children, activePage = "login" }) {
   const isLogin = activePage === "login";
 
   return (
     <div className="auth-page">
-      {/* Top Navigation Bar */}
+      {/* Top Minimal Navigation Bar */}
       <header className="auth-nav-header">
         <div className="auth-nav-inner">
           <Link to="/" className="auth-brand" aria-label="Intelligent Research home">
@@ -58,80 +21,26 @@ export default function AuthShell({ children, activePage = "login" }) {
 
           <div className="auth-switch-cta">
             <span className="auth-switch-label">
-              {isLogin ? "New to Intelligent Research?" : "Already have an account?"}
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
             </span>
             <Link
               to={isLogin ? "/register" : "/login"}
               className="auth-switch-button"
             >
-              {isLogin ? "Create an account" : "Sign in"}
+              {isLogin ? "Create account" : "Sign in"}
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Main Authentication Panel Wrapper */}
       <main className="auth-main-wrapper">
-        <div className="auth-layout-grid">
-          {/* Left Column: Product Introduction & Compact Capability List */}
-          <section className="auth-left-col" aria-label="Platform Overview">
-            <div className="auth-intro-block">
-              <div className="auth-pill-badge">
-                <Sparkles size={13} color="#4C8DFF" aria-hidden="true" />
-                <span>Next-Generation Innovation Stack</span>
-              </div>
-
-              <h1 className="auth-hero-title">
-                Research intelligence for modern innovation teams.
-              </h1>
-
-              <p className="auth-hero-desc">
-                Unify scholarly research, live federal grants, USPTO patent analytics, and commercialization readiness in one high-integrity workspace.
-              </p>
-            </div>
-
-            {/* Compact Capability List */}
-            <div className="auth-capabilities-card">
-              <div className="auth-capabilities-header">
-                <span className="auth-capabilities-title">Integrated Intelligence Modules</span>
-                <span className="auth-capabilities-count">5 Core Engines</span>
-              </div>
-
-              <div className="auth-capability-list">
-                {CAPABILITIES.map((cap) => {
-                  const Icon = cap.icon;
-                  return (
-                    <div key={cap.title} className="auth-capability-item">
-                      <div className="auth-capability-icon">
-                        <Icon size={15} color="#4C8DFF" aria-hidden="true" />
-                      </div>
-                      <div className="auth-capability-text">
-                        <span className="auth-capability-name">{cap.title}</span>
-                        <span className="auth-capability-desc">{cap.description}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Subtle Security / Trust Note */}
-            <div className="auth-trust-note">
-              <ShieldCheck size={16} color="#35C98A" aria-hidden="true" />
-              <span>
-                Engineered for university research offices, deep tech spinouts, and enterprise R&D directors.
-              </span>
-            </div>
-          </section>
-
-          {/* Right Column: Main Authentication Panel */}
-          <section className="auth-right-col" aria-label="Authentication Panel">
-            {children}
-          </section>
+        <div className="auth-card-container">
+          {children}
         </div>
       </main>
 
-      {/* Security and Trust Footer */}
+      {/* Small Secure Footer */}
       <AuthFooter />
 
       {/* Embedded Scoped Responsive CSS */}
@@ -145,12 +54,13 @@ export default function AuthShell({ children, activePage = "login" }) {
           flex-direction: column;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           overflow-x: hidden;
+          box-sizing: border-box;
         }
 
         .auth-nav-header {
           width: 100%;
           border-bottom: 1px solid #202A38;
-          background-color: rgba(7, 11, 18, 0.85);
+          background-color: rgba(7, 11, 18, 0.95);
           backdrop-filter: blur(12px);
           position: sticky;
           top: 0;
@@ -158,17 +68,18 @@ export default function AuthShell({ children, activePage = "login" }) {
         }
 
         .auth-nav-inner {
-          max-width: 1160px;
+          max-width: 1120px;
           margin: 0 auto;
           padding: 14px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 16px;
+          box-sizing: border-box;
         }
 
         .auth-brand {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 12px;
           text-decoration: none;
@@ -185,6 +96,7 @@ export default function AuthShell({ children, activePage = "login" }) {
           align-items: center;
           justify-content: center;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          flex-shrink: 0;
         }
 
         .auth-logo-text {
@@ -229,15 +141,16 @@ export default function AuthShell({ children, activePage = "login" }) {
           font-weight: 600;
           color: #4C8DFF;
           text-decoration: none;
-          padding: 6px 12px;
+          padding: 6px 14px;
           border-radius: 6px;
           background-color: rgba(76, 141, 255, 0.08);
           border: 1px solid rgba(76, 141, 255, 0.25);
           transition: all 0.18s ease;
+          white-space: nowrap;
         }
 
         .auth-switch-button:hover {
-          background-color: rgba(76, 141, 255, 0.15);
+          background-color: rgba(76, 141, 255, 0.16);
           border-color: #4C8DFF;
         }
 
@@ -246,182 +159,18 @@ export default function AuthShell({ children, activePage = "login" }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 36px 20px 48px;
-        }
-
-        .auth-layout-grid {
+          padding: 40px 16px 48px;
           width: 100%;
-          max-width: 1160px;
-          display: grid;
-          grid-template-columns: 1.05fr 1fr;
-          gap: 48px;
-          align-items: start;
+          box-sizing: border-box;
         }
 
-        .auth-left-col {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          padding-top: 12px;
-        }
-
-        .auth-intro-block {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .auth-pill-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 10px;
-          background-color: rgba(76, 141, 255, 0.08);
-          border: 1px solid rgba(76, 141, 255, 0.2);
-          border-radius: 9999px;
-          color: #4C8DFF;
-          font-size: 11px;
-          font-weight: 600;
-          width: fit-content;
-        }
-
-        .auth-hero-title {
-          font-size: 28px;
-          font-weight: 700;
-          color: #F2F5F8;
-          letter-spacing: -0.025em;
-          line-height: 1.25;
-          margin: 0;
-        }
-
-        .auth-hero-desc {
-          font-size: 14px;
-          color: #98A4B5;
-          line-height: 1.55;
-          margin: 0;
-        }
-
-        .auth-capabilities-card {
-          background-color: #101620;
-          border: 1px solid #202A38;
-          border-radius: 12px;
-          padding: 18px;
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-
-        .auth-capabilities-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding-bottom: 10px;
-          border-bottom: 1px solid #202A38;
-        }
-
-        .auth-capabilities-title {
-          font-size: 12px;
-          font-weight: 600;
-          color: #F2F5F8;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-        }
-
-        .auth-capabilities-count {
-          font-size: 11px;
-          color: #98A4B5;
-          background-color: #151D29;
-          padding: 2px 7px;
-          border-radius: 4px;
-          font-weight: 500;
-        }
-
-        .auth-capability-list {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .auth-capability-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-        }
-
-        .auth-capability-icon {
-          width: 26px;
-          height: 26px;
-          border-radius: 6px;
-          background-color: #151D29;
-          border: 1px solid #202A38;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          margin-top: 1px;
-        }
-
-        .auth-capability-text {
-          display: flex;
-          flex-direction: column;
-          gap: 1px;
-        }
-
-        .auth-capability-name {
-          font-size: 13px;
-          font-weight: 600;
-          color: #F2F5F8;
-          line-height: 1.25;
-        }
-
-        .auth-capability-desc {
-          font-size: 11.5px;
-          color: #98A4B5;
-          line-height: 1.35;
-        }
-
-        .auth-trust-note {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 12px;
-          color: #98A4B5;
-          line-height: 1.4;
-          padding: 10px 14px;
-          background-color: rgba(53, 201, 138, 0.05);
-          border: 1px solid rgba(53, 201, 138, 0.15);
-          border-radius: 8px;
-        }
-
-        .auth-right-col {
+        .auth-card-container {
+          width: 100%;
+          max-width: 460px;
+          margin: 0 auto;
           display: flex;
           justify-content: center;
-          width: 100%;
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 960px) {
-          .auth-layout-grid {
-            grid-template-columns: 1fr;
-            gap: 32px;
-          }
-
-          .auth-left-col {
-            padding-top: 0;
-            order: 2;
-          }
-
-          .auth-right-col {
-            order: 1;
-          }
-
-          .auth-hero-title {
-            font-size: 24px;
-          }
-
-          .auth-switch-label {
-            display: none;
-          }
+          box-sizing: border-box;
         }
 
         @media (max-width: 640px) {
@@ -429,17 +178,17 @@ export default function AuthShell({ children, activePage = "login" }) {
             padding: 12px 16px;
           }
 
-          .auth-main-wrapper {
-            padding: 20px 14px 36px;
-          }
-
-          .auth-left-col {
+          .auth-switch-label {
             display: none;
           }
 
           .auth-switch-button {
-            padding: 5px 10px;
+            padding: 5px 12px;
             font-size: 12px;
+          }
+
+          .auth-main-wrapper {
+            padding: 24px 12px 36px;
           }
         }
       `}</style>
