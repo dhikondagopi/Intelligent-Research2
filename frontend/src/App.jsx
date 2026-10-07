@@ -4,6 +4,7 @@ import {
   Route,
 } from "react-router-dom";
 
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
@@ -38,14 +39,13 @@ function App() {
 
 function AppContent() {
   return (
-    <div className="min-h-screen bg-navy-950 text-slate-100 font-sans antialiased">
+    <div className="min-h-screen text-slate-100 font-sans antialiased">
       <Routes>
 
-        {/* Public Authentication Pages (Without Sidebar Layout) */}
-
+        {/* Public Marketing Website */}
         <Route
           path="/"
-          element={<Login />}
+          element={<LandingPage />}
         />
 
         <Route

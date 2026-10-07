@@ -1,598 +1,596 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ShieldCheck,
-  ArrowRight,
   User,
   Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  Briefcase,
+  Building,
+  GraduationCap,
   Sparkles,
+  ArrowRight,
+  ArrowLeft,
   RefreshCw,
-  BookOpen,
-  DollarSign,
-  Cpu
+  AlertCircle,
+  CheckCircle2,
+  Tag,
+  Check,
 } from "lucide-react";
+import AuthShell from "../components/auth/AuthShell";
+import AuthCard from "../components/auth/AuthCard";
+import AuthHeader from "../components/auth/AuthHeader";
+import FormField from "../components/auth/FormField";
+import PasswordField from "../components/auth/PasswordField";
+import RoleSelector from "../components/auth/RoleSelector";
+import { registerUser, loginUser } from "../services/authService";
+import { updateProfile } from "../services/profileService";
 
-import { registerUser } from "../services/authService";
-
-function Register() {
+export default function Register() {
   const navigate = useNavigate();
 
+  // Active step (1: Account, 2: Role, 3: Optional Profile)
+  const [currentStep, setCurrentStep] = useState(1);
+
+  // Form states
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    role: "researcher"
+    confirmPassword: "",
+    role: "researcher",
+    adminInviteCode: "",
+    // Optional profile fields
+    affiliation: "",
+    department: "",
+    researchInterests: "",
+    skills: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
+  // UI & Feedback states
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
+  const [apiSuccess, setApiSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+    if (apiError) setApiError("");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    setIsError(false);
+  const validateStep1 = () => {
+    const errs = {};
+    if (!form.name.trim()) {
+      errs.name = "Full name is required";
+    }
+
+    if (!form.email.trim()) {
+      errs.email = "Email address is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errs.email = "Please enter a valid email address";
+    }
+
+    if (!form.password) {
+      errs.password = "Password is required";
+    } else if (form.password.length < 8) {
+      errs.password = "Password must be at least 8 characters";
+    }
+
+    if (!form.confirmPassword) {
+      errs.confirmPassword = "Confirm password is required";
+    } else if (form.password !== form.confirmPassword) {
+      errs.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleNextStep = () => {
+    if (currentStep === 1) {
+      if (!validateStep1()) return;
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      setCurrentStep(3);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = async (e, skipOptional = false) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setApiError("");
+    setApiSuccess("");
+
+    if (!validateStep1()) {
+      setCurrentStep(1);
+      return;
+    }
+
     setLoading(true);
 
-    try {
-      await registerUser(form);
-      setMessage("Account registered successfully! Redirecting to login...");
+    // SECURITY ENFORCEMENT:
+    // Backend remains authoritative. If 'admin' was chosen, check if an invite code is provided.
+    // Client defaults unverified admin registrations to 'researcher' with an administrative verification request,
+    // ensuring no unauthenticated client-side privilege escalation occurs.
+    let safeRole = form.role;
+    if (form.role === "admin") {
+      if (!form.adminInviteCode.trim()) {
+        safeRole = "researcher";
+      }
+    }
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1200);
+    try {
+      // 1. Register account
+      await registerUser({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        role: safeRole,
+      });
+
+      setApiSuccess("Account created successfully! Authenticating workspace...");
+
+      // 2. Automatically log in to obtain JWT access token
+      try {
+        const loginData = await loginUser({
+          email: form.email.trim(),
+          password: form.password,
+        });
+
+        // 3. Save optional profile details if supplied
+        if (!skipOptional && loginData?.user_id) {
+          const interestsList = form.researchInterests
+            ? form.researchInterests.split(",").map((s) => s.trim()).filter(Boolean)
+            : [];
+          const skillsList = form.skills
+            ? form.skills.split(",").map((s) => s.trim()).filter(Boolean)
+            : [];
+
+          if (form.affiliation || form.department || interestsList.length || skillsList.length) {
+            try {
+              await updateProfile(loginData.user_id, {
+                affiliation: form.affiliation.trim(),
+                department: form.department.trim(),
+                bio: "",
+                research_interests: interestsList,
+                skills: skillsList,
+                orcid: "",
+              });
+            } catch (profileErr) {
+              console.warn("Optional profile update failed:", profileErr);
+            }
+          }
+        }
+
+        // 4. Redirect to personal role dashboard
+        setTimeout(() => {
+          navigate(`/dashboard/${safeRole}`);
+        }, 800);
+      } catch (loginErr) {
+        console.warn("Auto-login error:", loginErr);
+        // Fallback to login page if auto-login encounters an issue
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
+      }
     } catch (error) {
-      setIsError(true);
-      setMessage(error.response?.data?.detail || "Registration failed. Please check your details.");
+      console.error("Registration error:", error);
+      const detail =
+        error.response?.data?.detail ||
+        "Registration failed. Please check your information and try again.";
+      setApiError(detail);
+      // If email was duplicated, bring user back to step 1
+      if (detail.toLowerCase().includes("email")) {
+        setCurrentStep(1);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.glowOne} />
-      <div style={styles.glowTwo} />
+    <AuthShell activePage="register">
+      <AuthCard>
+        <AuthHeader
+          badge={
+            currentStep === 1
+              ? "Account Setup"
+              : currentStep === 2
+              ? "Role Configuration"
+              : "Profile Enrichment"
+          }
+          heading="Create your workspace"
+          subtitle="Set up your research intelligence profile."
+          step={currentStep}
+          totalSteps={3}
+          onStepClick={(targetStep) => {
+            if (targetStep < currentStep) setCurrentStep(targetStep);
+            else if (targetStep === 2 && validateStep1()) setCurrentStep(2);
+          }}
+        />
 
-      <div style={styles.container}>
-        {/* LEFT SIDE Showcase */}
-        <div style={styles.leftCol}>
-          <div style={styles.brandRow}>
-            <div style={styles.logo}>IR</div>
-            <div>
-              <div style={styles.brandTitle}>Intelligent Research</div>
-              <div style={styles.brandSubtitle}>Research & Innovation Platform</div>
-            </div>
+        {/* API Error Alert */}
+        {apiError && (
+          <div style={styles.alertError} role="alert">
+            <AlertCircle size={16} color="#E05B61" style={{ flexShrink: 0 }} />
+            <span>{apiError}</span>
           </div>
+        )}
 
-          <div style={styles.badgeRow}>
-            <span style={styles.platformBadge}>
-              <Sparkles size={13} style={{ marginRight: 6 }} />
-              Create Institutional Account
-            </span>
+        {/* API Success Alert */}
+        {apiSuccess && (
+          <div style={styles.alertSuccess} role="status">
+            <CheckCircle2 size={16} color="#35C98A" style={{ flexShrink: 0 }} />
+            <span>{apiSuccess}</span>
           </div>
+        )}
 
-          <h1 style={styles.headline}>
-            Join the Next Era of <br />
-            <span style={styles.headlineGradient}>Scientific Intelligence.</span>
-          </h1>
+        <form onSubmit={(e) => e.preventDefault()} style={styles.form} noValidate>
+          {/* STEP 1: Basic Account Information */}
+          {currentStep === 1 && (
+            <div style={styles.stepBlock}>
+              <FormField
+                id="reg-name"
+                name="name"
+                label="Full name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Dr. Eleanor Vance"
+                icon={User}
+                error={errors.name}
+                required
+                disabled={loading}
+                autoComplete="name"
+                autoFocus
+              />
 
-          <p style={styles.description}>
-            Access real-time bibliometrics, funding grant tracking, patent landscapes, and cross-domain innovation scoring in one integrated platform.
-          </p>
+              <FormField
+                id="reg-email"
+                name="email"
+                label="Institutional or work email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="name@institution.edu"
+                icon={Mail}
+                error={errors.email}
+                required
+                disabled={loading}
+                autoComplete="email"
+              />
 
-          <div style={styles.featuresList}>
-            <div style={styles.featureItem}>
-              <div style={styles.featureIconBox}>
-                <BookOpen size={16} color="#4C8DFF" />
-              </div>
-              <div>
-                <div style={styles.featureTitle}>Role-Tailored Dashboards</div>
-                <div style={styles.featureSub}>Customized metrics for researchers, founders & executives</div>
+              <PasswordField
+                id="reg-password"
+                name="password"
+                label="Create password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Minimum 8 characters"
+                error={errors.password}
+                required
+                disabled={loading}
+                autoComplete="new-password"
+                showStrength
+              />
+
+              <PasswordField
+                id="reg-confirm-password"
+                name="confirmPassword"
+                label="Confirm password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                placeholder="Re-enter password"
+                error={errors.confirmPassword}
+                required
+                disabled={loading}
+                autoComplete="new-password"
+              />
+
+              <button
+                type="button"
+                onClick={handleNextStep}
+                style={styles.submitButton}
+              >
+                <span>Continue to Role Selection</span>
+                <ArrowRight size={15} style={{ marginLeft: 6 }} />
+              </button>
+            </div>
+          )}
+
+          {/* STEP 2: Role Selection & Authorization */}
+          {currentStep === 2 && (
+            <div style={styles.stepBlock}>
+              <RoleSelector
+                selectedRole={form.role}
+                onSelectRole={(role) => setForm((prev) => ({ ...prev, role }))}
+                adminInviteCode={form.adminInviteCode}
+                onAdminInviteCodeChange={(adminInviteCode) =>
+                  setForm((prev) => ({ ...prev, adminInviteCode }))
+                }
+              />
+
+              <div style={styles.buttonRow}>
+                <button
+                  type="button"
+                  onClick={handlePrevStep}
+                  style={styles.secondaryStepButton}
+                >
+                  <ArrowLeft size={14} style={{ marginRight: 6 }} />
+                  <span>Back</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  style={{ ...styles.submitButton, flex: 1, marginTop: 0 }}
+                >
+                  <span>Continue to Profile</span>
+                  <ArrowRight size={15} style={{ marginLeft: 6 }} />
+                </button>
               </div>
             </div>
+          )}
 
-            <div style={styles.featureItem}>
-              <div style={styles.featureIconBox}>
-                <DollarSign size={16} color="#4C8DFF" />
-              </div>
-              <div>
-                <div style={styles.featureTitle}>Grant & Award Intelligence</div>
-                <div style={styles.featureSub}>Direct synchronization with federal funding registries</div>
-              </div>
-            </div>
-
-            <div style={styles.featureItem}>
-              <div style={styles.featureIconBox}>
-                <Cpu size={16} color="#4C8DFF" />
-              </div>
-              <div>
-                <div style={styles.featureTitle}>Automated Executive Reports</div>
-                <div style={styles.featureSub}>Export decision-ready PDF & Excel datasets</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT SIDE Registration Card */}
-        <div style={styles.rightCol}>
-          <div style={styles.authCard}>
-            <div style={styles.cardHeader}>
-              <div style={styles.userIconBox}>
-                <User size={20} color="#4C8DFF" />
-              </div>
-              <h2 style={styles.cardTitle}>Create Account</h2>
-              <p style={styles.cardSub}>Enter your information to register a platform user account</p>
-            </div>
-
-            {message && (
-              <div style={isError ? styles.errorBox : styles.successBox}>
-                <span>{message}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} style={styles.form}>
-              <div style={styles.fieldGroup}>
-                <label style={styles.label}>Full Name</label>
-                <div style={styles.inputWrapper}>
-                  <User size={16} style={styles.inputIcon} />
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    placeholder="Dr. Jane Doe"
-                    value={form.name}
-                    onChange={handleChange}
-                    style={styles.input}
-                  />
-                </div>
+          {/* STEP 3: Optional Professional Profile Enrichment */}
+          {currentStep === 3 && (
+            <div style={styles.stepBlock}>
+              <div style={styles.optionalBanner}>
+                <Sparkles size={15} color="#4C8DFF" style={{ flexShrink: 0 }} />
+                <span style={styles.optionalBannerText}>
+                  Enrich your profile now or configure it later from account settings.
+                </span>
               </div>
 
-              <div style={styles.fieldGroup}>
-                <label style={styles.label}>Email Address</label>
-                <div style={styles.inputWrapper}>
-                  <Mail size={16} style={styles.inputIcon} />
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="jane.doe@university.edu"
-                    value={form.email}
-                    onChange={handleChange}
-                    style={styles.input}
-                  />
-                </div>
-              </div>
+              <FormField
+                id="reg-affiliation"
+                name="affiliation"
+                label="Organization / University"
+                value={form.affiliation}
+                onChange={handleChange}
+                placeholder="e.g. Stanford University, BioHealth R&D"
+                icon={Building}
+                optional
+                disabled={loading}
+                autoComplete="organization"
+              />
 
-              <div style={styles.fieldGroup}>
-                <label style={styles.label}>Institutional Role</label>
-                <div style={styles.inputWrapper}>
-                  <Briefcase size={16} style={styles.inputIcon} />
-                  <select
-                    name="role"
-                    value={form.role}
-                    onChange={handleChange}
-                    style={styles.select}
-                  >
-                    <option value="researcher">Researcher / Academic</option>
-                    <option value="innovation_manager">Innovation Manager / TTO</option>
-                    <option value="startup_founder">Startup Founder / Entrepreneur</option>
-                    <option value="research_organization">Research Organization Executive</option>
-                  </select>
-                </div>
-              </div>
+              <FormField
+                id="reg-department"
+                name="department"
+                label="Research domains / Department"
+                value={form.department}
+                onChange={handleChange}
+                placeholder="e.g. Department of Computer Science & AI"
+                icon={GraduationCap}
+                optional
+                disabled={loading}
+              />
 
-              <div style={styles.fieldGroup}>
-                <label style={styles.label}>Password</label>
-                <div style={styles.inputWrapper}>
-                  <Lock size={16} style={styles.inputIcon} />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    required
-                    placeholder="••••••••"
-                    value={form.password}
-                    onChange={handleChange}
-                    style={styles.input}
-                  />
+              <FormField
+                id="reg-interests"
+                name="researchInterests"
+                label="Research interests"
+                value={form.researchInterests}
+                onChange={handleChange}
+                placeholder="e.g. Quantum Computing, Genomics, Solid State Batteries"
+                icon={Tag}
+                optional
+                disabled={loading}
+                helpText="Separate multiple keywords with commas"
+              />
+
+              <FormField
+                id="reg-skills"
+                name="skills"
+                label="Technology focus areas"
+                value={form.skills}
+                onChange={handleChange}
+                placeholder="e.g. TRL 4-7, Machine Learning, Patent Strategy"
+                icon={Tag}
+                optional
+                disabled={loading}
+                helpText="Key methodology or technology areas you specialize in"
+              />
+
+              <div style={styles.actionColumn}>
+                <button
+                  type="button"
+                  onClick={(e) => handleSubmit(e, false)}
+                  disabled={loading}
+                  style={{
+                    ...styles.submitButton,
+                    opacity: loading ? 0.75 : 1,
+                    cursor: loading ? "wait" : "pointer",
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw size={15} className="auth-spin" style={{ marginRight: 8 }} />
+                      <span>Creating workspace...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Create my workspace</span>
+                      <Check size={15} style={{ marginLeft: 6 }} strokeWidth={2.5} />
+                    </>
+                  )}
+                </button>
+
+                <div style={styles.buttonRow}>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={styles.eyeBtn}
+                    onClick={handlePrevStep}
+                    disabled={loading}
+                    style={styles.secondaryStepButton}
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    <ArrowLeft size={14} style={{ marginRight: 6 }} />
+                    <span>Back</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => handleSubmit(e, true)}
+                    disabled={loading}
+                    style={styles.skipButton}
+                  >
+                    Skip & Complete
                   </button>
                 </div>
               </div>
-
-              <button type="submit" disabled={loading} style={styles.submitBtn}>
-                {loading ? (
-                  <>
-                    <RefreshCw size={16} style={styles.spinner} />
-                    <span>Creating Account...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Create Platform Account</span>
-                    <ArrowRight size={16} />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div style={styles.cardFooter}>
-              <span style={styles.footerText}>Already registered?</span>
-              <Link to="/login" style={styles.link}>
-                Sign in
-              </Link>
             </div>
+          )}
+        </form>
 
-            <div style={styles.securityNote}>
-              <ShieldCheck size={14} style={{ color: "#35C98A", flexShrink: 0 }} />
-              <span>Compliant with institutional security policies</span>
-            </div>
-          </div>
+        {/* Secondary Navigation CTA */}
+        <div style={styles.secondaryRow}>
+          <span style={styles.secondaryText}>Already have an account?</span>
+          <Link to="/login" style={styles.secondaryLink}>
+            Sign in
+          </Link>
         </div>
-      </div>
-    </div>
+      </AuthCard>
+
+      <style>{`
+        .auth-spin {
+          animation: spin 1s linear infinite;
+        }
+      `}</style>
+    </AuthShell>
   );
 }
 
 const styles = {
-  page: {
-    minHeight: "100vh",
-    width: "100%",
-    background: "#080B12",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "40px 24px",
-    position: "relative",
-    overflow: "hidden",
-    boxSizing: "border-box"
-  },
-
-  glowOne: {
-    position: "absolute",
-    top: "-150px",
-    right: "-150px",
-    width: "500px",
-    height: "500px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(76, 141, 255, 0.12) 0%, rgba(8, 11, 18, 0) 70%)",
-    pointerEvents: "none"
-  },
-
-  glowTwo: {
-    position: "absolute",
-    bottom: "-150px",
-    left: "-150px",
-    width: "500px",
-    height: "500px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(76, 141, 255, 0.12) 0%, rgba(8, 11, 18, 0) 70%)",
-    pointerEvents: "none"
-  },
-
-  container: {
-    maxWidth: "1240px",
-    width: "100%",
-    display: "grid",
-    gridTemplateColumns: "1.1fr 0.9fr",
-    gap: "60px",
-    alignItems: "center",
-    zIndex: 1
-  },
-
-  leftCol: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "24px"
-  },
-
-  brandRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px"
-  },
-
-  logo: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "12px",
-    background: "#101620",
-    border: "1px solid #4C8DFF",
-    color: "#4C8DFF",
-    fontSize: "18px",
-    fontWeight: "700",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
-  },
-
-  brandTitle: {
-    fontSize: "16px",
-    fontWeight: "700",
-    color: "#F2F5F8"
-  },
-
-  brandSubtitle: {
-    fontSize: "11px",
-    color: "#98A4B5"
-  },
-
-  badgeRow: {
-    display: "flex"
-  },
-
-  platformBadge: {
-    background: "rgba(76, 141, 255, 0.12)",
-    border: "1px solid rgba(76, 141, 255, 0.3)",
-    color: "#4C8DFF",
-    fontSize: "12px",
-    fontWeight: "500",
-    padding: "4px 12px",
-    borderRadius: "20px",
-    display: "inline-flex",
-    alignItems: "center"
-  },
-
-  headline: {
-    fontSize: "36px",
-    fontWeight: "700",
-    lineHeight: "1.2",
-    color: "#F2F5F8",
-    letterSpacing: "-0.02em",
-    margin: 0
-  },
-
-  headlineGradient: {
-    color: "#4C8DFF"
-  },
-
-  description: {
-    fontSize: "14px",
-    color: "#98A4B5",
-    lineHeight: "1.6",
-    margin: 0
-  },
-
-  featuresList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px"
-  },
-
-  featureItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    background: "#101620",
-    border: "1px solid #202A38",
-    padding: "12px 16px",
-    borderRadius: "12px"
-  },
-
-  featureIconBox: {
-    width: "32px",
-    height: "32px",
-    borderRadius: "8px",
-    background: "#0B0F17",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0
-  },
-
-  featureTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#F2F5F8"
-  },
-
-  featureSub: {
-    fontSize: "11px",
-    color: "#98A4B5"
-  },
-
-  rightCol: {
-    display: "flex",
-    justifyContent: "center"
-  },
-
-  authCard: {
-    width: "100%",
-    maxWidth: "440px",
-    background: "#101620",
-    border: "1px solid #202A38",
-    borderRadius: "20px",
-    padding: "32px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "18px"
-  },
-
-  cardHeader: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center"
-  },
-
-  userIconBox: {
-    width: "48px",
-    height: "48px",
-    borderRadius: "14px",
-    background: "rgba(76, 141, 255, 0.12)",
-    border: "1px solid rgba(76, 141, 255, 0.3)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "12px"
-  },
-
-  cardTitle: {
-    fontSize: "22px",
-    fontWeight: "700",
-    letterSpacing: "-0.015em",
-    color: "#F2F5F8",
-    margin: "0 0 4px 0"
-  },
-
-  cardSub: {
-    fontSize: "12px",
-    color: "#98A4B5",
-    margin: 0
-  },
-
-  errorBox: {
-    background: "rgba(224, 91, 97, 0.12)",
-    border: "1px solid #E05B61",
-    borderRadius: "10px",
-    padding: "10px 14px",
-    color: "#E05B61",
-    fontSize: "12px",
-    textAlign: "center"
-  },
-
-  successBox: {
-    background: "rgba(53, 201, 138, 0.12)",
-    border: "1px solid rgba(53, 201, 138, 0.3)",
-    borderRadius: "10px",
-    padding: "10px 14px",
-    color: "#35C98A",
-    fontSize: "12px",
-    textAlign: "center"
-  },
-
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "14px"
+    gap: "18px",
+    marginTop: "6px",
   },
-
-  fieldGroup: {
+  stepBlock: {
     display: "flex",
     flexDirection: "column",
-    gap: "5px"
+    gap: "16px",
   },
-
-  label: {
-    fontSize: "12px",
-    fontWeight: "500",
-    color: "#F2F5F8"
-  },
-
-  inputWrapper: {
-    position: "relative",
+  buttonRow: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    gap: "10px",
+    marginTop: "4px",
   },
-
-  inputIcon: {
-    position: "absolute",
-    left: "14px",
-    color: "#98A4B5"
+  actionColumn: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    marginTop: "6px",
   },
-
-  input: {
+  submitButton: {
     width: "100%",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
-    borderRadius: "10px",
-    padding: "10px 40px 10px 40px",
-    color: "#F2F5F8",
-    fontSize: "13px",
-    outline: "none",
-    boxSizing: "border-box"
-  },
-
-  select: {
-    width: "100%",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
-    borderRadius: "10px",
-    padding: "10px 14px 10px 40px",
-    color: "#F2F5F8",
-    fontSize: "13px",
-    outline: "none",
-    boxSizing: "border-box",
-    cursor: "pointer"
-  },
-
-  eyeBtn: {
-    position: "absolute",
-    right: "12px",
-    background: "transparent",
+    height: "42px",
+    borderRadius: "8px",
     border: "none",
-    color: "#98A4B5",
-    cursor: "pointer",
-    padding: "4px"
-  },
-
-  submitBtn: {
-    background: "#4C8DFF",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: "10px",
-    padding: "12px",
+    backgroundColor: "#4C8DFF",
+    color: "#FFFFFF",
     fontSize: "14px",
     fontWeight: "600",
-    cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    transition: "all 0.18s ease",
+    boxShadow: "0 2px 10px rgba(76, 141, 255, 0.3)",
+    cursor: "pointer",
     marginTop: "6px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
   },
-
-  spinner: {
-    animation: "spin 1s linear infinite"
+  secondaryStepButton: {
+    height: "40px",
+    padding: "0 16px",
+    borderRadius: "8px",
+    border: "1px solid #202A38",
+    backgroundColor: "#151D29",
+    color: "#F2F5F8",
+    fontSize: "13px",
+    fontWeight: "500",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "background-color 0.18s ease",
   },
-
-  cardFooter: {
+  skipButton: {
+    flex: 1,
+    height: "40px",
+    borderRadius: "8px",
+    border: "1px dashed #202A38",
+    backgroundColor: "transparent",
+    color: "#98A4B5",
+    fontSize: "13px",
+    fontWeight: "500",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "all 0.18s ease",
+  },
+  optionalBanner: {
+    backgroundColor: "rgba(76, 141, 255, 0.08)",
+    border: "1px solid rgba(76, 141, 255, 0.2)",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "12px",
+    color: "#F2F5F8",
+    lineHeight: 1.4,
+  },
+  optionalBannerText: {
+    color: "#98A4B5",
+  },
+  secondaryRow: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "6px",
-    fontSize: "12px"
+    marginTop: "24px",
+    paddingTop: "18px",
+    borderTop: "1px solid #202A38",
+    fontSize: "13px",
   },
-
-  footerText: {
-    color: "#98A4B5"
+  secondaryText: {
+    color: "#98A4B5",
   },
-
-  link: {
+  secondaryLink: {
     color: "#4C8DFF",
     fontWeight: "600",
-    textDecoration: "none"
+    textDecoration: "none",
   },
-
-  securityNote: {
+  alertError: {
+    backgroundColor: "rgba(224, 91, 97, 0.1)",
+    border: "1px solid rgba(224, 91, 97, 0.3)",
+    borderRadius: "8px",
+    padding: "10px 14px",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    gap: "6px",
-    fontSize: "11px",
-    color: "#98A4B5",
-    borderTop: "1px solid #202A38",
-    paddingTop: "12px"
-  }
+    gap: "10px",
+    fontSize: "13px",
+    color: "#F2F5F8",
+    marginBottom: "16px",
+  },
+  alertSuccess: {
+    backgroundColor: "rgba(53, 201, 138, 0.1)",
+    border: "1px solid rgba(53, 201, 138, 0.3)",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "13px",
+    color: "#F2F5F8",
+    marginBottom: "16px",
+  },
 };
-
-export default Register;
