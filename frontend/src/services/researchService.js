@@ -3,10 +3,12 @@ import { API_BASE_URL } from "./api";
 
 const API_URL = `${API_BASE_URL}/api/research`;
 
-export const searchResearch = async (query) => {
+export const searchResearch = async (query, page = 1, perPage = 15) => {
   const response = await axios.get(`${API_URL}/search`, {
     params: {
       q: query,
+      page,
+      per_page: perPage,
     },
   });
 
@@ -19,6 +21,6 @@ export const getTrendingResearch = async () => {
 };
 
 export const getResearchById = async (researchId) => {
-  const response = await axios.get(`${API_URL}/${researchId}`);
+  const response = await axios.get(`${API_URL}/${encodeURIComponent(researchId)}`);
   return response.data;
 };

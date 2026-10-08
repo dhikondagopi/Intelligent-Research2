@@ -1,29 +1,25 @@
 export default function AuthCard({ children, style = {} }) {
   return (
-    <div className="auth-card" style={{ ...styles.card, ...style }}>
+    <div className="auth-card" style={style}>
       {children}
       <style>{`
+        .auth-card {
+          background-color: var(--auth-card);
+          border: 1px solid var(--auth-border);
+          border-radius: 12px;
+          padding: 32px;
+          box-shadow: var(--auth-card-shadow);
+          width: 100%;
+          box-sizing: border-box;
+          transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
         @media (max-width: 480px) {
           .auth-card {
-            padding: 24px 18px !important;
+            padding: 24px 18px;
           }
         }
       `}</style>
     </div>
   );
 }
-
-const styles = {
-  card: {
-    backgroundColor: "#101620",
-    border: "1px solid #202A38",
-    borderRadius: "12px",
-    padding: "32px",
-    boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.03)",
-    width: "100%",
-    maxWidth: "460px",
-    margin: "0 auto",
-    position: "relative",
-    boxSizing: "border-box",
-  },
-};

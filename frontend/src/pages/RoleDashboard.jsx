@@ -215,12 +215,12 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
 
   welcomeBanner: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "24px 28px",
     marginBottom: "24px",
@@ -229,7 +229,7 @@ const styles = {
     justifyContent: "space-between",
     flexWrap: "wrap",
     gap: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
+    boxShadow: "var(--shadow-card)"
   },
 
   welcomeBadge: {
@@ -237,7 +237,7 @@ const styles = {
     alignItems: "center",
     fontSize: "11px",
     fontWeight: "600",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     background: "rgba(76, 141, 255, 0.12)",
     border: "1px solid rgba(76, 141, 255, 0.25)",
     padding: "2px 8px",
@@ -248,21 +248,21 @@ const styles = {
   welcomeTitle: {
     fontSize: "24px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 4px 0",
     letterSpacing: "-0.02em"
   },
 
   welcomeSub: {
     fontSize: "14px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     margin: 0
   },
 
   refreshBtn: {
-    background: "#0B0F17",
-    border: "1px solid #202A38",
-    color: "#F2F5F8",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-text)",
     fontSize: "12px",
     fontWeight: "500",
     padding: "9px 16px",
@@ -288,14 +288,14 @@ const styles = {
   },
 
   card: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "24px",
     display: "flex",
     flexDirection: "column",
     gap: "18px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
+    boxShadow: "var(--shadow-card)"
   },
 
   cardHeader: {
@@ -307,13 +307,13 @@ const styles = {
   cardTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 2px 0"
   },
 
   cardSub: {
     fontSize: "12px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     margin: 0
   },
 
@@ -327,8 +327,8 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "12px 14px"
   },
@@ -338,7 +338,7 @@ const styles = {
     height: "26px",
     borderRadius: "50%",
     background: "rgba(76, 141, 255, 0.15)",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontSize: "12px",
     fontWeight: "700",
     display: "flex",
@@ -349,7 +349,7 @@ const styles = {
 
   focusText: {
     fontSize: "13px",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     lineHeight: "1.4"
   },
 
@@ -363,8 +363,8 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "14px 16px",
     textDecoration: "none",
@@ -374,13 +374,13 @@ const styles = {
   actionTitle: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 2px 0"
   },
 
   actionSub: {
     fontSize: "12px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     margin: 0
   }
 };

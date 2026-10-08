@@ -325,14 +325,15 @@ const styles = {
 
   bellButton: {
     position: "relative",
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "8px 11px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    color: "var(--color-text-muted)",
     transition: "all 0.2s ease"
   },
 
@@ -340,7 +341,7 @@ const styles = {
     position: "absolute",
     top: "-5px",
     right: "-5px",
-    background: "#E05B61",
+    background: "var(--color-danger)",
     color: "#ffffff",
     fontSize: "10px",
     fontWeight: "600",
@@ -355,10 +356,10 @@ const styles = {
     top: "calc(100% + 10px)",
     width: "420px",
     maxHeight: "540px",
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
-    boxShadow: "0 14px 40px rgba(0, 0, 0, 0.6)",
+    boxShadow: "var(--shadow-dropdown)",
     zIndex: 2000,
     display: "flex",
     flexDirection: "column",
@@ -367,24 +368,24 @@ const styles = {
 
   header: {
     padding: "16px 18px",
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    background: "#0B0F17"
+    background: "var(--color-bg-secondary)"
   },
 
   headerTitle: {
     fontSize: "15px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0
   },
 
   headerUnreadBadge: {
     background: "rgba(76, 141, 255, 0.12)",
     border: "1px solid rgba(76, 141, 255, 0.25)",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontSize: "11px",
     fontWeight: "500",
     padding: "2px 7px",
@@ -393,8 +394,8 @@ const styles = {
 
   headerActionBtn: {
     background: "transparent",
-    border: "1px solid #202A38",
-    color: "#98A4B5",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-text-muted)",
     fontSize: "11px",
     fontWeight: "500",
     padding: "5px 9px",
@@ -408,7 +409,7 @@ const styles = {
   closeBtn: {
     background: "transparent",
     border: "none",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     cursor: "pointer",
     padding: "4px",
     display: "flex",
@@ -419,15 +420,15 @@ const styles = {
     display: "flex",
     gap: "4px",
     padding: "8px 12px",
-    background: "#101620",
-    borderBottom: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    borderBottom: "1px solid var(--color-border)",
     overflowX: "auto"
   },
 
   tabBtn: {
     background: "transparent",
     border: "none",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     fontSize: "12px",
     fontWeight: "500",
     padding: "6px 10px",
@@ -438,7 +439,7 @@ const styles = {
 
   tabBtnActive: {
     background: "rgba(76, 141, 255, 0.14)",
-    color: "#4C8DFF"
+    color: "var(--color-primary)"
   },
 
   listBody: {
@@ -455,25 +456,25 @@ const styles = {
   },
 
   mutedText: {
-    color: "#94a3b8",
+    color: "var(--color-text-muted)",
     fontSize: "13px",
     marginTop: "8px"
   },
 
   spinner: {
     animation: "spin 1s linear infinite",
-    color: "#60a5fa"
+    color: "var(--color-primary)"
   },
 
   emptyTitle: {
-    color: "#cbd5e1",
+    color: "var(--color-text)",
     fontSize: "14px",
     fontWeight: "600",
     margin: "0 0 4px 0"
   },
 
   emptySub: {
-    color: "#64748b",
+    color: "var(--color-text-muted)",
     fontSize: "12px",
     margin: 0
   },
@@ -504,7 +505,7 @@ const styles = {
 
   notificationItem: {
     padding: "12px 16px",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+    borderBottom: "1px solid var(--color-border)",
     display: "flex",
     alignItems: "flex-start",
     gap: "12px",
@@ -513,8 +514,8 @@ const styles = {
   },
 
   itemUnread: {
-    background: "rgba(37, 99, 235, 0.08)",
-    borderLeft: "3px solid #2563eb"
+    background: "rgba(76, 141, 255, 0.08)",
+    borderLeft: "3px solid var(--color-primary)"
   },
 
   itemRead: {
@@ -526,7 +527,7 @@ const styles = {
     width: "28px",
     height: "28px",
     borderRadius: "6px",
-    background: "#1e293b",
+    background: "var(--color-bg-secondary)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -544,7 +545,7 @@ const styles = {
   typeBadge: {
     fontSize: "10px",
     fontWeight: "500",
-    color: "#60a5fa",
+    color: "var(--color-primary)",
     letterSpacing: "0.5px"
   },
 
@@ -561,28 +562,28 @@ const styles = {
     width: "7px",
     height: "7px",
     borderRadius: "50%",
-    background: "#3b82f6",
+    background: "var(--color-primary)",
     marginLeft: "auto"
   },
 
   itemTitle: {
     fontSize: "13px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     margin: "0 0 3px 0",
     lineHeight: "1.3"
   },
 
   itemMessage: {
     fontSize: "12px",
-    color: "#94a3b8",
+    color: "var(--color-text-muted)",
     margin: "0 0 6px 0",
     lineHeight: "1.4"
   },
 
   timeText: {
     fontSize: "10px",
-    color: "#64748b"
+    color: "var(--color-text-muted)"
   }
 };
 

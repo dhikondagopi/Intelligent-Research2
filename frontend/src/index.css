@@ -1,31 +1,133 @@
 /* ============================================================
-   INTELLIGENT RESEARCH PLATFORM - ENTERPRISE DESIGN SYSTEM
+   INTELLIGENT RESEARCH PLATFORM - GLOBAL ENTERPRISE DESIGN TOKENS
    ============================================================ */
 
-:root {
-  --bg-main: #080B12;
-  --bg-sidebar: #0B0F17;
-  --bg-surface: #101620;
-  --bg-hover: #151D29;
-  
-  --border-subtle: #202A38;
-  --border-active: #4C8DFF;
+:root, [data-theme="dark"] {
+  /* Core Semantic Tokens - Dark (Default) */
+  --color-bg: #070B12;
+  --color-bg-secondary: #0B0F17;
+  --color-surface: #101620;
+  --color-surface-elevated: #151D29;
+  --color-text: #F2F5F8;
+  --color-text-muted: #98A4B5;
+  --color-text-dim: #64748B;
+  --color-border: #202A38;
+  --color-border-subtle: #182230;
+  --color-primary: #4C8DFF;
+  --color-primary-hover: #3B7BE6;
+  --color-primary-subtle: rgba(76, 141, 255, 0.12);
+  --color-success: #35C98A;
+  --color-warning: #D9A441;
+  --color-danger: #E05B61;
 
-  --accent-primary: #4C8DFF;
-  --accent-success: #35C98A;
-  --accent-warning: #D9A441;
-  --accent-danger: #E05B61;
+  /* Elevation Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 16px 36px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
 
-  --text-main: #F2F5F8;
-  --text-secondary: #98A4B5;
-  --text-muted: #98A4B5;
-  --text-dim: #5c6b7f;
-
+  /* Fonts */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
 
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
+  /* Backward Compatibility Aliases */
+  --bg-main: var(--color-bg);
+  --bg-sidebar: var(--color-bg-secondary);
+  --bg-surface: var(--color-surface);
+  --bg-hover: var(--color-surface-elevated);
+  --border-subtle: var(--color-border);
+  --border-active: var(--color-primary);
+  --accent-primary: var(--color-primary);
+  --accent-success: var(--color-success);
+  --accent-warning: var(--color-warning);
+  --accent-danger: var(--color-danger);
+  --text-main: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --text-muted: var(--color-text-muted);
+  --text-dim: var(--color-text-dim);
+
+  /* Auth Aliases */
+  --auth-bg: var(--color-bg);
+  --auth-card: var(--color-surface);
+  --auth-border: var(--color-border);
+  --auth-primary: var(--color-primary);
+  --auth-text: var(--color-text);
+  --auth-muted: var(--color-text-muted);
+  --auth-input-bg: #0B0F17;
+  --auth-input-border: var(--color-border);
+  --auth-hover: var(--color-surface-elevated);
+  --auth-card-shadow: var(--shadow-card);
+  --auth-logo-bg: #151D29;
+  --auth-alert-error-bg: rgba(224, 91, 97, 0.12);
+  --auth-alert-error-border: rgba(224, 91, 97, 0.3);
+  --auth-alert-error-text: #F2F5F8;
+  --auth-alert-success-bg: rgba(53, 201, 138, 0.12);
+  --auth-alert-success-border: rgba(53, 201, 138, 0.3);
+  --auth-alert-success-text: #F2F5F8;
+}
+
+[data-theme="light"] {
+  /* Core Semantic Tokens - Light */
+  --color-bg: #FFFFFF;
+  --color-bg-secondary: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F8FAFC;
+  --color-text: #101828;
+  --color-text-muted: #536273;
+  --color-text-dim: #94A3B8;
+  --color-border: #D9E0EA;
+  --color-border-subtle: #E2E8F0;
+  --color-primary: #2F6FED;
+  --color-primary-hover: #1D58CE;
+  --color-primary-subtle: rgba(47, 111, 237, 0.08);
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
+  --shadow-card: 0 10px 30px -10px rgba(16, 24, 40, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-dropdown: 0 12px 32px rgba(16, 24, 40, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Backward Compatibility Aliases */
+  --bg-main: var(--color-bg);
+  --bg-sidebar: var(--color-bg-secondary);
+  --bg-surface: var(--color-surface);
+  --bg-hover: var(--color-surface-elevated);
+  --border-subtle: var(--color-border);
+  --border-active: var(--color-primary);
+  --accent-primary: var(--color-primary);
+  --accent-success: var(--color-success);
+  --accent-warning: var(--color-warning);
+  --accent-danger: var(--color-danger);
+  --text-main: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --text-muted: var(--color-text-muted);
+  --text-dim: var(--color-text-dim);
+
+  /* Auth Aliases */
+  --auth-bg: #F7F9FC;
+  --auth-card: #FFFFFF;
+  --auth-border: var(--color-border);
+  --auth-primary: var(--color-primary);
+  --auth-text: var(--color-text);
+  --auth-muted: var(--color-text-muted);
+  --auth-input-bg: #FFFFFF;
+  --auth-input-border: var(--color-border);
+  --auth-hover: #F1F5F9;
+  --auth-card-shadow: var(--shadow-card);
+  --auth-logo-bg: #EEF2F6;
+  --auth-alert-error-bg: rgba(224, 91, 97, 0.08);
+  --auth-alert-error-border: rgba(224, 91, 97, 0.25);
+  --auth-alert-error-text: #B91C1C;
+  --auth-alert-success-bg: rgba(53, 201, 138, 0.1);
+  --auth-alert-success-border: rgba(53, 201, 138, 0.3);
+  --auth-alert-success-text: #0F766E;
 }
 
 * {
@@ -36,8 +138,8 @@
 
 html, body {
   min-height: 100vh;
-  background: var(--bg-main);
-  color: var(--text-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
@@ -45,6 +147,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #root {
@@ -52,8 +155,10 @@ html, body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   text-align: left;
+  transition: background-color 0.2s ease;
 }
 
 /* Scrollbar */
@@ -62,14 +167,14 @@ html, body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #080B12;
+  background: var(--color-bg-secondary);
 }
 ::-webkit-scrollbar-thumb {
-  background: #202A38;
+  background: var(--color-border);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a374a;
+  background: var(--color-text-dim);
 }
 
 /* Focus States */
@@ -78,7 +183,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--accent-primary);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -94,9 +199,9 @@ a:focus-visible {
 }
 
 @keyframes skeletonPulse {
-  0% { background-color: #101620; }
-  50% { background-color: #151D29; }
-  100% { background-color: #101620; }
+  0% { background-color: var(--color-surface); }
+  50% { background-color: var(--color-surface-elevated); }
+  100% { background-color: var(--color-surface); }
 }
 
 .animate-fade-in {
@@ -111,19 +216,48 @@ a:focus-visible {
   animation: skeletonPulse 1.5s ease-in-out infinite;
 }
 
-/* Clean Enterprise Panel Utility */
+/* Semantic Utility Classes */
+.bg-theme-main {
+  background-color: var(--color-bg) !important;
+}
+
+.bg-theme-secondary {
+  background-color: var(--color-bg-secondary) !important;
+}
+
+.bg-theme-surface {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-theme-elevated {
+  background-color: var(--color-surface-elevated) !important;
+}
+
+.text-theme-main {
+  color: var(--color-text) !important;
+}
+
+.text-theme-muted {
+  color: var(--color-text-muted) !important;
+}
+
+.border-theme {
+  border-color: var(--color-border) !important;
+}
+
 .glass-panel {
-  background: #101620;
-  border: 1px solid #202A38;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .gradient-text {
-  color: #F2F5F8;
+  color: var(--color-text);
 }
 
 .gradient-button {
-  background: #4C8DFF;
+  background: var(--color-primary);
   color: #ffffff;
   border: none;
   font-weight: 600;
@@ -131,7 +265,7 @@ a:focus-visible {
 }
 
 .gradient-button:hover:not(:disabled) {
-  background: #3b7be6;
+  background: var(--color-primary-hover);
   transform: translateY(-1px);
 }
 

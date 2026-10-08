@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ShieldCheck, Mail, Globe, MapPin } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import Logo from "../brand/Logo";
 
 export default function PublicFooter() {
   const scrollToSection = (e, id) => {
@@ -18,10 +19,7 @@ export default function PublicFooter() {
           {/* Brand Column */}
           <div style={styles.brandCol}>
             <Link to="/" style={styles.brand} aria-label="Intelligent Research">
-              <div style={styles.logoMark}>
-                <span style={styles.logoText}>IR</span>
-              </div>
-              <span style={styles.brandTitle}>Intelligent Research</span>
+              <Logo variant="compact" />
             </Link>
 
             <p style={styles.brandMission}>
@@ -29,7 +27,7 @@ export default function PublicFooter() {
             </p>
 
             <div style={styles.securityPill}>
-              <ShieldCheck size={14} color="#2F6FED" />
+              <ShieldCheck size={14} color="var(--color-primary)" />
               <span>SOC 2 Type II Audited • 256-Bit TLS</span>
             </div>
           </div>
@@ -131,10 +129,10 @@ export default function PublicFooter() {
 
 const styles = {
   footer: {
-    backgroundColor: "#FFFFFF",
-    borderTop: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-surface)",
+    borderTop: "1px solid var(--color-border)",
     padding: "64px 24px 36px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
   },
   container: {
     maxWidth: "1240px",
@@ -158,29 +156,9 @@ const styles = {
     textDecoration: "none",
     color: "inherit",
   },
-  logoMark: {
-    width: "32px",
-    height: "32px",
-    borderRadius: "6px",
-    backgroundColor: "#172554",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoText: {
-    color: "#FFFFFF",
-    fontSize: "13px",
-    fontWeight: "800",
-  },
-  brandTitle: {
-    fontSize: "17px",
-    fontWeight: "700",
-    color: "#101828",
-    letterSpacing: "-0.02em",
-  },
   brandMission: {
     fontSize: "13.5px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
     lineHeight: 1.55,
     margin: 0,
     maxWidth: "300px",
@@ -189,13 +167,13 @@ const styles = {
     display: "inline-flex",
     alignItems: "center",
     gap: "6px",
-    backgroundColor: "#F5F7FA",
-    border: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "6px",
     padding: "6px 10px",
     fontSize: "11px",
     fontWeight: "600",
-    color: "#101828",
+    color: "var(--color-text)",
     width: "fit-content",
   },
   linkCol: {
@@ -206,7 +184,7 @@ const styles = {
   colTitle: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#101828",
+    color: "var(--color-text)",
     textTransform: "uppercase",
     letterSpacing: "0.06em",
   },
@@ -219,7 +197,7 @@ const styles = {
     gap: "10px",
   },
   link: {
-    color: "#536273",
+    color: "var(--color-text-muted)",
     fontSize: "13.5px",
     textDecoration: "none",
     transition: "color 0.15s ease",
@@ -227,14 +205,14 @@ const styles = {
   },
   bottomBar: {
     paddingTop: "28px",
-    borderTop: "1px solid #D9E0EA",
+    borderTop: "1px solid var(--color-border)",
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
     gap: "16px",
     fontSize: "13px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
   },
   copyright: {
     fontWeight: "500",
@@ -245,6 +223,6 @@ const styles = {
     gap: "10px",
   },
   dot: {
-    color: "#D9E0EA",
+    color: "var(--color-border)",
   },
 };

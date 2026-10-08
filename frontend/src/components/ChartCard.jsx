@@ -13,6 +13,7 @@ import {
   Tooltip,
   CartesianGrid
 } from "recharts";
+import { useTheme } from "../context/ThemeContext";
 
 const COLORS = ["#4C8DFF", "#35C98A", "#D9A441", "#38bdf8", "#818cf8", "#E05B61"];
 
@@ -22,7 +23,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div style={styles.tooltip}>
         <p style={styles.tooltipLabel}>{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color || "#4C8DFF", margin: 0, fontSize: "12px" }}>
+          <p key={index} style={{ color: entry.color || "var(--color-primary)", margin: 0, fontSize: "12px" }}>
             {`${entry.name}: ${typeof entry.value === "number" ? entry.value.toLocaleString() : entry.value}`}
           </p>
         ))}
@@ -39,9 +40,15 @@ function ChartCard({
   data = [],
   dataKey = "value",
   nameKey = "name",
-  color = "#4C8DFF",
+  color,
   height = 260
 }) {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+  const activeColor = color || (isLight ? "#2F6FED" : "#4C8DFF");
+  const gridColor = isLight ? "#E2E8F0" : "#202A38";
+  const axisColor = isLight ? "#64748B" : "#98A4B5";
+
   return (
     <div style={styles.card}>
       {title && (
@@ -56,16 +63,16 @@ function ChartCard({
           <ResponsiveContainer width="100%" height="100%">
             {type === "line" ? (
               <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#202A38" />
-                <XAxis dataKey={nameKey} stroke="#98A4B5" fontSize={11} tickLine={false} />
-                <YAxis stroke="#98A4B5" fontSize={11} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <XAxis dataKey={nameKey} stroke={axisColor} fontSize={11} tickLine={false} />
+                <YAxis stroke={axisColor} fontSize={11} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={{ r: 3, fill: color }} />
+                <Line type="monotone" dataKey={dataKey} stroke={activeColor} strokeWidth={2} dot={{ r: 3, fill: activeColor }} />
               </LineChart>
             ) : type === "pie" ? (
               <PieChart>
                 <Tooltip content={<CustomTooltip />} />
-                <Pie data={data} dataKey={dataKey} nameKey={nameKey} cx="50%" cy="50%" outerRadius={80} fill={color}>
+                <Pie data={data} dataKey={dataKey} nameKey={nameKey} cx="50%" cy="50%" outerRadius={80} fill={activeColor}>
                   {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -73,17 +80,17 @@ function ChartCard({
               </PieChart>
             ) : (
               <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#202A38" />
-                <XAxis dataKey={nameKey} stroke="#98A4B5" fontSize={11} tickLine={false} />
-                <YAxis stroke="#98A4B5" fontSize={11} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <XAxis dataKey={nameKey} stroke={axisColor} fontSize={11} tickLine={false} />
+                <YAxis stroke={axisColor} fontSize={11} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey={dataKey} fill={color} radius={[4, 4, 0, 0]} />
+                <Bar dataKey={dataKey} fill={activeColor} radius={[4, 4, 0, 0]} />
               </BarChart>
             )}
           </ResponsiveContainer>
         ) : (
           <div style={styles.emptyBox}>
-            <span style={{ color: "#98A4B5", fontSize: "12px" }}>No chart data available</span>
+            <span style={{ color: "var(--color-text-muted)", fontSize: "12px" }}>No chart data available</span>
           </div>
         )}
       </div>
@@ -93,14 +100,14 @@ function ChartCard({
 
 const styles = {
   card: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "20px",
     display: "flex",
     flexDirection: "column",
     gap: "14px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
+    boxShadow: "var(--shadow-card)"
   },
   header: {
     display: "flex",
@@ -110,24 +117,24 @@ const styles = {
   title: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0
   },
   subtitle: {
     fontSize: "11px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
   tooltip: {
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-surface-elevated)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "8px 12px",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
+    boxShadow: "var(--shadow-dropdown)"
   },
   tooltipLabel: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 4px 0"
   },
   emptyBox: {

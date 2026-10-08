@@ -21,31 +21,21 @@ export default function FormField({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.labelRow}>
-        <label htmlFor={id} style={styles.label}>
+    <div className="auth-field-group">
+      <div className="auth-label-row">
+        <label htmlFor={id} className="auth-field-label">
           {label}
-          {required && <span style={styles.requiredMark} aria-hidden="true">*</span>}
+          {required && <span className="auth-required-mark" aria-hidden="true">*</span>}
         </label>
-        {optional && <span style={styles.optionalTag}>Optional</span>}
+        {optional && <span className="auth-optional-tag">Optional</span>}
       </div>
 
       <div
-        style={{
-          ...styles.inputWrapper,
-          borderColor: error ? "#E05B61" : isFocused ? "#4C8DFF" : "#202A38",
-          boxShadow: isFocused
-            ? error
-              ? "0 0 0 3px rgba(224, 91, 97, 0.15)"
-              : "0 0 0 3px rgba(76, 141, 255, 0.15)"
-            : "none",
-          backgroundColor: disabled ? "#0B0F17" : "#151D29",
-          opacity: disabled ? 0.65 : 1,
-        }}
+        className={`auth-input-wrapper ${error ? "has-error" : ""} ${isFocused ? "is-focused" : ""} ${disabled ? "is-disabled" : ""}`}
       >
         {Icon && (
-          <div style={styles.iconBox} aria-hidden="true">
-            <Icon size={16} color={error ? "#E05B61" : isFocused ? "#4C8DFF" : "#98A4B5"} />
+          <div className="auth-input-icon" aria-hidden="true">
+            <Icon size={16} />
           </div>
         )}
 
@@ -64,99 +54,134 @@ export default function FormField({
           onBlur={() => setIsFocused(false)}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={error ? `${id}-error` : helpText ? `${id}-help` : undefined}
-          style={{
-            ...styles.input,
-            paddingLeft: Icon ? "38px" : "12px",
-          }}
+          className={`auth-input ${Icon ? "has-icon" : ""}`}
         />
       </div>
 
       {error ? (
-        <div id={`${id}-error`} style={styles.errorMessage} role="alert">
+        <div id={`${id}-error`} className="auth-error-message" role="alert">
           {error}
         </div>
       ) : helpText ? (
-        <div id={`${id}-help`} style={styles.helpText}>
+        <div id={`${id}-help`} className="auth-help-text">
           {helpText}
         </div>
       ) : null}
+
+      <style>{`
+        .auth-field-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          width: 100%;
+        }
+
+        .auth-label-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .auth-field-label {
+          font-size: 13px;
+          fontWeight: 500;
+          color: var(--auth-text);
+          display: flex;
+          align-items: center;
+          gap: 3px;
+        }
+
+        .auth-required-mark {
+          color: #E05B61;
+          font-size: 13px;
+        }
+
+        .auth-optional-tag {
+          font-size: 11px;
+          color: var(--auth-muted);
+        }
+
+        .auth-input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          border-radius: 8px;
+          border: 1px solid var(--auth-border);
+          background-color: var(--auth-input-bg);
+          transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        }
+
+        .auth-input-wrapper.is-focused {
+          border-color: var(--auth-primary);
+          box-shadow: 0 0 0 3px rgba(76, 141, 255, 0.15);
+        }
+
+        .auth-input-wrapper.has-error {
+          border-color: #E05B61;
+        }
+
+        .auth-input-wrapper.has-error.is-focused {
+          box-shadow: 0 0 0 3px rgba(224, 91, 97, 0.15);
+        }
+
+        .auth-input-wrapper.is-disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-input-icon {
+          position: absolute;
+          left: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          color: var(--auth-muted);
+        }
+
+        .auth-input-wrapper.is-focused .auth-input-icon {
+          color: var(--auth-primary);
+        }
+
+        .auth-input-wrapper.has-error .auth-input-icon {
+          color: #E05B61;
+        }
+
+        .auth-input {
+          width: 100%;
+          height: 40px;
+          padding: 0 12px;
+          background: transparent;
+          border: none;
+          color: var(--auth-text);
+          font-size: 14px;
+          font-family: inherit;
+          outline: none;
+          border-radius: 8px;
+          box-sizing: border-box;
+        }
+
+        .auth-input.has-icon {
+          padding-left: 38px;
+        }
+
+        .auth-input::placeholder {
+          color: var(--auth-muted);
+          opacity: 0.8;
+        }
+
+        .auth-error-message {
+          font-size: 12px;
+          color: #E05B61;
+          line-height: 1.3;
+        }
+
+        .auth-help-text {
+          font-size: 12px;
+          color: var(--auth-muted);
+          line-height: 1.3;
+        }
+      `}</style>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-    width: "100%",
-  },
-  labelRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  label: {
-    fontSize: "13px",
-    fontWeight: "500",
-    color: "#F2F5F8",
-    display: "flex",
-    alignItems: "center",
-    gap: "3px",
-  },
-  requiredMark: {
-    color: "#E05B61",
-    fontSize: "14px",
-  },
-  optionalTag: {
-    fontSize: "11px",
-    color: "#98A4B5",
-    backgroundColor: "rgba(152, 164, 181, 0.1)",
-    padding: "1px 6px",
-    borderRadius: "4px",
-    fontWeight: "400",
-  },
-  inputWrapper: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    borderRadius: "8px",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    transition: "border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
-  },
-  iconBox: {
-    position: "absolute",
-    left: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    pointerEvents: "none",
-    zIndex: 1,
-  },
-  input: {
-    width: "100%",
-    height: "40px",
-    paddingRight: "12px",
-    backgroundColor: "transparent",
-    border: "none",
-    color: "#F2F5F8",
-    fontSize: "14px",
-    fontFamily: "inherit",
-    outline: "none",
-    borderRadius: "8px",
-  },
-  errorMessage: {
-    fontSize: "12px",
-    color: "#E05B61",
-    lineHeight: 1.3,
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
-  },
-  helpText: {
-    fontSize: "12px",
-    color: "#98A4B5",
-    lineHeight: 1.3,
-  },
-};

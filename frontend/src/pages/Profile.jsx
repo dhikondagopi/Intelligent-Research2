@@ -257,11 +257,11 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
   unauthCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "40px",
     textAlign: "center",
@@ -278,46 +278,47 @@ const styles = {
     gap: "24px"
   },
   userCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "16px",
     padding: "28px 20px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    textAlign: "center"
+    textAlign: "center",
+    boxShadow: "var(--shadow-card)"
   },
   avatarLarge: {
     width: "72px",
     height: "72px",
     borderRadius: "50%",
-    background: "#0B0F17",
-    border: "2px solid #4C8DFF",
-    color: "#4C8DFF",
+    background: "var(--color-bg-secondary)",
+    border: "2px solid var(--color-primary)",
+    color: "var(--color-primary)",
     fontSize: "28px",
     fontWeight: "700",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: "14px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
+    boxShadow: "var(--shadow-sm)"
   },
   userName: {
     fontSize: "18px",
     fontWeight: "700",
     letterSpacing: "-0.015em",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 2px 0"
   },
   userEmail: {
     fontSize: "12px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     marginBottom: "12px"
   },
   roleBadge: {
     background: "rgba(76, 141, 255, 0.12)",
-    border: "1px solid rgba(76, 141, 255, 0.3)",
-    color: "#4C8DFF",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-primary)",
     fontSize: "11px",
     fontWeight: "500",
     padding: "4px 10px",
@@ -328,7 +329,7 @@ const styles = {
   userMetaDivider: {
     width: "100%",
     height: "1px",
-    background: "#202A38",
+    background: "var(--color-border)",
     margin: "18px 0"
   },
   userMetaBox: {
@@ -342,23 +343,24 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
   formCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "16px",
     padding: "28px",
     display: "flex",
     flexDirection: "column",
-    gap: "20px"
+    gap: "20px",
+    boxShadow: "var(--shadow-card)"
   },
   formTitle: {
     fontSize: "16px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0,
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     paddingBottom: "12px"
   },
   successBanner: {
@@ -366,7 +368,7 @@ const styles = {
     border: "1px solid rgba(53, 201, 138, 0.3)",
     borderRadius: "10px",
     padding: "12px 16px",
-    color: "#35C98A",
+    color: "var(--color-success)",
     fontSize: "13px",
     display: "flex",
     alignItems: "center",
@@ -401,30 +403,30 @@ const styles = {
   label: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
   input: {
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "10px 12px",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     fontSize: "13px",
     outline: "none"
   },
   textarea: {
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "10px 12px",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     fontSize: "13px",
     outline: "none",
     resize: "vertical"
   },
   fieldHelp: {
     fontSize: "11px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
   formFooter: {
     display: "flex",
@@ -432,7 +434,7 @@ const styles = {
     paddingTop: "10px"
   },
   saveBtn: {
-    background: "#4C8DFF",
+    background: "var(--color-primary)",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -443,7 +445,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)"
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)"
   }
 };
 

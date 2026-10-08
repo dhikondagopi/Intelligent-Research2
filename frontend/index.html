@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Intelligent Research</title>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('intelligent-research-theme');
+          var theme = 'dark';
+          if (saved === 'light' || saved === 'dark') {
+            theme = saved;
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            theme = 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

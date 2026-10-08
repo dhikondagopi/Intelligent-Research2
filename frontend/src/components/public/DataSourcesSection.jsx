@@ -64,7 +64,7 @@ export default function DataSourcesSection() {
               <div key={source.name} style={styles.card}>
                 <div style={styles.cardTop}>
                   <div style={styles.iconBox}>
-                    <Icon size={18} color="#2F6FED" />
+                    <Icon size={18} color="var(--color-primary)" />
                   </div>
                   <span style={styles.statusPill}>
                     <span style={styles.statusDot} />
@@ -77,7 +77,7 @@ export default function DataSourcesSection() {
                 <p style={styles.sourceDesc}>{source.desc}</p>
 
                 <div style={styles.coverageRow}>
-                  <CheckCircle2 size={13} color="#2F6FED" />
+                  <CheckCircle2 size={13} color="var(--color-primary)" />
                   <span style={styles.coverageText}>{source.coverage}</span>
                 </div>
               </div>
@@ -87,7 +87,7 @@ export default function DataSourcesSection() {
 
         {/* Audit / Compliance Guarantee Callout */}
         <div style={styles.complianceBox}>
-          <ShieldCheck size={20} color="#172554" style={{ flexShrink: 0 }} />
+          <ShieldCheck size={20} color="var(--color-primary)" style={{ flexShrink: 0 }} />
           <div style={styles.complianceText}>
             <strong style={styles.complianceTitle}>Enterprise Data Governance: </strong>
             <span>
@@ -102,9 +102,9 @@ export default function DataSourcesSection() {
 
 const styles = {
   section: {
-    backgroundColor: "#F5F7FA",
+    backgroundColor: "var(--color-bg)",
     padding: "88px 24px",
-    borderBottom: "1px solid #D9E0EA",
+    borderBottom: "1px solid var(--color-border)",
   },
   container: {
     maxWidth: "1240px",
@@ -122,21 +122,21 @@ const styles = {
   categoryBadge: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#2F6FED",
+    color: "var(--color-primary)",
     textTransform: "uppercase",
     letterSpacing: "0.06em",
   },
   title: {
     fontSize: "clamp(26px, 3.4vw, 38px)",
     fontWeight: "800",
-    color: "#101828",
+    color: "var(--color-text)",
     letterSpacing: "-0.03em",
     lineHeight: 1.2,
     margin: 0,
   },
   subtitle: {
     fontSize: "16px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
     lineHeight: 1.55,
     margin: 0,
   },
@@ -147,14 +147,14 @@ const styles = {
     marginBottom: "36px",
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "24px",
     display: "flex",
     flexDirection: "column",
     gap: "8px",
-    boxShadow: "0 2px 6px rgba(16, 24, 40, 0.03)",
+    boxShadow: "var(--shadow-card)",
   },
   cardTop: {
     display: "flex",
@@ -166,8 +166,8 @@ const styles = {
     width: "36px",
     height: "36px",
     borderRadius: "8px",
-    backgroundColor: "#F5F7FA",
-    border: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -175,9 +175,9 @@ const styles = {
   statusPill: {
     fontSize: "11px",
     fontWeight: "600",
-    color: "#172554",
-    backgroundColor: "#F5F7FA",
-    border: "1px solid #D9E0EA",
+    color: "var(--color-primary)",
+    backgroundColor: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     padding: "3px 8px",
     borderRadius: "4px",
     display: "inline-flex",
@@ -188,23 +188,23 @@ const styles = {
     width: "5px",
     height: "5px",
     borderRadius: "50%",
-    backgroundColor: "#2F6FED",
+    backgroundColor: "var(--color-primary)",
   },
   sourceName: {
     fontSize: "17px",
     fontWeight: "700",
-    color: "#101828",
+    color: "var(--color-text)",
     margin: 0,
     lineHeight: 1.25,
   },
   sourceType: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#2F6FED",
+    color: "var(--color-primary)",
   },
   sourceDesc: {
     fontSize: "13.5px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
     lineHeight: 1.5,
     margin: "4px 0 12px",
     flex: 1,
@@ -214,30 +214,30 @@ const styles = {
     alignItems: "center",
     gap: "6px",
     paddingTop: "12px",
-    borderTop: "1px solid #F5F7FA",
+    borderTop: "1px solid var(--color-border)",
   },
   coverageText: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#101828",
+    color: "var(--color-text)",
   },
   complianceBox: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "18px 24px",
     display: "flex",
     alignItems: "flex-start",
     gap: "14px",
-    boxShadow: "0 2px 8px rgba(16, 24, 40, 0.04)",
+    boxShadow: "var(--shadow-card)",
   },
   complianceText: {
     fontSize: "13.5px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
     lineHeight: 1.55,
   },
   complianceTitle: {
-    color: "#172554",
+    color: "var(--color-text)",
     fontWeight: "700",
   },
 };

@@ -18,9 +18,9 @@ export default function PasswordField({
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
-  // Compute basic password strength (for signup feedback)
+  // Compute password strength if requested
   const calculateStrength = (pwd) => {
-    if (!pwd) return { score: 0, text: "", color: "#202A38" };
+    if (!pwd) return { score: 0, text: "", color: "var(--auth-border)" };
     let score = 0;
     if (pwd.length >= 8) score += 1;
     if (/[A-Z]/.test(pwd)) score += 1;
@@ -36,30 +36,20 @@ export default function PasswordField({
   const strength = showStrength ? calculateStrength(value) : null;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.labelRow}>
-        <label htmlFor={id} style={styles.label}>
+    <div className="auth-field-group">
+      <div className="auth-label-row">
+        <label htmlFor={id} className="auth-field-label">
           {label}
-          {required && <span style={styles.requiredMark} aria-hidden="true">*</span>}
+          {required && <span className="auth-required-mark" aria-hidden="true">*</span>}
         </label>
         {forgotPasswordAction}
       </div>
 
       <div
-        style={{
-          ...styles.inputWrapper,
-          borderColor: error ? "#E05B61" : isFocused ? "#4C8DFF" : "#202A38",
-          boxShadow: isFocused
-            ? error
-              ? "0 0 0 3px rgba(224, 91, 97, 0.15)"
-              : "0 0 0 3px rgba(76, 141, 255, 0.15)"
-            : "none",
-          backgroundColor: disabled ? "#0B0F17" : "#151D29",
-          opacity: disabled ? 0.65 : 1,
-        }}
+        className={`auth-input-wrapper ${error ? "has-error" : ""} ${isFocused ? "is-focused" : ""} ${disabled ? "is-disabled" : ""}`}
       >
-        <div style={styles.iconBox} aria-hidden="true">
-          <Lock size={16} color={error ? "#E05B61" : isFocused ? "#4C8DFF" : "#98A4B5"} />
+        <div className="auth-input-icon" aria-hidden="true">
+          <Lock size={16} />
         </div>
 
         <input
@@ -75,148 +65,102 @@ export default function PasswordField({
           onBlur={() => setIsFocused(false)}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={error ? `${id}-error` : showStrength ? `${id}-strength` : undefined}
-          style={styles.input}
+          className="auth-input has-icon has-toggle"
         />
 
         <button
           type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          style={styles.toggleButton}
+          onClick={() => setShowPassword((prev) => !prev)}
+          className="auth-toggle-btn"
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabIndex={0}
         >
           {showPassword ? (
-            <EyeOff size={16} color="#98A4B5" />
+            <EyeOff size={16} aria-hidden="true" />
           ) : (
-            <Eye size={16} color="#98A4B5" />
+            <Eye size={16} aria-hidden="true" />
           )}
         </button>
       </div>
 
       {showStrength && value && (
-        <div id={`${id}-strength`} style={styles.strengthRow}>
-          <div style={styles.strengthBars}>
+        <div id={`${id}-strength`} className="auth-strength-row">
+          <div className="auth-strength-bars">
             {[1, 2, 3, 4].map((level) => (
               <div
                 key={level}
+                className="auth-strength-bar"
                 style={{
-                  ...styles.strengthBar,
-                  backgroundColor: level <= strength.score ? strength.color : "#202A38",
+                  backgroundColor: level <= strength.score ? strength.color : "var(--auth-border)",
                 }}
               />
             ))}
           </div>
-          <span style={{ ...styles.strengthLabel, color: strength.color }}>
+          <span className="auth-strength-label" style={{ color: strength.color }}>
             {strength.text}
           </span>
         </div>
       )}
 
       {error && (
-        <div id={`${id}-error`} style={styles.errorMessage} role="alert">
+        <div id={`${id}-error`} className="auth-error-message" role="alert">
           {error}
         </div>
       )}
+
+      <style>{`
+        .auth-input.has-toggle {
+          padding-right: 40px;
+        }
+
+        .auth-toggle-btn {
+          position: absolute;
+          right: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 6px;
+          border: none;
+          background: transparent;
+          color: var(--auth-muted);
+          cursor: pointer;
+          padding: 0;
+          transition: color 0.15s ease;
+        }
+
+        .auth-toggle-btn:hover {
+          color: var(--auth-text);
+        }
+
+        .auth-strength-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          margin-top: 2px;
+        }
+
+        .auth-strength-bars {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex: 1;
+        }
+
+        .auth-strength-bar {
+          height: 3px;
+          flex: 1;
+          border-radius: 2px;
+          transition: background-color 0.2s ease;
+        }
+
+        .auth-strength-label {
+          font-size: 11px;
+          font-weight: 600;
+        }
+      `}</style>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-    width: "100%",
-  },
-  labelRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  label: {
-    fontSize: "13px",
-    fontWeight: "500",
-    color: "#F2F5F8",
-    display: "flex",
-    alignItems: "center",
-    gap: "3px",
-  },
-  requiredMark: {
-    color: "#E05B61",
-    fontSize: "14px",
-  },
-  inputWrapper: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    borderRadius: "8px",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    transition: "border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
-  },
-  iconBox: {
-    position: "absolute",
-    left: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    pointerEvents: "none",
-    zIndex: 1,
-  },
-  input: {
-    width: "100%",
-    height: "40px",
-    paddingLeft: "38px",
-    paddingRight: "40px",
-    backgroundColor: "transparent",
-    border: "none",
-    color: "#F2F5F8",
-    fontSize: "14px",
-    fontFamily: "inherit",
-    outline: "none",
-    borderRadius: "8px",
-  },
-  toggleButton: {
-    position: "absolute",
-    right: "8px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "28px",
-    height: "28px",
-    borderRadius: "6px",
-    border: "none",
-    backgroundColor: "transparent",
-    cursor: "pointer",
-    padding: 0,
-    transition: "background-color 0.15s ease",
-  },
-  strengthRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "8px",
-    marginTop: "2px",
-  },
-  strengthBars: {
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
-    flex: 1,
-  },
-  strengthBar: {
-    height: "3px",
-    flex: 1,
-    borderRadius: "2px",
-    transition: "background-color 0.2s ease",
-  },
-  strengthLabel: {
-    fontSize: "11px",
-    fontWeight: "600",
-  },
-  errorMessage: {
-    fontSize: "12px",
-    color: "#E05B61",
-    lineHeight: 1.3,
-  },
-};

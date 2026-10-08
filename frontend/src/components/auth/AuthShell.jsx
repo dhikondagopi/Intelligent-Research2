@@ -1,73 +1,59 @@
 import { Link } from "react-router-dom";
+import Logo from "../brand/Logo";
+import ThemeToggle from "../ThemeToggle";
 import AuthFooter from "./AuthFooter";
 
-export default function AuthShell({ children, activePage = "login" }) {
-  const isLogin = activePage === "login";
-
+export default function AuthShell({ children }) {
   return (
     <div className="auth-page">
-      {/* Top Minimal Navigation Bar */}
-      <header className="auth-nav-header">
-        <div className="auth-nav-inner">
+      {/* AUTH HEADER */}
+      <header className="auth-header" role="banner">
+        <div className="auth-header-inner">
           <Link to="/" className="auth-brand" aria-label="Intelligent Research home">
-            <div className="auth-logo-mark">
-              <span className="auth-logo-text">IR</span>
-            </div>
-            <div className="auth-brand-info">
-              <span className="auth-brand-name">Intelligent Research</span>
-              <span className="auth-brand-badge">Enterprise Platform</span>
-            </div>
+            <Logo variant="full" size={38} showSubtitle={true} />
           </Link>
 
-          <div className="auth-switch-cta">
-            <span className="auth-switch-label">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}
-            </span>
-            <Link
-              to={isLogin ? "/register" : "/login"}
-              className="auth-switch-button"
-            >
-              {isLogin ? "Create account" : "Sign in"}
-            </Link>
-          </div>
+          {/* Unified Light/Dark mode toggle in the top-right */}
+          <ThemeToggle />
         </div>
       </header>
 
-      {/* Main Authentication Panel Wrapper */}
-      <main className="auth-main-wrapper">
+      {/* Responsive flowable main content area */}
+      <main className="auth-main" role="main">
         <div className="auth-card-container">
           {children}
         </div>
       </main>
 
-      {/* Small Secure Footer */}
+      {/* Small footer */}
       <AuthFooter />
 
-      {/* Embedded Scoped Responsive CSS */}
+      {/* Scoped CSS for minimal layout and themes */}
       <style>{`
         .auth-page {
           min-height: 100vh;
           width: 100%;
-          background-color: #070B12;
-          color: #F2F5F8;
+          background-color: var(--auth-bg);
+          color: var(--auth-text);
           display: flex;
           flex-direction: column;
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
           overflow-x: hidden;
           box-sizing: border-box;
+          transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        .auth-nav-header {
+        .auth-header {
           width: 100%;
-          border-bottom: 1px solid #202A38;
-          background-color: rgba(7, 11, 18, 0.95);
-          backdrop-filter: blur(12px);
+          background-color: var(--auth-bg);
+          border-bottom: 1px solid var(--auth-border);
           position: sticky;
           top: 0;
           z-index: 50;
+          transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
-        .auth-nav-inner {
+        .auth-header-inner {
           max-width: 1120px;
           margin: 0 auto;
           padding: 14px 20px;
@@ -87,74 +73,75 @@ export default function AuthShell({ children, activePage = "login" }) {
         }
 
         .auth-logo-mark {
-          width: 34px;
-          height: 34px;
+          width: 36px;
+          height: 36px;
           border-radius: 8px;
-          background: linear-gradient(135deg, #151D29 0%, #101620 100%);
-          border: 1px solid #202A38;
+          background-color: var(--auth-logo-bg);
+          border: 1px solid var(--auth-border);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
           flex-shrink: 0;
+          transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
         .auth-logo-text {
           font-size: 13px;
           font-weight: 800;
-          letter-spacing: -0.03em;
+          letter-spacing: -0.02em;
           color: #4C8DFF;
         }
 
         .auth-brand-info {
           display: flex;
           flex-direction: column;
-          line-height: 1.2;
+          line-height: 1.25;
         }
 
         .auth-brand-name {
           font-size: 15px;
           font-weight: 700;
-          color: #F2F5F8;
-          letter-spacing: -0.02em;
+          color: var(--auth-text);
+          letter-spacing: -0.01em;
         }
 
-        .auth-brand-badge {
-          font-size: 11px;
-          color: #98A4B5;
+        .auth-brand-subtitle {
+          font-size: 12px;
+          color: var(--auth-muted);
           font-weight: 400;
         }
 
-        .auth-switch-cta {
-          display: flex;
+        .auth-theme-toggle {
+          display: inline-flex;
           align-items: center;
-          gap: 10px;
-        }
-
-        .auth-switch-label {
-          font-size: 13px;
-          color: #98A4B5;
-        }
-
-        .auth-switch-button {
-          font-size: 13px;
-          font-weight: 600;
-          color: #4C8DFF;
-          text-decoration: none;
-          padding: 6px 14px;
-          border-radius: 6px;
-          background-color: rgba(76, 141, 255, 0.08);
-          border: 1px solid rgba(76, 141, 255, 0.25);
+          gap: 7px;
+          padding: 6px 12px;
+          border-radius: 7px;
+          border: 1px solid var(--auth-border);
+          background-color: var(--auth-card);
+          color: var(--auth-text);
+          font-size: 12.5px;
+          font-weight: 500;
+          cursor: pointer;
           transition: all 0.18s ease;
-          white-space: nowrap;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .auth-switch-button:hover {
-          background-color: rgba(76, 141, 255, 0.16);
+        .auth-theme-toggle:hover {
           border-color: #4C8DFF;
+          color: #4C8DFF;
         }
 
-        .auth-main-wrapper {
+        .auth-theme-icon {
+          flex-shrink: 0;
+        }
+
+        .auth-theme-text {
+          user-select: none;
+        }
+
+        .auth-main {
           flex: 1;
           display: flex;
           align-items: center;
@@ -166,29 +153,31 @@ export default function AuthShell({ children, activePage = "login" }) {
 
         .auth-card-container {
           width: 100%;
-          max-width: 460px;
+          max-width: 440px;
           margin: 0 auto;
-          display: flex;
-          justify-content: center;
           box-sizing: border-box;
         }
 
         @media (max-width: 640px) {
-          .auth-nav-inner {
+          .auth-header-inner {
             padding: 12px 16px;
           }
 
-          .auth-switch-label {
-            display: none;
+          .auth-brand-subtitle {
+            font-size: 11px;
           }
 
-          .auth-switch-button {
-            padding: 5px 12px;
-            font-size: 12px;
+          .auth-brand-name {
+            font-size: 14px;
           }
 
-          .auth-main-wrapper {
+          .auth-main {
             padding: 24px 12px 36px;
+          }
+
+          .auth-theme-toggle {
+            padding: 5px 10px;
+            font-size: 12px;
           }
         }
       `}</style>

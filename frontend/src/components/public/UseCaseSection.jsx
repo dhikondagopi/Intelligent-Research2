@@ -95,31 +95,31 @@ export default function UseCaseSection() {
                   onClick={() => setSelectedCase(uc)}
                   style={{
                     ...styles.navItem,
-                    backgroundColor: isSelected ? "#FFFFFF" : "transparent",
-                    borderColor: isSelected ? "#2F6FED" : "transparent",
-                    boxShadow: isSelected ? "0 2px 8px rgba(16, 24, 40, 0.05)" : "none",
+                    backgroundColor: isSelected ? "var(--color-surface)" : "transparent",
+                    borderColor: isSelected ? "var(--color-primary)" : "transparent",
+                    boxShadow: isSelected ? "var(--shadow-card)" : "none",
                   }}
                   aria-pressed={isSelected}
                 >
                   <div
                     style={{
                       ...styles.navIconBox,
-                      backgroundColor: isSelected ? "#2F6FED" : "#FFFFFF",
-                      color: isSelected ? "#FFFFFF" : "#536273",
-                      borderColor: isSelected ? "#2F6FED" : "#D9E0EA",
+                      backgroundColor: isSelected ? "var(--color-primary)" : "var(--color-surface)",
+                      color: isSelected ? "#FFFFFF" : "var(--color-text-muted)",
+                      borderColor: isSelected ? "var(--color-primary)" : "var(--color-border)",
                     }}
                   >
                     <Icon size={16} />
                   </div>
                   <div style={styles.navTextCol}>
-                    <span style={{ ...styles.navTitle, color: isSelected ? "#101828" : "#536273" }}>
+                    <span style={{ ...styles.navTitle, color: isSelected ? "var(--color-text)" : "var(--color-text-muted)" }}>
                       {uc.title}
                     </span>
                     <span style={styles.navSubtitle}>{uc.subtitle}</span>
                   </div>
                   <ChevronRight
                     size={16}
-                    color={isSelected ? "#2F6FED" : "#D9E0EA"}
+                    color={isSelected ? "var(--color-primary)" : "var(--color-border)"}
                     style={{ marginLeft: "auto" }}
                   />
                 </button>
@@ -134,7 +134,7 @@ export default function UseCaseSection() {
                 <div style={styles.cardHeaderIcon}>
                   {(() => {
                     const Icon = selectedCase.icon;
-                    return <Icon size={24} color="#2F6FED" />;
+                    return <Icon size={24} color="var(--color-primary)" />;
                   })()}
                 </div>
                 <div>
@@ -171,9 +171,9 @@ export default function UseCaseSection() {
 
 const styles = {
   section: {
-    backgroundColor: "#F5F7FA",
+    backgroundColor: "var(--color-bg-secondary)",
     padding: "88px 24px",
-    borderBottom: "1px solid #D9E0EA",
+    borderBottom: "1px solid var(--color-border)",
   },
   container: {
     maxWidth: "1240px",
@@ -191,21 +191,21 @@ const styles = {
   categoryBadge: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#2F6FED",
+    color: "var(--color-primary)",
     textTransform: "uppercase",
     letterSpacing: "0.06em",
   },
   title: {
     fontSize: "clamp(26px, 3.4vw, 38px)",
     fontWeight: "800",
-    color: "#101828",
+    color: "var(--color-text)",
     letterSpacing: "-0.03em",
     lineHeight: 1.2,
     margin: 0,
   },
   subtitle: {
     fontSize: "16px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
     lineHeight: 1.55,
     margin: 0,
   },
@@ -255,20 +255,20 @@ const styles = {
   },
   navSubtitle: {
     fontSize: "11.5px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
   },
   showcaseCol: {
     width: "100%",
   },
   showcaseCard: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "32px",
     display: "flex",
     flexDirection: "column",
     gap: "18px",
-    boxShadow: "0 8px 24px rgba(16, 24, 40, 0.05)",
+    boxShadow: "var(--shadow-card)",
   },
   cardHeader: {
     display: "flex",
@@ -279,8 +279,8 @@ const styles = {
     width: "48px",
     height: "48px",
     borderRadius: "10px",
-    backgroundColor: "rgba(47, 111, 237, 0.08)",
-    border: "1px solid rgba(47, 111, 237, 0.2)",
+    backgroundColor: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid rgba(76, 141, 255, 0.25)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -288,24 +288,24 @@ const styles = {
   cardTitle: {
     fontSize: "20px",
     fontWeight: "800",
-    color: "#101828",
+    color: "var(--color-text)",
     margin: 0,
     letterSpacing: "-0.02em",
   },
   cardSubtitle: {
     fontSize: "13px",
-    color: "#2F6FED",
+    color: "var(--color-primary)",
     fontWeight: "600",
   },
   cardDesc: {
     fontSize: "15px",
-    color: "#536273",
+    color: "var(--color-text-muted)",
     lineHeight: 1.6,
     margin: 0,
   },
   metricsBox: {
-    backgroundColor: "#F5F7FA",
-    border: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "14px 16px",
     display: "flex",
@@ -315,18 +315,18 @@ const styles = {
   metricsHeader: {
     fontSize: "11px",
     fontWeight: "700",
-    color: "#172554",
+    color: "var(--color-primary)",
     textTransform: "uppercase",
     letterSpacing: "0.04em",
   },
   metricsText: {
     fontSize: "13.5px",
-    color: "#101828",
+    color: "var(--color-text)",
     fontWeight: "600",
   },
   outcomeBox: {
-    backgroundColor: "rgba(47, 111, 237, 0.05)",
-    border: "1px solid rgba(47, 111, 237, 0.2)",
+    backgroundColor: "rgba(76, 141, 255, 0.08)",
+    border: "1px solid rgba(76, 141, 255, 0.25)",
     borderRadius: "8px",
     padding: "14px 16px",
     display: "flex",
@@ -336,13 +336,13 @@ const styles = {
   outcomeHeader: {
     fontSize: "11px",
     fontWeight: "700",
-    color: "#2F6FED",
+    color: "var(--color-primary)",
     textTransform: "uppercase",
     letterSpacing: "0.04em",
   },
   outcomeText: {
     fontSize: "13.5px",
-    color: "#101828",
+    color: "var(--color-text)",
     fontWeight: "500",
   },
   cardActionRow: {
@@ -351,7 +351,7 @@ const styles = {
   learnMoreBtn: {
     display: "inline-flex",
     alignItems: "center",
-    backgroundColor: "#2F6FED",
+    backgroundColor: "var(--color-primary)",
     color: "#FFFFFF",
     padding: "11px 22px",
     borderRadius: "6px",

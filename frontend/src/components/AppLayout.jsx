@@ -3,6 +3,8 @@ import { useLocation, Link } from "react-router-dom";
 import { Menu, Shield, ChevronRight } from "lucide-react";
 import Sidebar from "./Sidebar";
 import NotificationMenu from "./NotificationMenu";
+import ThemeToggle from "./ThemeToggle";
+import GlobalSearchBar from "./GlobalSearchBar";
 
 function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -88,15 +90,21 @@ function AppLayout({ children }) {
             <div style={styles.breadcrumbCol}>
               <div style={styles.breadcrumbRow}>
                 <span style={styles.sectionBadge}>{pageInfo.section}</span>
-                <ChevronRight size={12} style={{ color: "#98A4B5" }} />
+                <ChevronRight size={12} style={{ color: "var(--color-text-muted)" }} />
                 <span style={styles.pathText}>{location.pathname}</span>
               </div>
               <h2 style={styles.pageTitle}>{pageInfo.title}</h2>
             </div>
           </div>
 
+          {/* Header Center Global Search */}
+          <div style={styles.headerCenter} className="header-search-wrap">
+            <GlobalSearchBar />
+          </div>
+
           {/* Header Right Actions */}
           <div style={styles.headerRight}>
+            <ThemeToggle />
             <NotificationMenu />
 
             {user && (
@@ -130,8 +138,8 @@ const styles = {
     display: "flex",
     minHeight: "100vh",
     width: "100vw",
-    background: "#080B12",
-    color: "#F2F5F8",
+    background: "var(--color-bg)",
+    color: "var(--color-text)",
     overflow: "hidden"
   },
 
@@ -147,8 +155,8 @@ const styles = {
   header: {
     height: "64px",
     padding: "0 28px",
-    background: "#0B0F17",
-    borderBottom: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    borderBottom: "1px solid var(--color-border)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -166,9 +174,9 @@ const styles = {
 
   mobileMenuBtn: {
     display: "none",
-    background: "#101620",
-    border: "1px solid #202A38",
-    color: "#98A4B5",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-text-muted)",
     padding: "8px",
     borderRadius: "8px",
     cursor: "pointer",
@@ -192,14 +200,14 @@ const styles = {
   sectionBadge: {
     fontSize: "10px",
     fontWeight: "600",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     letterSpacing: "0.5px",
     textTransform: "uppercase"
   },
 
   pathText: {
     fontSize: "11px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     fontWeight: "400"
   },
 
@@ -207,12 +215,20 @@ const styles = {
     fontSize: "16px",
     fontWeight: "700",
     letterSpacing: "-0.02em",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0,
     lineHeight: "1.2",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
+  },
+
+  headerCenter: {
+    flex: 1,
+    maxWidth: "480px",
+    margin: "0 16px",
+    display: "flex",
+    alignItems: "center"
   },
 
   headerRight: {
@@ -227,8 +243,8 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     padding: "4px 10px 4px 4px",
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "20px",
     textDecoration: "none",
     transition: "background 0.2s ease"
@@ -240,7 +256,7 @@ const styles = {
     borderRadius: "50%",
     background: "rgba(76, 141, 255, 0.15)",
     border: "1px solid rgba(76, 141, 255, 0.3)",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontSize: "12px",
     fontWeight: "600",
     display: "flex",
@@ -257,13 +273,13 @@ const styles = {
   badgeName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     lineHeight: "1.2"
   },
 
   badgeRole: {
     fontSize: "9px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     textTransform: "capitalize"
   },
 

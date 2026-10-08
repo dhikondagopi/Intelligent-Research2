@@ -15,6 +15,7 @@ import {
   X,
   Shield
 } from "lucide-react";
+import Logo from "./brand/Logo";
 
 function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
   const location = useLocation();
@@ -98,14 +99,9 @@ function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
             to={dashboardPath}
             style={styles.brand}
             onClick={() => setMobileOpen(false)}
+            aria-label="Intelligent Research Dashboard"
           >
-            <div style={styles.logo}>IR</div>
-            {!collapsed && (
-              <div style={styles.brandTextCol}>
-                <span style={styles.brandTitle}>Intelligent Research</span>
-                <span style={styles.brandSubtitle}>Research & Innovation Platform</span>
-              </div>
-            )}
+            <Logo variant={collapsed ? "icon" : "compact"} />
           </Link>
 
           {/* Collapse/Expand Toggle Button on Desktop */}
@@ -252,8 +248,8 @@ const styles = {
     position: "sticky",
     top: 0,
     height: "100vh",
-    background: "#0B0F17",
-    borderRight: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    borderRight: "1px solid var(--color-border)",
     display: "flex",
     flexDirection: "column",
     flexShrink: 0,
@@ -278,7 +274,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     flexShrink: 0
   },
 
@@ -294,7 +290,7 @@ const styles = {
     width: "36px",
     height: "36px",
     borderRadius: "8px",
-    background: "#4C8DFF",
+    background: "var(--color-primary)",
     color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",
@@ -313,7 +309,7 @@ const styles = {
   brandTitle: {
     fontSize: "13px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     lineHeight: "1.2",
     letterSpacing: "-0.015em",
     whiteSpace: "nowrap",
@@ -324,14 +320,14 @@ const styles = {
   brandSubtitle: {
     fontSize: "9px",
     fontWeight: "400",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     whiteSpace: "nowrap"
   },
 
   collapseBtn: {
-    background: "#101620",
-    border: "1px solid #202A38",
-    color: "#98A4B5",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-text-muted)",
     borderRadius: "6px",
     padding: "6px",
     cursor: "pointer",
@@ -345,7 +341,7 @@ const styles = {
     display: "none",
     background: "transparent",
     border: "none",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     cursor: "pointer",
     padding: "6px"
   },
@@ -369,14 +365,14 @@ const styles = {
     fontSize: "10px",
     fontWeight: "600",
     letterSpacing: "0.5px",
-    color: "#5c6b7f",
+    color: "var(--color-text-muted)",
     padding: "4px 10px 6px 10px",
     textTransform: "uppercase"
   },
 
   sectionDivider: {
     height: "1px",
-    background: "#202A38",
+    background: "var(--color-border)",
     margin: "6px 0"
   },
 
@@ -393,7 +389,7 @@ const styles = {
     gap: "12px",
     padding: "9px 12px",
     borderRadius: "8px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     fontSize: "13px",
     fontWeight: "500",
     textDecoration: "none",
@@ -407,7 +403,7 @@ const styles = {
   },
 
   navItemActive: {
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     background: "rgba(76, 141, 255, 0.12)",
     boxShadow: "inset 0 0 0 1px rgba(76, 141, 255, 0.25)"
   },
@@ -419,26 +415,26 @@ const styles = {
     bottom: "6px",
     width: "3px",
     borderRadius: "0 3px 3px 0",
-    background: "#4C8DFF"
+    background: "var(--color-primary)"
   },
 
   itemText: {
     fontSize: "13px",
     fontWeight: "500",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     whiteSpace: "nowrap"
   },
 
   itemTextActive: {
     fontSize: "13px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     whiteSpace: "nowrap"
   },
 
   bottomSection: {
     padding: "12px 10px 16px 10px",
-    borderTop: "1px solid #202A38",
+    borderTop: "1px solid var(--color-border)",
     flexShrink: 0
   },
 
@@ -447,8 +443,8 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     padding: "8px 10px",
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px"
   },
 
@@ -463,7 +459,7 @@ const styles = {
     borderRadius: "50%",
     background: "rgba(76, 141, 255, 0.15)",
     border: "1px solid rgba(76, 141, 255, 0.3)",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontSize: "13px",
     fontWeight: "600",
     display: "flex",
@@ -482,7 +478,7 @@ const styles = {
   userName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
@@ -490,7 +486,7 @@ const styles = {
 
   userRole: {
     fontSize: "10px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     whiteSpace: "nowrap",
     display: "flex",
     alignItems: "center"

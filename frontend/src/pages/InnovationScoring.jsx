@@ -266,14 +266,15 @@ const styles = {
     marginBottom: "28px"
   },
   formulaCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "16px",
     padding: "24px",
     marginBottom: "28px",
     display: "flex",
     flexDirection: "column",
-    gap: "14px"
+    gap: "14px",
+    boxShadow: "var(--shadow-card)"
   },
   formulaHeader: {
     display: "flex",
@@ -283,12 +284,12 @@ const styles = {
   formulaTitle: {
     fontSize: "15px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0
   },
   formulaDesc: {
     fontSize: "13px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     margin: 0,
     lineHeight: "1.5"
   },
@@ -299,8 +300,8 @@ const styles = {
     marginTop: "8px"
   },
   factorItem: {
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "14px",
     display: "flex",
@@ -315,7 +316,7 @@ const styles = {
   factorName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
   factorWeight: {
     fontSize: "14px",
@@ -324,16 +325,17 @@ const styles = {
   },
   factorDesc: {
     fontSize: "11px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
   tableCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "16px",
     padding: "24px",
     display: "flex",
     flexDirection: "column",
-    gap: "16px"
+    gap: "16px",
+    boxShadow: "var(--shadow-card)"
   },
   tableHeader: {
     display: "flex",
@@ -343,15 +345,15 @@ const styles = {
   tableTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0
   },
   countBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     background: "rgba(76, 141, 255, 0.12)",
-    border: "1px solid rgba(76, 141, 255, 0.3)",
+    border: "1px solid var(--color-border)",
     padding: "2px 8px",
     borderRadius: "6px"
   },
@@ -365,33 +367,33 @@ const styles = {
     textAlign: "left"
   },
   th: {
-    background: "#0B0F17",
-    color: "#98A4B5",
+    background: "var(--color-bg-secondary)",
+    color: "var(--color-text-muted)",
     fontWeight: "600",
     padding: "12px 14px",
-    borderBottom: "1px solid #202A38"
+    borderBottom: "1px solid var(--color-border)"
   },
   td: {
     padding: "12px 14px",
-    color: "#98A4B5",
-    borderBottom: "1px solid #202A38"
+    color: "var(--color-text-muted)",
+    borderBottom: "1px solid var(--color-border)"
   },
   tdBold: {
     padding: "12px 14px",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     fontWeight: "600",
-    borderBottom: "1px solid #202A38"
+    borderBottom: "1px solid var(--color-border)"
   },
   trEven: {
     background: "transparent"
   },
   trOdd: {
-    background: "rgba(255, 255, 255, 0.015)"
+    background: "rgba(0, 0, 0, 0.02)"
   },
   scoreBadge: {
     background: "rgba(76, 141, 255, 0.12)",
-    border: "1px solid rgba(76, 141, 255, 0.3)",
-    color: "#4C8DFF",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-primary)",
     fontWeight: "700",
     letterSpacing: "-0.02em",
     fontSize: "12px",
@@ -400,14 +402,14 @@ const styles = {
   },
   signalBadge: {
     background: "rgba(53, 201, 138, 0.12)",
-    color: "#35C98A",
+    color: "var(--color-success)",
     fontSize: "11px",
     fontWeight: "500",
     padding: "3px 8px",
     borderRadius: "4px"
   },
   detailLink: {
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontWeight: "600",
     textDecoration: "none",
     display: "inline-flex",

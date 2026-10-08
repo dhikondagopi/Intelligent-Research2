@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Menu, X, Shield, ChevronRight } from "lucide-react";
+import { ArrowRight, Menu, X, ChevronRight } from "lucide-react";
+import Logo from "../brand/Logo";
+import ThemeToggle from "../ThemeToggle";
 
 export default function PublicHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,29 +27,13 @@ export default function PublicHeader() {
 
   return (
     <header
-      style={{
-        ...styles.header,
-        backgroundColor: isScrolled
-          ? "rgba(255, 255, 255, 0.96)"
-          : "#FFFFFF",
-        borderBottom: isScrolled
-          ? "1px solid #D9E0EA"
-          : "1px solid rgba(217, 224, 234, 0.7)",
-        boxShadow: isScrolled
-          ? "0 4px 20px rgba(16, 24, 40, 0.05)"
-          : "none",
-      }}
+      className={`public-header ${isScrolled ? "is-scrolled" : ""}`}
+      style={styles.header}
     >
       <div style={styles.container}>
-        {/* Brand Logo */}
+        {/* Unified Official Brand Logo */}
         <Link to="/" style={styles.brand} aria-label="Intelligent Research home">
-          <div style={styles.logoMark}>
-            <span style={styles.logoText}>IR</span>
-          </div>
-          <div style={styles.brandTextGroup}>
-            <span style={styles.brandTitle}>Intelligent Research</span>
-            <span style={styles.brandSubtitle}>Research & Innovation Intelligence</span>
-          </div>
+          <Logo variant="full" size={38} showSubtitle={true} />
         </Link>
 
         {/* Desktop Navigation Links */}
@@ -56,6 +42,7 @@ export default function PublicHeader() {
             href="#platform"
             onClick={(e) => scrollToSection(e, "platform")}
             style={styles.navLink}
+            className="header-nav-link"
           >
             Platform
           </a>
@@ -63,6 +50,7 @@ export default function PublicHeader() {
             href="#solutions"
             onClick={(e) => scrollToSection(e, "solutions")}
             style={styles.navLink}
+            className="header-nav-link"
           >
             Solutions
           </a>
@@ -70,6 +58,7 @@ export default function PublicHeader() {
             href="#intelligence"
             onClick={(e) => scrollToSection(e, "intelligence")}
             style={styles.navLink}
+            className="header-nav-link"
           >
             Intelligence
           </a>
@@ -77,6 +66,7 @@ export default function PublicHeader() {
             href="#data"
             onClick={(e) => scrollToSection(e, "data")}
             style={styles.navLink}
+            className="header-nav-link"
           >
             Data
           </a>
@@ -84,6 +74,7 @@ export default function PublicHeader() {
             href="#resources"
             onClick={(e) => scrollToSection(e, "resources")}
             style={styles.navLink}
+            className="header-nav-link"
           >
             Resources
           </a>
@@ -91,6 +82,7 @@ export default function PublicHeader() {
             href="#about"
             onClick={(e) => scrollToSection(e, "about")}
             style={styles.navLink}
+            className="header-nav-link"
           >
             About
           </a>
@@ -98,80 +90,59 @@ export default function PublicHeader() {
 
         {/* Desktop Actions */}
         <div style={styles.actions}>
-          <Link to="/login" style={styles.signInBtn}>
+          {/* Global Light/Dark Theme Toggle */}
+          <ThemeToggle />
+
+          <Link to="/login" style={styles.signInBtn} className="header-signin-btn">
             Sign In
           </Link>
-          <Link to="/register" style={styles.getStartedBtn}>
+          <Link to="/register" style={styles.getStartedBtn} className="header-cta-btn">
             <span>Get Started</span>
             <ArrowRight size={14} style={{ marginLeft: 4 }} />
           </Link>
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          style={styles.mobileToggle}
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? <X size={22} color="#101828" /> : <Menu size={22} color="#101828" />}
-        </button>
+        {/* Mobile Actions and Hamburger Toggle */}
+        <div style={styles.mobileRightGroup}>
+          <ThemeToggle size="sm" showLabel={false} />
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={styles.mobileToggle}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          >
+            {mobileMenuOpen ? (
+              <X size={24} style={{ color: "var(--color-text)" }} />
+            ) : (
+              <Menu size={24} style={{ color: "var(--color-text)" }} />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div style={styles.mobileDrawer}>
-          <div style={styles.mobileNavLinks}>
-            <a
-              href="#platform"
-              onClick={(e) => scrollToSection(e, "platform")}
-              style={styles.mobileNavLink}
-            >
-              <span>Platform</span>
-              <ChevronRight size={16} color="#536273" />
-            </a>
-            <a
-              href="#solutions"
-              onClick={(e) => scrollToSection(e, "solutions")}
-              style={styles.mobileNavLink}
-            >
-              <span>Solutions</span>
-              <ChevronRight size={16} color="#536273" />
-            </a>
-            <a
-              href="#intelligence"
-              onClick={(e) => scrollToSection(e, "intelligence")}
-              style={styles.mobileNavLink}
-            >
-              <span>Intelligence</span>
-              <ChevronRight size={16} color="#536273" />
-            </a>
-            <a
-              href="#data"
-              onClick={(e) => scrollToSection(e, "data")}
-              style={styles.mobileNavLink}
-            >
-              <span>Data</span>
-              <ChevronRight size={16} color="#536273" />
-            </a>
-            <a
-              href="#resources"
-              onClick={(e) => scrollToSection(e, "resources")}
-              style={styles.mobileNavLink}
-            >
-              <span>Resources</span>
-              <ChevronRight size={16} color="#536273" />
-            </a>
-            <a
-              href="#about"
-              onClick={(e) => scrollToSection(e, "about")}
-              style={styles.mobileNavLink}
-            >
-              <span>About</span>
-              <ChevronRight size={16} color="#536273" />
-            </a>
-          </div>
+        <div style={styles.mobileDrawer} className="mobile-menu-show">
+          <nav style={styles.mobileNavLinks}>
+            {[
+              { id: "platform", label: "Platform" },
+              { id: "solutions", label: "Solutions" },
+              { id: "intelligence", label: "Intelligence" },
+              { id: "data", label: "Data Architecture" },
+              { id: "resources", label: "Methodology" },
+              { id: "about", label: "About Mission" },
+            ].map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={(e) => scrollToSection(e, link.id)}
+                style={styles.mobileNavLink}
+              >
+                <span>{link.label}</span>
+                <ChevronRight size={16} style={{ color: "var(--color-text-muted)" }} />
+              </a>
+            ))}
+          </nav>
 
           <div style={styles.mobileActionGroup}>
             <Link
@@ -193,19 +164,40 @@ export default function PublicHeader() {
         </div>
       )}
 
-      {/* Media query styling */}
       <style>{`
-        @media (max-width: 900px) {
-          .desktop-nav-hide {
-            display: none !important;
-          }
-          .mobile-menu-show {
-            display: flex !important;
-          }
+        .public-header {
+          background-color: var(--color-bg);
+          border-bottom: 1px solid var(--color-border);
+          transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        @media (min-width: 901px) {
-          .mobile-menu-show {
+
+        .public-header.is-scrolled {
+          box-shadow: var(--shadow-sm);
+        }
+
+        .header-nav-link:hover {
+          color: var(--color-primary) !important;
+        }
+
+        .header-signin-btn:hover {
+          background-color: var(--color-primary-subtle) !important;
+          color: var(--color-primary) !important;
+        }
+
+        .header-cta-btn:hover {
+          background-color: var(--color-primary-hover) !important;
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 960px) {
+          nav[aria-label="Main Navigation"] {
             display: none !important;
+          }
+          .public-header div[style*="justify-content: space-between"] > div:nth-child(3) {
+            display: none !important;
+          }
+          .mobile-toggle-btn {
+            display: flex !important;
           }
         }
       `}</style>
@@ -219,7 +211,6 @@ const styles = {
     top: 0,
     zIndex: 100,
     width: "100%",
-    transition: "all 0.2s ease",
   },
   container: {
     maxWidth: "1280px",
@@ -229,55 +220,23 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: "24px",
+    gap: "20px",
+    boxSizing: "border-box",
   },
   brand: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
     textDecoration: "none",
     color: "inherit",
     flexShrink: 0,
   },
-  logoMark: {
-    width: "36px",
-    height: "36px",
-    borderRadius: "8px",
-    backgroundColor: "#172554",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 2px 6px rgba(23, 37, 84, 0.2)",
-  },
-  logoText: {
-    color: "#FFFFFF",
-    fontSize: "14px",
-    fontWeight: "800",
-    letterSpacing: "-0.02em",
-  },
-  brandTextGroup: {
-    display: "flex",
-    flexDirection: "column",
-    lineHeight: 1.2,
-  },
-  brandTitle: {
-    fontSize: "16px",
-    fontWeight: "700",
-    color: "#101828",
-    letterSpacing: "-0.02em",
-  },
-  brandSubtitle: {
-    fontSize: "11px",
-    fontWeight: "500",
-    color: "#536273",
-  },
   navLinks: {
     display: "flex",
     alignItems: "center",
-    gap: "28px",
+    gap: "24px",
   },
   navLink: {
-    color: "#536273",
+    color: "var(--color-text-muted)",
     fontSize: "14px",
     fontWeight: "500",
     textDecoration: "none",
@@ -291,39 +250,46 @@ const styles = {
     flexShrink: 0,
   },
   signInBtn: {
-    color: "#101828",
+    color: "var(--color-text)",
+    fontSize: "14px",
+    fontWeight: "600",
+    textDecoration: "none",
+    padding: "8px 14px",
+    borderRadius: "6px",
+    transition: "all 0.15s ease",
+  },
+  getStartedBtn: {
+    backgroundColor: "var(--color-primary)",
+    color: "#FFFFFF",
     fontSize: "14px",
     fontWeight: "600",
     textDecoration: "none",
     padding: "8px 16px",
     borderRadius: "6px",
-    transition: "background-color 0.15s ease",
-  },
-  getStartedBtn: {
-    backgroundColor: "#2F6FED",
-    color: "#FFFFFF",
-    fontSize: "14px",
-    fontWeight: "600",
-    textDecoration: "none",
-    padding: "9px 18px",
-    borderRadius: "6px",
     display: "inline-flex",
     alignItems: "center",
-    boxShadow: "0 1px 3px rgba(47, 111, 237, 0.25)",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.15)",
     transition: "background-color 0.15s ease, transform 0.1s ease",
   },
-  mobileToggle: {
+  mobileRightGroup: {
     display: "none",
+    alignItems: "center",
+    gap: "10px",
+  },
+  mobileToggle: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     background: "none",
     border: "none",
     cursor: "pointer",
-    padding: "8px",
+    padding: "4px",
   },
   mobileDrawer: {
-    backgroundColor: "#FFFFFF",
-    borderBottom: "1px solid #D9E0EA",
+    backgroundColor: "var(--color-surface)",
+    borderBottom: "1px solid var(--color-border)",
     padding: "20px 24px 28px",
-    boxShadow: "0 12px 24px rgba(16, 24, 40, 0.08)",
+    boxShadow: "var(--shadow-md)",
   },
   mobileNavLinks: {
     display: "flex",
@@ -336,8 +302,8 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "12px 0",
-    borderBottom: "1px solid #F5F7FA",
-    color: "#101828",
+    borderBottom: "1px solid var(--color-border-subtle)",
+    color: "var(--color-text)",
     fontSize: "15px",
     fontWeight: "500",
     textDecoration: "none",
@@ -349,21 +315,22 @@ const styles = {
   },
   mobileSignInBtn: {
     width: "100%",
-    padding: "12px",
+    padding: "10px",
     borderRadius: "6px",
-    border: "1px solid #D9E0EA",
-    backgroundColor: "#FFFFFF",
-    color: "#101828",
+    border: "1px solid var(--color-border)",
+    backgroundColor: "var(--color-surface)",
+    color: "var(--color-text)",
     fontSize: "14px",
     fontWeight: "600",
     textAlign: "center",
     textDecoration: "none",
+    boxSizing: "border-box",
   },
   mobileGetStartedBtn: {
     width: "100%",
-    padding: "12px",
+    padding: "10px",
     borderRadius: "6px",
-    backgroundColor: "#2F6FED",
+    backgroundColor: "var(--color-primary)",
     color: "#FFFFFF",
     fontSize: "14px",
     fontWeight: "600",
@@ -372,5 +339,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    boxSizing: "border-box",
   },
 };

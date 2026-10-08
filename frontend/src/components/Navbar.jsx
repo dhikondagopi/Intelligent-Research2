@@ -15,6 +15,9 @@ import {
   X
 } from "lucide-react";
 
+import Logo from "./brand/Logo";
+import ThemeToggle from "./ThemeToggle";
+
 const NAV_ITEMS = [
   { to: "/dashboard/researcher", label: "Dashboard", icon: LayoutDashboard },
   { to: "/research", label: "Research", icon: BookOpen },
@@ -49,11 +52,7 @@ function Navbar() {
       <div style={styles.navInner}>
         {/* Brand Logo */}
         <Link to="/dashboard/researcher" style={styles.brand}>
-          <div style={styles.logo}>IR</div>
-          <div style={styles.brandTextCol}>
-            <span style={styles.brandTitle}>Intelligent Research</span>
-            <span style={styles.brandSubtitle}>Research & Innovation Platform</span>
-          </div>
+          <Logo variant="compact" />
         </Link>
 
         {/* Desktop Navigation Links */}

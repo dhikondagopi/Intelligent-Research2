@@ -15,6 +15,7 @@ from app.routes.commercialization import (
 from app.routes.dashboard import router as dashboard_router
 from app.routes.notifications import router as notifications_router
 from app.routes.reports import router as reports_router
+from app.routes.search import router as search_router
 
 app = FastAPI(
     title="Intelligent Research Platform API",
@@ -99,6 +100,10 @@ app.include_router(
 
 app.include_router(
     reports_router
+)
+
+app.include_router(
+    search_router
 )
 
 

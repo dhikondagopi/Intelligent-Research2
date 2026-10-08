@@ -394,14 +394,14 @@ const styles = {
     gap: "14px"
   },
   grantCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "16px 18px",
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.35)"
+    boxShadow: "var(--shadow-card)"
   },
   cardHeader: {
     display: "flex",
@@ -418,7 +418,7 @@ const styles = {
   sourceTag: {
     background: "rgba(76, 141, 255, 0.12)",
     border: "1px solid rgba(76, 141, 255, 0.3)",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontSize: "10px",
     fontWeight: "700",
     padding: "2px 7px",
@@ -427,8 +427,8 @@ const styles = {
     alignItems: "center"
   },
   codeTag: {
-    background: "#0B0F17",
-    color: "#98A4B5",
+    background: "var(--color-bg-secondary)",
+    color: "var(--color-text-muted)",
     fontSize: "10px",
     fontWeight: "600",
     padding: "2px 6px",
@@ -445,7 +445,7 @@ const styles = {
   grantTitle: {
     fontSize: "15px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0,
     lineHeight: "1.4"
   },
@@ -461,21 +461,21 @@ const styles = {
   },
   amountLabel: {
     fontSize: "10px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     fontWeight: "500"
   },
   amountVal: {
     fontSize: "16px",
     fontWeight: "700",
     letterSpacing: "-0.02em",
-    color: "#35C98A"
+    color: "var(--color-success)"
   },
   metaGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: "8px",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "12px 14px",
     fontSize: "12px"
@@ -484,16 +484,16 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "6px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
   abstractSection: {
-    borderTop: "1px solid #202A38",
+    borderTop: "1px solid var(--color-border)",
     paddingTop: "10px"
   },
   toggleAbstractBtn: {
     background: "transparent",
     border: "none",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
@@ -504,37 +504,38 @@ const styles = {
   },
   abstractContent: {
     marginTop: "8px",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "12px",
     fontSize: "12px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     lineHeight: "1.5"
   },
   abstractText: {
     margin: 0
   },
   orgCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "18px",
     display: "flex",
     flexDirection: "column",
-    gap: "12px"
+    gap: "12px",
+    boxShadow: "var(--shadow-card)"
   },
   orgHeader: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     paddingBottom: "10px"
   },
   orgTitle: {
     fontSize: "14px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0
   },
   orgList: {
@@ -548,26 +549,26 @@ const styles = {
     justifyContent: "space-between",
     gap: "8px",
     padding: "8px 10px",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px"
   },
   orgName: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
   },
   orgSub: {
     fontSize: "10px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
   orgAmount: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#35C98A",
+    color: "var(--color-success)",
     whiteSpace: "nowrap"
   }
 };

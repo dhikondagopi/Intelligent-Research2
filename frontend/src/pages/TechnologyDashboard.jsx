@@ -218,10 +218,10 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
   emergingBtn: {
-    background: "#4C8DFF",
+    background: "var(--color-primary)",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -234,9 +234,9 @@ const styles = {
     gap: "6px"
   },
   refreshBtn: {
-    background: "#101620",
-    border: "1px solid #202A38",
-    color: "#F2F5F8",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-text)",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 14px",
@@ -264,13 +264,14 @@ const styles = {
     gap: "20px"
   },
   card: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "16px",
     padding: "24px",
     display: "flex",
     flexDirection: "column",
-    gap: "16px"
+    gap: "16px",
+    boxShadow: "var(--shadow-card)"
   },
   cardHeader: {
     display: "flex",
@@ -280,12 +281,12 @@ const styles = {
   cardTitle: {
     fontSize: "15px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 2px 0"
   },
   cardSub: {
     fontSize: "11px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     margin: 0
   },
   tableWrapper: {
@@ -298,28 +299,28 @@ const styles = {
     textAlign: "left"
   },
   th: {
-    background: "#0B0F17",
-    color: "#98A4B5",
+    background: "var(--color-bg-secondary)",
+    color: "var(--color-text-muted)",
     fontWeight: "600",
     padding: "10px 14px",
-    borderBottom: "1px solid #202A38"
+    borderBottom: "1px solid var(--color-border)"
   },
   td: {
     padding: "10px 14px",
-    color: "#98A4B5",
-    borderBottom: "1px solid #202A38"
+    color: "var(--color-text-muted)",
+    borderBottom: "1px solid var(--color-border)"
   },
   tdBold: {
     padding: "10px 14px",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     fontWeight: "600",
-    borderBottom: "1px solid #202A38"
+    borderBottom: "1px solid var(--color-border)"
   },
   trEven: {
     background: "transparent"
   },
   trOdd: {
-    background: "rgba(255, 255, 255, 0.015)"
+    background: "rgba(0, 0, 0, 0.02)"
   },
   cpcGrid: {
     display: "grid",
@@ -327,8 +328,8 @@ const styles = {
     gap: "10px"
   },
   cpcItem: {
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "12px",
     display: "flex",
@@ -338,11 +339,11 @@ const styles = {
   cpcTitle: {
     fontSize: "12px",
     fontWeight: "700",
-    color: "#4C8DFF"
+    color: "var(--color-primary)"
   },
   cpcValue: {
     fontSize: "11px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   }
 };
 

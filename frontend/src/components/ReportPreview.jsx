@@ -255,15 +255,16 @@ function ReportPreview({ data, reportType }) {
 
 const styles = {
   previewContainer: {
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "24px",
-    color: "#f8fafc"
+    color: "var(--color-text)",
+    boxShadow: "var(--shadow-card)"
   },
 
   headerBox: {
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid var(--color-border)",
     paddingBottom: "18px",
     marginBottom: "20px"
   },
@@ -276,9 +277,9 @@ const styles = {
   },
 
   typeBadge: {
-    background: "rgba(37, 99, 235, 0.2)",
-    border: "1px solid rgba(59, 130, 246, 0.4)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-primary)",
     fontSize: "11px",
     fontWeight: "700",
     padding: "3px 9px",
@@ -288,7 +289,7 @@ const styles = {
   statusBadge: {
     background: "rgba(16, 185, 129, 0.15)",
     border: "1px solid rgba(16, 185, 129, 0.3)",
-    color: "#34d399",
+    color: "var(--color-success)",
     fontSize: "11px",
     fontWeight: "600",
     padding: "3px 9px",
@@ -300,7 +301,7 @@ const styles = {
   reportTitle: {
     fontSize: "20px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     margin: "0 0 10px 0"
   },
 
@@ -308,7 +309,7 @@ const styles = {
     display: "flex",
     gap: "20px",
     fontSize: "12px",
-    color: "#94a3b8"
+    color: "var(--color-text-muted)"
   },
 
   inlineIcon: {
@@ -317,8 +318,8 @@ const styles = {
   },
 
   summaryBox: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "16px",
     marginBottom: "20px"
@@ -327,7 +328,7 @@ const styles = {
   sectionHeader: {
     fontSize: "14px",
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     margin: "0 0 10px 0",
     display: "flex",
     alignItems: "center"
@@ -335,7 +336,7 @@ const styles = {
 
   summaryText: {
     fontSize: "13px",
-    color: "#cbd5e1",
+    color: "var(--color-text-muted)",
     lineHeight: "1.5",
     margin: 0
   },
@@ -348,8 +349,8 @@ const styles = {
   },
 
   metricCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "14px",
     display: "flex",
@@ -359,24 +360,24 @@ const styles = {
 
   metricLabel: {
     fontSize: "11px",
-    color: "#94a3b8",
+    color: "var(--color-text-muted)",
     fontWeight: "600"
   },
 
   metricValue: {
     fontSize: "18px",
     fontWeight: "800",
-    color: "#f8fafc"
+    color: "var(--color-text)"
   },
 
   metricSub: {
     fontSize: "11px",
-    color: "#60a5fa"
+    color: "var(--color-primary)"
   },
 
   chartSection: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px",
     padding: "16px",
     marginBottom: "24px"
@@ -397,7 +398,7 @@ const styles = {
   barLabel: {
     width: "140px",
     fontSize: "12px",
-    color: "#cbd5e1",
+    color: "var(--color-text)",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
@@ -406,7 +407,7 @@ const styles = {
   barTrack: {
     flex: 1,
     height: "8px",
-    background: "#1e293b",
+    background: "var(--color-border)",
     borderRadius: "4px",
     overflow: "hidden"
   },
@@ -422,7 +423,7 @@ const styles = {
     textAlign: "right",
     fontSize: "12px",
     fontWeight: "600",
-    color: "#94a3b8"
+    color: "var(--color-text-muted)"
   },
 
   tableSection: {
@@ -431,7 +432,7 @@ const styles = {
 
   tableWrapper: {
     overflowX: "auto",
-    border: "1px solid #1e293b",
+    border: "1px solid var(--color-border)",
     borderRadius: "10px"
   },
 
@@ -443,24 +444,24 @@ const styles = {
   },
 
   th: {
-    background: "#0f172a",
-    color: "#94a3b8",
+    background: "var(--color-bg-secondary)",
+    color: "var(--color-text-muted)",
     fontWeight: "700",
     padding: "10px 14px",
-    borderBottom: "1px solid #1e293b"
+    borderBottom: "1px solid var(--color-border)"
   },
 
   td: {
     padding: "10px 14px",
-    color: "#cbd5e1",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)"
+    color: "var(--color-text-muted)",
+    borderBottom: "1px solid var(--color-border)"
   },
 
   tdBold: {
     padding: "10px 14px",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     fontWeight: "600",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.04)"
+    borderBottom: "1px solid var(--color-border)"
   },
 
   trEven: {
@@ -468,13 +469,13 @@ const styles = {
   },
 
   trOdd: {
-    background: "rgba(255, 255, 255, 0.015)"
+    background: "rgba(0, 0, 0, 0.02)"
   },
 
   emptyTd: {
     padding: "30px",
     textAlign: "center",
-    color: "#64748b"
+    color: "var(--color-text-muted)"
   },
 
   badgeStage: {
@@ -487,7 +488,7 @@ const styles = {
 
   badgeSignal: {
     background: "rgba(52, 211, 153, 0.15)",
-    color: "#34d399",
+    color: "var(--color-success)",
     padding: "2px 7px",
     borderRadius: "4px",
     fontSize: "11px"
@@ -495,7 +496,7 @@ const styles = {
 
   tableFooterNote: {
     fontSize: "11px",
-    color: "#64748b",
+    color: "var(--color-text-muted)",
     marginTop: "8px",
     textAlign: "right"
   },
@@ -503,15 +504,15 @@ const styles = {
   methodologyBox: {
     display: "flex",
     gap: "10px",
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "12px 14px"
   },
 
   methodologyText: {
     fontSize: "11px",
-    color: "#94a3b8",
+    color: "var(--color-text-muted)",
     margin: 0,
     lineHeight: "1.4"
   }

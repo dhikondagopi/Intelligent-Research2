@@ -13,7 +13,9 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp,
-  FileText
+  FileText,
+  CheckCircle2,
+  AlertTriangle
 } from "lucide-react";
 
 import { searchResearch, getTrendingResearch } from "../services/researchService";
@@ -28,6 +30,7 @@ import ErrorState from "../components/ErrorState";
 function ResearchIntelligence() {
   const [query, setQuery] = useState("artificial intelligence");
   const [results, setResults] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,6 +44,7 @@ function ResearchIntelligence() {
     try {
       const data = await searchResearch(query);
       setResults(data.results || []);
+      setMeta(data.meta || null);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.detail || "Failed to retrieve research data.");
@@ -159,6 +163,82 @@ function ResearchIntelligence() {
             <span style={styles.resultBadge}>{results.length} Publications</span>
           </div>
 
+          {/* Provider Health Bar */}
+          {meta && meta.source_status && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "10px",
+                padding: "10px 14px",
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+                borderRadius: "8px",
+                fontSize: "12px",
+                marginBottom: "14px"
+              }}
+            >
+              <span style={{ fontWeight: 600, color: "var(--color-text)" }}>
+                Sources:
+              </span>
+              {Object.entries(meta.source_status).map(([srcName, status]) => (
+                <span
+                  key={srcName}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    padding: "2px 8px",
+                    borderRadius: "4px",
+                    background: "var(--color-surface-elevated)",
+                    border: "1px solid var(--color-border)",
+                    fontSize: "11px",
+                    color: "var(--color-text)"
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      backgroundColor:
+                        status === "LIVE"
+                          ? "var(--color-success)"
+                          : status === "CACHED"
+                          ? "var(--color-warning)"
+                          : "var(--color-danger)"
+                    }}
+                  />
+                  {srcName} ({status})
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Partial provider warning */}
+          {meta && meta.errors && Object.keys(meta.errors).length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 12px",
+                borderRadius: "6px",
+                background: "rgba(245, 158, 11, 0.12)",
+                border: "1px solid rgba(245, 158, 11, 0.3)",
+                color: "var(--color-warning)",
+                fontSize: "12px",
+                marginBottom: "14px"
+              }}
+            >
+              <AlertTriangle size={14} />
+              <span>
+                {Object.keys(meta.errors).join(", ")} temporarily unavailable. Showing available literature.
+              </span>
+            </div>
+          )}
+
           {loading ? (
             <LoadingSkeleton type="card" count={4} height={140} />
           ) : results.length === 0 ? (
@@ -175,24 +255,49 @@ function ResearchIntelligence() {
           ) : (
             <div style={styles.cardsList}>
               {results.map((r, i) => {
-                const itemKey = r.id || i;
+                const itemKey = r.id || r.doi || i;
                 const isExpanded = !!expandedAbstracts[itemKey];
 
                 return (
                   <div key={itemKey} style={styles.paperCard}>
-                    <div style={styles.cardHeader}>
-                      <h4 style={styles.paperTitle}>{r.title}</h4>
-                      {r.cited_by_count !== undefined && (
+                    {/* Provenance Badges & Citations Row */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                        {(r.sources && r.sources.length > 0 ? r.sources : ["OpenAlex"]).map((src) => (
+                          <span
+                            key={src}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                              fontSize: "10.5px",
+                              fontWeight: 600,
+                              padding: "2px 7px",
+                              borderRadius: 4,
+                              backgroundColor: "rgba(76, 141, 255, 0.12)",
+                              color: "var(--color-primary)"
+                            }}
+                          >
+                            <CheckCircle2 size={11} /> {src}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <span style={styles.citationBadge}>
                           <Award size={12} style={{ marginRight: 4 }} />
-                          {r.cited_by_count} Citations
+                          {r.citation_count !== undefined ? r.citation_count : r.cited_by_count || 0} Citations
                         </span>
-                      )}
+                      </div>
+                    </div>
+
+                    <div style={styles.cardHeader}>
+                      <h4 style={styles.paperTitle}>{r.title}</h4>
                     </div>
 
                     <div style={styles.metaRow}>
                       <span style={styles.metaItem}>
-                        <Calendar size={13} /> {r.publication_year || "N/A"}
+                        <Calendar size={13} /> {r.year || r.publication_year || "N/A"}
                       </span>
                       {r.authors && r.authors.length > 0 && (
                         <span style={styles.metaItem}>
@@ -200,18 +305,23 @@ function ResearchIntelligence() {
                           {r.authors.length > 3 && ` +${r.authors.length - 3}`}
                         </span>
                       )}
+                      {r.venue && (
+                        <span style={styles.metaItem}>
+                          · Published in {r.venue}
+                        </span>
+                      )}
                     </div>
 
                     {r.institutions && r.institutions.length > 0 && (
                       <div style={styles.instRow}>
-                        <Building size={13} color="#64748b" />
+                        <Building size={13} color="var(--color-text-muted)" />
                         <span style={styles.instText}>{r.institutions.slice(0, 2).join(", ")}</span>
                       </div>
                     )}
 
-                    {r.concepts && r.concepts.length > 0 && (
+                    {(r.topics || r.concepts) && (
                       <div style={styles.tagsRow}>
-                        {r.concepts.slice(0, 5).map((c, ci) => (
+                        {(r.topics || r.concepts).slice(0, 5).map((c, ci) => (
                           <span key={ci} style={styles.conceptTag}>
                             <Tag size={10} style={{ marginRight: 3 }} /> {c}
                           </span>
@@ -237,14 +347,61 @@ function ResearchIntelligence() {
                       </div>
                     )}
 
-                    {r.doi && (
-                      <div style={styles.cardFooter}>
-                        <a href={r.doi} target="_blank" rel="noreferrer" style={styles.doiLink}>
-                          <span>View Publication (DOI)</span>
-                          <ExternalLink size={13} />
+                    {/* Direct External Provider Links & DOI */}
+                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--color-border)" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--color-text-muted)", textTransform: "uppercase" }}>
+                        Direct Links:
+                      </span>
+
+                      {r.source_urls && Object.entries(r.source_urls).map(([src, link]) => (
+                        <a
+                          key={src}
+                          href={link}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 4,
+                            fontSize: "11.5px",
+                            fontWeight: 500,
+                            padding: "3px 8px",
+                            borderRadius: 5,
+                            background: "var(--color-surface-elevated)",
+                            border: "1px solid var(--color-border)",
+                            color: "var(--color-primary)",
+                            textDecoration: "none"
+                          }}
+                        >
+                          <span>View on {src}</span>
+                          <ExternalLink size={11} />
                         </a>
-                      </div>
-                    )}
+                      ))}
+
+                      {r.doi && !r.source_urls?.["Crossref"] && (
+                        <a
+                          href={r.doi.startsWith("http") ? r.doi : `https://doi.org/${r.doi}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 4,
+                            fontSize: "11.5px",
+                            fontWeight: 500,
+                            padding: "3px 8px",
+                            borderRadius: 5,
+                            background: "var(--color-surface-elevated)",
+                            border: "1px solid var(--color-border)",
+                            color: "var(--color-primary)",
+                            textDecoration: "none"
+                          }}
+                        >
+                          <span>DOI Publication</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -370,20 +527,20 @@ const styles = {
   sectionTitle: {
     fontSize: "16px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     margin: 0
   },
   sectionSub: {
     fontSize: "12px",
-    color: "#64748b",
+    color: "var(--color-text-muted)",
     margin: "2px 0 0 0"
   },
   resultBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#60a5fa",
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
+    color: "var(--color-primary)",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid var(--color-border)",
     padding: "2px 8px",
     borderRadius: "6px"
   },
@@ -393,14 +550,14 @@ const styles = {
     gap: "14px"
   },
   paperCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "16px 18px",
     display: "flex",
     flexDirection: "column",
     gap: "8px",
-    boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)"
+    boxShadow: "var(--shadow-card)"
   },
   cardHeader: {
     display: "flex",
@@ -411,16 +568,16 @@ const styles = {
   paperTitle: {
     fontSize: "15px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     margin: 0,
     lineHeight: "1.4"
   },
   citationBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#34d399",
-    background: "rgba(16, 185, 129, 0.15)",
-    border: "1px solid rgba(16, 185, 129, 0.3)",
+    color: "var(--color-success)",
+    background: "rgba(16, 185, 129, 0.12)",
+    border: "1px solid rgba(16, 185, 129, 0.25)",
     padding: "3px 8px",
     borderRadius: "6px",
     whiteSpace: "nowrap",
@@ -432,7 +589,7 @@ const styles = {
     alignItems: "center",
     gap: "16px",
     fontSize: "12px",
-    color: "#94a3b8"
+    color: "var(--color-text-muted)"
   },
   metaItem: {
     display: "flex",
@@ -446,7 +603,7 @@ const styles = {
     fontSize: "12px"
   },
   instText: {
-    color: "#64748b"
+    color: "var(--color-text-muted)"
   },
   tagsRow: {
     display: "flex",
@@ -455,9 +612,9 @@ const styles = {
     marginTop: "2px"
   },
   conceptTag: {
-    background: "rgba(37, 99, 235, 0.12)",
-    border: "1px solid rgba(59, 130, 246, 0.2)",
-    color: "#60a5fa",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-primary)",
     fontSize: "11px",
     fontWeight: "500",
     padding: "2px 7px",
@@ -466,13 +623,13 @@ const styles = {
     alignItems: "center"
   },
   abstractSection: {
-    borderTop: "1px solid #1e293b",
+    borderTop: "1px solid var(--color-border)",
     paddingTop: "8px"
   },
   toggleBtn: {
     background: "transparent",
     border: "none",
-    color: "#60a5fa",
+    color: "var(--color-primary)",
     fontSize: "12px",
     fontWeight: "500",
     cursor: "pointer",
@@ -483,26 +640,26 @@ const styles = {
   },
   abstractBox: {
     marginTop: "6px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "10px 12px",
     fontSize: "12px",
-    color: "#94a3b8",
+    color: "var(--color-text-muted)",
     lineHeight: "1.5"
   },
   abstractText: {
     margin: 0
   },
   cardFooter: {
-    borderTop: "1px solid #1e293b",
+    borderTop: "1px solid var(--color-border)",
     paddingTop: "10px",
     marginTop: "2px",
     display: "flex",
     justifyContent: "flex-end"
   },
   doiLink: {
-    color: "#60a5fa",
+    color: "var(--color-primary)",
     fontSize: "12px",
     fontWeight: "500",
     textDecoration: "none",
@@ -511,25 +668,26 @@ const styles = {
     gap: "4px"
   },
   sidebarCard: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "18px",
     display: "flex",
     flexDirection: "column",
-    gap: "12px"
+    gap: "12px",
+    boxShadow: "var(--shadow-card)"
   },
   sidebarHeader: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    borderBottom: "1px solid #1e293b",
+    borderBottom: "1px solid var(--color-border)",
     paddingBottom: "10px"
   },
   sidebarTitle: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#f8fafc",
+    color: "var(--color-text)",
     margin: 0
   },
   trendingList: {
@@ -543,21 +701,21 @@ const styles = {
     justifyContent: "space-between",
     gap: "8px",
     padding: "8px 10px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px"
   },
   trendingTitle: {
     fontSize: "12px",
     fontWeight: "500",
-    color: "#cbd5e1",
+    color: "var(--color-text)",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap"
   },
   trendingBadge: {
     fontSize: "10px",
-    color: "#34d399",
+    color: "var(--color-success)",
     fontWeight: "500",
     whiteSpace: "nowrap",
     display: "inline-flex",
@@ -573,20 +731,20 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "6px 8px",
-    background: "#0b0f19",
-    border: "1px solid #1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "6px"
   },
   conceptName: {
     fontSize: "12px",
-    color: "#cbd5e1",
+    color: "var(--color-text)",
     fontWeight: "500"
   },
   conceptCountBadge: {
     fontSize: "10px",
-    color: "#c084fc",
-    background: "rgba(192, 132, 252, 0.15)",
-    border: "1px solid rgba(192, 132, 252, 0.3)",
+    color: "var(--color-primary)",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid var(--color-border)",
     padding: "2px 6px",
     borderRadius: "4px",
     fontWeight: "500"

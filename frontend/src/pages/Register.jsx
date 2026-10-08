@@ -88,8 +88,7 @@ export default function Register() {
     setLoading(true);
 
     // SECURITY ENFORCEMENT:
-    // Backend remains authoritative. If 'admin' was chosen without an invite code,
-    // provision account as researcher to prevent unauthenticated client-side privilege escalation.
+    // If 'admin' was chosen without an invite code, provision as researcher
     let safeRole = form.role;
     if (form.role === "admin" && !form.adminInviteCode.trim()) {
       safeRole = "researcher";
@@ -116,12 +115,12 @@ export default function Register() {
         // 3. Redirect to designated dashboard
         setTimeout(() => {
           navigate(`/dashboard/${safeRole}`);
-        }, 600);
+        }, 500);
       } catch (loginErr) {
         console.warn("Auto-login error:", loginErr);
         setTimeout(() => {
           navigate("/login");
-        }, 800);
+        }, 700);
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -139,26 +138,26 @@ export default function Register() {
       <AuthCard>
         <AuthHeader
           heading="Create your account"
-          subtitle="Set up your workspace for research, funding, and patent intelligence."
+          subtitle="Set up your workspace for research intelligence."
         />
 
-        {/* API Error Alert */}
+        {/* Error alert */}
         {apiError && (
-          <div style={styles.alertError} role="alert">
-            <AlertCircle size={16} color="#E05B61" style={{ flexShrink: 0 }} />
+          <div className="auth-alert auth-alert-error" role="alert">
+            <AlertCircle size={15} style={{ flexShrink: 0 }} />
             <span>{apiError}</span>
           </div>
         )}
 
-        {/* API Success Alert */}
+        {/* Success alert */}
         {apiSuccess && (
-          <div style={styles.alertSuccess} role="status">
-            <CheckCircle2 size={16} color="#35C98A" style={{ flexShrink: 0 }} />
+          <div className="auth-alert auth-alert-success" role="status">
+            <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
             <span>{apiSuccess}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={styles.form} noValidate>
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {/* Full Name */}
           <FormField
             id="reg-name"
@@ -193,23 +192,18 @@ export default function Register() {
           />
 
           {/* Role */}
-          <div style={styles.fieldContainer}>
-            <div style={styles.labelRow}>
-              <label htmlFor="reg-role" style={styles.label}>
-                Role <span style={styles.requiredMark} aria-hidden="true">*</span>
+          <div className="auth-field-group">
+            <div className="auth-label-row">
+              <label htmlFor="reg-role" className="auth-field-label">
+                Role <span className="auth-required-mark" aria-hidden="true">*</span>
               </label>
             </div>
 
             <div
-              style={{
-                ...styles.selectWrapper,
-                borderColor: errors.role ? "#E05B61" : "#202A38",
-                backgroundColor: loading ? "#0B0F17" : "#151D29",
-                opacity: loading ? 0.65 : 1,
-              }}
+              className={`auth-select-wrapper ${errors.role ? "has-error" : ""} ${loading ? "is-disabled" : ""}`}
             >
-              <div style={styles.selectIconBox} aria-hidden="true">
-                <Briefcase size={16} color={errors.role ? "#E05B61" : "#98A4B5"} />
+              <div className="auth-select-icon" aria-hidden="true">
+                <Briefcase size={16} />
               </div>
 
               <select
@@ -218,7 +212,7 @@ export default function Register() {
                 value={form.role}
                 onChange={handleChange}
                 disabled={loading}
-                style={styles.selectInput}
+                className="auth-select-input"
               >
                 <option value="researcher">Researcher / Academic</option>
                 <option value="founder">Startup Founder</option>
@@ -226,34 +220,27 @@ export default function Register() {
                 <option value="admin">Administrator</option>
               </select>
 
-              <div style={styles.selectChevronBox} aria-hidden="true">
-                <ChevronDown size={16} color="#98A4B5" />
+              <div className="auth-select-chevron" aria-hidden="true">
+                <ChevronDown size={15} />
               </div>
             </div>
 
-            <div style={styles.roleHint}>
-              {form.role === "researcher" && "Scholarly publications, literature velocity, grant tracking & citations."}
-              {form.role === "founder" && "Patent defensibility, IP landscape, venture capital & market readiness."}
-              {form.role === "manager" && "TRL portfolio maturity, institutional research pipelines & commercialization."}
-              {form.role === "admin" && "Institutional governance, audit logging, API controls & user management."}
-            </div>
-
             {errors.role && (
-              <div style={styles.errorMessage} role="alert">
+              <div className="auth-error-message" role="alert">
                 {errors.role}
               </div>
             )}
           </div>
 
-          {/* Conditional Admin Invite Code */}
+          {/* Admin invite code if admin selected */}
           {form.role === "admin" && (
-            <div style={styles.adminBox}>
-              <div style={styles.adminHeader}>
+            <div className="auth-admin-box">
+              <div className="auth-admin-header">
                 <ShieldAlert size={15} color="#D9A441" />
-                <span style={styles.adminTitle}>Institutional Verification</span>
+                <span className="auth-admin-title">Institutional Verification</span>
               </div>
-              <p style={styles.adminDesc}>
-                Enter your institutional authorization code below, or continue to provision standard researcher access.
+              <p className="auth-admin-desc">
+                Enter an authorization code or proceed to provision standard researcher access.
               </p>
               <input
                 type="text"
@@ -262,7 +249,7 @@ export default function Register() {
                 onChange={handleChange}
                 placeholder="Authorization code (optional)"
                 disabled={loading}
-                style={styles.adminInput}
+                className="auth-admin-input"
                 aria-label="Institutional Admin Code"
               />
             </div>
@@ -302,40 +289,231 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            style={{
-              ...styles.submitButton,
-              opacity: loading ? 0.75 : 1,
-              cursor: loading ? "wait" : "pointer",
-            }}
+            className="auth-submit-btn"
           >
             {loading ? (
               <>
-                <RefreshCw size={15} className="auth-spin" style={{ marginRight: 8 }} />
+                <RefreshCw size={15} className="auth-spin" />
                 <span>Creating account...</span>
               </>
             ) : (
               <>
                 <span>Create Account</span>
-                <ArrowRight size={15} style={{ marginLeft: 6 }} />
+                <ArrowRight size={15} />
               </>
             )}
           </button>
         </form>
 
-        {/* Already have an account? Sign in */}
-        <div style={styles.secondaryRow}>
-          <span style={styles.secondaryText}>Already have an account?</span>
-          <Link to="/login" style={styles.secondaryLink}>
+        {/* Sign in link */}
+        <div className="auth-switch-row">
+          <span className="auth-switch-text">Already have an account?</span>
+          <Link to="/login" className="auth-switch-link">
             Sign in
           </Link>
         </div>
       </AuthCard>
 
       <style>{`
-        .auth-spin {
-          animation: spin 1s linear infinite;
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          margin-top: 4px;
+          width: 100%;
         }
-        @keyframes spin {
+
+        .auth-select-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          border-radius: 8px;
+          border: 1px solid var(--auth-border);
+          background-color: var(--auth-input-bg);
+          transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        }
+
+        .auth-select-wrapper.has-error {
+          border-color: #E05B61;
+        }
+
+        .auth-select-wrapper.is-disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-select-icon {
+          position: absolute;
+          left: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          color: var(--auth-muted);
+        }
+
+        .auth-select-chevron {
+          position: absolute;
+          right: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          color: var(--auth-muted);
+        }
+
+        .auth-select-input {
+          width: 100%;
+          height: 40px;
+          padding-left: 38px;
+          padding-right: 36px;
+          background-color: transparent;
+          border: none;
+          color: var(--auth-text);
+          font-size: 14px;
+          font-family: inherit;
+          outline: none;
+          border-radius: 8px;
+          cursor: pointer;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+        }
+
+        .auth-select-input option {
+          background-color: var(--auth-card);
+          color: var(--auth-text);
+        }
+
+        .auth-admin-box {
+          background-color: rgba(217, 164, 65, 0.08);
+          border: 1px solid rgba(217, 164, 65, 0.25);
+          border-radius: 8px;
+          padding: 10px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .auth-admin-header {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .auth-admin-title {
+          font-size: 12px;
+          font-weight: 600;
+          color: #D9A441;
+        }
+
+        .auth-admin-desc {
+          font-size: 11.5px;
+          color: var(--auth-muted);
+          line-height: 1.35;
+          margin: 0;
+        }
+
+        .auth-admin-input {
+          width: 100%;
+          height: 34px;
+          padding: 0 10px;
+          background-color: var(--auth-card);
+          border: 1px solid var(--auth-border);
+          border-radius: 6px;
+          color: var(--auth-text);
+          font-size: 12.5px;
+          outline: none;
+          box-sizing: border-box;
+          font-family: inherit;
+        }
+
+        .auth-admin-input:focus {
+          border-color: #D9A441;
+        }
+
+        .auth-submit-btn {
+          width: 100%;
+          height: 42px;
+          border-radius: 8px;
+          border: none;
+          background-color: var(--auth-primary);
+          color: #FFFFFF;
+          font-size: 14px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: background-color 0.18s ease, transform 0.1s ease;
+          box-shadow: 0 2px 10px rgba(76, 141, 255, 0.25);
+          margin-top: 6px;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .auth-submit-btn:hover:not(:disabled) {
+          background-color: #3B7BE6;
+          transform: translateY(-1px);
+        }
+
+        .auth-submit-btn:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        .auth-switch-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          margin-top: 22px;
+          padding-top: 18px;
+          border-top: 1px solid var(--auth-border);
+          font-size: 13px;
+        }
+
+        .auth-switch-text {
+          color: var(--auth-muted);
+        }
+
+        .auth-switch-link {
+          color: var(--auth-primary);
+          font-weight: 600;
+          text-decoration: none;
+        }
+
+        .auth-switch-link:hover {
+          text-decoration: underline;
+        }
+
+        .auth-alert {
+          border-radius: 8px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 13px;
+          margin-bottom: 16px;
+          box-sizing: border-box;
+        }
+
+        .auth-alert-error {
+          background-color: var(--auth-alert-error-bg);
+          border: 1px solid var(--auth-alert-error-border);
+          color: var(--auth-alert-error-text);
+        }
+
+        .auth-alert-success {
+          background-color: var(--auth-alert-success-bg);
+          border: 1px solid var(--auth-alert-success-border);
+          color: var(--auth-alert-success-text);
+        }
+
+        .auth-spin {
+          animation: authSpin 1s linear infinite;
+        }
+
+        @keyframes authSpin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
@@ -343,187 +521,3 @@ export default function Register() {
     </AuthShell>
   );
 }
-
-const styles = {
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-    marginTop: "6px",
-    width: "100%",
-  },
-  fieldContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-    width: "100%",
-  },
-  labelRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  label: {
-    fontSize: "13px",
-    fontWeight: "500",
-    color: "#F2F5F8",
-    display: "flex",
-    alignItems: "center",
-    gap: "3px",
-  },
-  requiredMark: {
-    color: "#E05B61",
-    fontSize: "14px",
-  },
-  selectWrapper: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    borderRadius: "8px",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    transition: "border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
-  },
-  selectIconBox: {
-    position: "absolute",
-    left: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    pointerEvents: "none",
-    zIndex: 1,
-  },
-  selectChevronBox: {
-    position: "absolute",
-    right: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    pointerEvents: "none",
-    zIndex: 1,
-  },
-  selectInput: {
-    width: "100%",
-    height: "40px",
-    paddingLeft: "38px",
-    paddingRight: "36px",
-    backgroundColor: "transparent",
-    border: "none",
-    color: "#F2F5F8",
-    fontSize: "14px",
-    fontFamily: "inherit",
-    outline: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    appearance: "none",
-    WebkitAppearance: "none",
-    MozAppearance: "none",
-  },
-  roleHint: {
-    fontSize: "12px",
-    color: "#98A4B5",
-    lineHeight: 1.35,
-    marginTop: "2px",
-  },
-  errorMessage: {
-    fontSize: "12px",
-    color: "#E05B61",
-    lineHeight: 1.3,
-  },
-  adminBox: {
-    backgroundColor: "rgba(217, 164, 65, 0.08)",
-    border: "1px solid rgba(217, 164, 65, 0.25)",
-    borderRadius: "8px",
-    padding: "10px 12px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-  },
-  adminHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-  },
-  adminTitle: {
-    fontSize: "12px",
-    fontWeight: "600",
-    color: "#D9A441",
-  },
-  adminDesc: {
-    fontSize: "11.5px",
-    color: "#98A4B5",
-    lineHeight: 1.35,
-    margin: 0,
-  },
-  adminInput: {
-    width: "100%",
-    height: "34px",
-    padding: "0 10px",
-    backgroundColor: "#101620",
-    border: "1px solid #202A38",
-    borderRadius: "6px",
-    color: "#F2F5F8",
-    fontSize: "12.5px",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  submitButton: {
-    width: "100%",
-    height: "42px",
-    borderRadius: "8px",
-    border: "none",
-    backgroundColor: "#4C8DFF",
-    color: "#FFFFFF",
-    fontSize: "14px",
-    fontWeight: "600",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "background-color 0.18s ease, transform 0.1s ease",
-    boxShadow: "0 2px 10px rgba(76, 141, 255, 0.3)",
-    marginTop: "6px",
-    cursor: "pointer",
-  },
-  secondaryRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "6px",
-    marginTop: "24px",
-    paddingTop: "18px",
-    borderTop: "1px solid #202A38",
-    fontSize: "13px",
-  },
-  secondaryText: {
-    color: "#98A4B5",
-  },
-  secondaryLink: {
-    color: "#4C8DFF",
-    fontWeight: "600",
-    textDecoration: "none",
-  },
-  alertError: {
-    backgroundColor: "rgba(224, 91, 97, 0.1)",
-    border: "1px solid rgba(224, 91, 97, 0.3)",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    fontSize: "13px",
-    color: "#F2F5F8",
-    marginBottom: "16px",
-  },
-  alertSuccess: {
-    backgroundColor: "rgba(53, 201, 138, 0.1)",
-    border: "1px solid rgba(53, 201, 138, 0.3)",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    fontSize: "13px",
-    color: "#F2F5F8",
-    marginBottom: "16px",
-  },
-};

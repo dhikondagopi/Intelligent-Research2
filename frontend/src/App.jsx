@@ -8,6 +8,7 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import SearchResults from "./pages/SearchResults";
 
 import AppLayout from "./components/AppLayout";
 
@@ -28,18 +29,29 @@ import RoleDashboard from "./pages/RoleDashboard";
 import Reports from "./pages/Reports";
 
 
+import { ThemeProvider } from "./context/ThemeContext";
+
 function App() {
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
 
 function AppContent() {
   return (
-    <div className="min-h-screen text-slate-100 font-sans antialiased">
+    <div
+      className="min-h-screen font-sans antialiased"
+      style={{
+        backgroundColor: "var(--color-bg)",
+        color: "var(--color-text)",
+        transition: "background-color 0.2s ease, color 0.2s ease",
+      }}
+    >
       <Routes>
 
         {/* Public Marketing Website */}
@@ -66,6 +78,15 @@ function AppContent() {
           element={
             <AppLayout>
               <Profile />
+            </AppLayout>
+          }
+        />
+
+        <Route
+          path="/search"
+          element={
+            <AppLayout>
+              <SearchResults />
             </AppLayout>
           }
         />

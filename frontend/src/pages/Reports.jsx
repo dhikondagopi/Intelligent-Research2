@@ -343,7 +343,7 @@ const styles = {
     padding: "28px 36px",
     maxWidth: "1440px",
     margin: "0 auto",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
 
   banner: {
@@ -356,14 +356,14 @@ const styles = {
   pageTitle: {
     fontSize: "26px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: "0 0 6px 0",
     letterSpacing: "-0.02em"
   },
 
   pageSubtitle: {
     fontSize: "14px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     margin: 0
   },
 
@@ -373,7 +373,7 @@ const styles = {
   },
 
   pdfExportBtn: {
-    background: "#4C8DFF",
+    background: "var(--color-primary)",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -384,12 +384,12 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
     transition: "all 0.2s ease"
   },
 
   excelExportBtn: {
-    background: "#35C98A",
+    background: "var(--color-success)",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -400,7 +400,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
     transition: "all 0.2s ease"
   },
 
@@ -408,16 +408,16 @@ const styles = {
     display: "flex",
     gap: "8px",
     marginBottom: "24px",
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     paddingBottom: "12px",
     overflowX: "auto"
   },
 
   tabBtn: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     fontSize: "13px",
     fontWeight: "600",
     padding: "10px 16px",
@@ -431,16 +431,17 @@ const styles = {
 
   tabBtnActive: {
     background: "rgba(76, 141, 255, 0.14)",
-    borderColor: "#4C8DFF",
-    color: "#F2F5F8"
+    borderColor: "var(--color-primary)",
+    color: "var(--color-text)"
   },
 
   filterCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "20px",
-    marginBottom: "28px"
+    marginBottom: "28px",
+    boxShadow: "var(--shadow-card)"
   },
 
   filterHeader: {
@@ -453,7 +454,7 @@ const styles = {
   filterTitle: {
     fontSize: "14px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0,
     flex: 1
   },
@@ -461,7 +462,7 @@ const styles = {
   clearBtn: {
     background: "transparent",
     border: "none",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     fontSize: "12px",
     cursor: "pointer",
     textDecoration: "underline"
@@ -482,7 +483,7 @@ const styles = {
   label: {
     fontSize: "12px",
     fontWeight: "600",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
 
   inputWrapper: {
@@ -494,23 +495,23 @@ const styles = {
   inputIcon: {
     position: "absolute",
     left: "12px",
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   },
 
   input: {
     width: "100%",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "9px 12px 9px 34px",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     fontSize: "13px",
     outline: "none",
     boxSizing: "border-box"
   },
 
   applyBtn: {
-    background: "#4C8DFF",
+    background: "var(--color-primary)",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -547,8 +548,8 @@ const styles = {
   },
 
   loadingCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "60px 20px",
     textAlign: "center",
@@ -559,13 +560,13 @@ const styles = {
 
   loadingText: {
     fontSize: "14px",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     marginTop: "12px"
   },
 
   spinner: {
     animation: "spin 1s linear infinite",
-    color: "#4C8DFF"
+    color: "var(--color-primary)"
   }
 };
 

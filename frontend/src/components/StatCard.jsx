@@ -29,7 +29,7 @@ function StatCard({
       <div style={styles.topRow}>
         <span style={styles.title}>{title}</span>
         {icon && (
-          <div style={{ ...styles.iconBox, background: `rgba(76, 141, 255, 0.1)`, border: `1px solid #202A38` }}>
+          <div style={{ ...styles.iconBox, background: `rgba(76, 141, 255, 0.1)`, border: `1px solid var(--color-border)` }}>
             {renderIcon()}
           </div>
         )}
@@ -52,14 +52,14 @@ function StatCard({
 
 const styles = {
   card: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "12px",
     padding: "20px",
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.35)",
+    boxShadow: "var(--shadow-card)",
     transition: "all 0.2s ease"
   },
   topRow: {
@@ -70,7 +70,7 @@ const styles = {
   title: {
     fontSize: "12px",
     fontWeight: "500",
-    color: "#98A4B5",
+    color: "var(--color-text-muted)",
     letterSpacing: "0.1px"
   },
   iconBox: {
@@ -89,13 +89,13 @@ const styles = {
   value: {
     fontSize: "24px",
     fontWeight: "700",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     letterSpacing: "-0.02em"
   },
   badge: {
     fontSize: "10px",
     fontWeight: "500",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     background: "rgba(76, 141, 255, 0.12)",
     border: "1px solid rgba(76, 141, 255, 0.25)",
     padding: "2px 6px",
@@ -109,10 +109,10 @@ const styles = {
   },
   trend: {
     fontWeight: "600",
-    color: "#35C98A"
+    color: "var(--color-success)"
   },
   subtext: {
-    color: "#98A4B5"
+    color: "var(--color-text-muted)"
   }
 };
 

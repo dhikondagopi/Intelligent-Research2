@@ -23,7 +23,7 @@ export default function Login() {
   const [apiSuccess, setApiSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Forgot password view toggle
+  // Forgot password flow
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotStatus, setForgotStatus] = useState({ loading: false, message: "", isSuccess: false });
@@ -65,11 +65,11 @@ export default function Login() {
       const data = await loginUser(form);
       const role = data.role || "researcher";
 
-      setApiSuccess("Authentication verified. Loading your workspace...");
+      setApiSuccess("Authentication verified. Loading workspace...");
 
       setTimeout(() => {
         navigate(`/dashboard/${role}`);
-      }, 600);
+      }, 500);
     } catch (error) {
       console.error("Login failed:", error);
       const detail =
@@ -101,7 +101,7 @@ export default function Login() {
         message: `Password reset instructions have been dispatched to ${forgotEmail}. Please check your inbox.`,
         isSuccess: true,
       });
-    }, 700);
+    }, 600);
   };
 
   return (
@@ -111,26 +111,26 @@ export default function Login() {
           <>
             <AuthHeader
               heading="Welcome back"
-              subtitle="Sign in to continue to your research intelligence workspace."
+              subtitle="Sign in to your research intelligence workspace."
             />
 
-            {/* API Error Alert */}
+            {/* Error feedback alert */}
             {apiError && (
-              <div style={styles.alertError} role="alert">
-                <AlertCircle size={16} color="#E05B61" style={{ flexShrink: 0 }} />
+              <div className="auth-alert auth-alert-error" role="alert">
+                <AlertCircle size={15} style={{ flexShrink: 0 }} />
                 <span>{apiError}</span>
               </div>
             )}
 
-            {/* API Success Alert */}
+            {/* Success feedback alert */}
             {apiSuccess && (
-              <div style={styles.alertSuccess} role="status">
-                <CheckCircle2 size={16} color="#35C98A" style={{ flexShrink: 0 }} />
+              <div className="auth-alert auth-alert-success" role="status">
+                <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
                 <span>{apiSuccess}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} style={styles.form} noValidate>
+            <form onSubmit={handleSubmit} className="auth-form" noValidate>
               {/* Email Address */}
               <FormField
                 id="login-email"
@@ -168,7 +168,7 @@ export default function Login() {
                       setForgotStatus({ loading: false, message: "", isSuccess: false });
                       setShowForgotModal(true);
                     }}
-                    style={styles.forgotBtn}
+                    className="auth-forgot-link"
                   >
                     Forgot password?
                   </button>
@@ -179,65 +179,59 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                style={{
-                  ...styles.submitButton,
-                  opacity: loading ? 0.75 : 1,
-                  cursor: loading ? "wait" : "pointer",
-                }}
+                className="auth-submit-btn"
               >
                 {loading ? (
                   <>
-                    <RefreshCw size={15} className="auth-spin" style={{ marginRight: 8 }} />
+                    <RefreshCw size={15} className="auth-spin" />
                     <span>Signing in...</span>
                   </>
                 ) : (
                   <>
                     <span>Sign In</span>
-                    <ArrowRight size={15} style={{ marginLeft: 6 }} />
+                    <ArrowRight size={15} />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Don't have an account? Create account */}
-            <div style={styles.secondaryRow}>
-              <span style={styles.secondaryText}>Don't have an account?</span>
-              <Link to="/register" style={styles.secondaryLink}>
+            {/* Create account link */}
+            <div className="auth-switch-row">
+              <span className="auth-switch-text">Don't have an account?</span>
+              <Link to="/register" className="auth-switch-link">
                 Create account
               </Link>
             </div>
           </>
         ) : (
-          /* Forgot Password View */
-          <div>
-            <div style={styles.forgotHeader}>
-              <div style={styles.forgotIconBox}>
+          /* Minimal Reset Password View */
+          <div className="auth-forgot-view">
+            <div className="auth-forgot-header">
+              <div className="auth-forgot-icon-box">
                 <KeyRound size={20} color="#4C8DFF" />
               </div>
-              <h2 style={styles.forgotTitle}>Reset Password</h2>
-              <p style={styles.forgotSubtitle}>
-                Enter your registered workspace email and we'll send an authentication recovery link.
+              <h2 className="auth-card-title" style={{ marginTop: 8 }}>Reset Password</h2>
+              <p className="auth-card-subtitle">
+                Enter your registered workspace email and we'll dispatch password recovery instructions.
               </p>
             </div>
 
             {forgotStatus.message && (
               <div
-                style={
-                  forgotStatus.isSuccess ? styles.alertSuccess : styles.alertError
-                }
+                className={`auth-alert ${forgotStatus.isSuccess ? "auth-alert-success" : "auth-alert-error"}`}
                 role="status"
               >
                 {forgotStatus.isSuccess ? (
-                  <CheckCircle2 size={16} color="#35C98A" style={{ flexShrink: 0 }} />
+                  <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
                 ) : (
-                  <AlertCircle size={16} color="#E05B61" style={{ flexShrink: 0 }} />
+                  <AlertCircle size={15} style={{ flexShrink: 0 }} />
                 )}
                 <span>{forgotStatus.message}</span>
               </div>
             )}
 
             {!forgotStatus.isSuccess ? (
-              <form onSubmit={handleForgotPasswordSubmit} style={styles.form}>
+              <form onSubmit={handleForgotPasswordSubmit} className="auth-form">
                 <FormField
                   id="forgot-email"
                   name="email"
@@ -253,14 +247,11 @@ export default function Login() {
                   autoFocus
                 />
 
-                <div style={styles.forgotActionRow}>
+                <div className="auth-forgot-actions">
                   <button
                     type="submit"
                     disabled={forgotStatus.loading}
-                    style={{
-                      ...styles.submitButton,
-                      opacity: forgotStatus.loading ? 0.75 : 1,
-                    }}
+                    className="auth-submit-btn"
                   >
                     {forgotStatus.loading ? "Sending link..." : "Send Reset Link"}
                   </button>
@@ -268,7 +259,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowForgotModal(false)}
-                    style={styles.cancelBtn}
+                    className="auth-cancel-btn"
                   >
                     Back to Sign In
                   </button>
@@ -278,7 +269,8 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowForgotModal(false)}
-                style={styles.submitButton}
+                className="auth-submit-btn"
+                style={{ marginTop: 12 }}
               >
                 Back to Sign In
               </button>
@@ -288,10 +280,161 @@ export default function Login() {
       </AuthCard>
 
       <style>{`
-        .auth-spin {
-          animation: spin 1s linear infinite;
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-top: 4px;
+          width: 100%;
         }
-        @keyframes spin {
+
+        .auth-forgot-link {
+          background: none;
+          border: none;
+          color: var(--auth-primary);
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          padding: 0;
+          text-decoration: none;
+          font-family: inherit;
+        }
+
+        .auth-forgot-link:hover {
+          text-decoration: underline;
+        }
+
+        .auth-submit-btn {
+          width: 100%;
+          height: 42px;
+          border-radius: 8px;
+          border: none;
+          background-color: var(--auth-primary);
+          color: #FFFFFF;
+          font-size: 14px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: background-color 0.18s ease, transform 0.1s ease;
+          box-shadow: 0 2px 10px rgba(76, 141, 255, 0.25);
+          margin-top: 6px;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .auth-submit-btn:hover:not(:disabled) {
+          background-color: #3B7BE6;
+          transform: translateY(-1px);
+        }
+
+        .auth-submit-btn:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        .auth-switch-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          margin-top: 22px;
+          padding-top: 18px;
+          border-top: 1px solid var(--auth-border);
+          font-size: 13px;
+        }
+
+        .auth-switch-text {
+          color: var(--auth-muted);
+        }
+
+        .auth-switch-link {
+          color: var(--auth-primary);
+          font-weight: 600;
+          text-decoration: none;
+        }
+
+        .auth-switch-link:hover {
+          text-decoration: underline;
+        }
+
+        .auth-alert {
+          border-radius: 8px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 13px;
+          margin-bottom: 16px;
+          box-sizing: border-box;
+        }
+
+        .auth-alert-error {
+          background-color: var(--auth-alert-error-bg);
+          border: 1px solid var(--auth-alert-error-border);
+          color: var(--auth-alert-error-text);
+        }
+
+        .auth-alert-success {
+          background-color: var(--auth-alert-success-bg);
+          border: 1px solid var(--auth-alert-success-border);
+          color: var(--auth-alert-success-text);
+        }
+
+        .auth-forgot-view {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .auth-forgot-header {
+          text-align: center;
+          margin-bottom: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .auth-forgot-icon-box {
+          width: 44px;
+          height: 44px;
+          border-radius: 10px;
+          background-color: rgba(76, 141, 255, 0.1);
+          border: 1px solid rgba(76, 141, 255, 0.25);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .auth-forgot-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .auth-cancel-btn {
+          width: 100%;
+          height: 38px;
+          background-color: transparent;
+          border: 1px solid var(--auth-border);
+          border-radius: 8px;
+          color: var(--auth-muted);
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all 0.15s ease;
+        }
+
+        .auth-cancel-btn:hover {
+          color: var(--auth-text);
+          border-color: var(--auth-muted);
+        }
+
+        .auth-spin {
+          animation: authSpin 1s linear infinite;
+        }
+
+        @keyframes authSpin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
@@ -299,128 +442,3 @@ export default function Login() {
     </AuthShell>
   );
 }
-
-const styles = {
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "18px",
-    marginTop: "6px",
-    width: "100%",
-  },
-  forgotBtn: {
-    background: "none",
-    border: "none",
-    color: "#4C8DFF",
-    fontSize: "12px",
-    fontWeight: "500",
-    cursor: "pointer",
-    padding: 0,
-    textDecoration: "none",
-  },
-  submitButton: {
-    width: "100%",
-    height: "42px",
-    borderRadius: "8px",
-    border: "none",
-    backgroundColor: "#4C8DFF",
-    color: "#FFFFFF",
-    fontSize: "14px",
-    fontWeight: "600",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "background-color 0.18s ease, transform 0.1s ease",
-    boxShadow: "0 2px 10px rgba(76, 141, 255, 0.3)",
-    marginTop: "6px",
-    cursor: "pointer",
-  },
-  secondaryRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "6px",
-    marginTop: "24px",
-    paddingTop: "18px",
-    borderTop: "1px solid #202A38",
-    fontSize: "13px",
-  },
-  secondaryText: {
-    color: "#98A4B5",
-  },
-  secondaryLink: {
-    color: "#4C8DFF",
-    fontWeight: "600",
-    textDecoration: "none",
-  },
-  alertError: {
-    backgroundColor: "rgba(224, 91, 97, 0.1)",
-    border: "1px solid rgba(224, 91, 97, 0.3)",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    fontSize: "13px",
-    color: "#F2F5F8",
-    marginBottom: "16px",
-  },
-  alertSuccess: {
-    backgroundColor: "rgba(53, 201, 138, 0.1)",
-    border: "1px solid rgba(53, 201, 138, 0.3)",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    fontSize: "13px",
-    color: "#F2F5F8",
-    marginBottom: "16px",
-  },
-  forgotHeader: {
-    textAlign: "center",
-    marginBottom: "20px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "8px",
-  },
-  forgotIconBox: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "10px",
-    backgroundColor: "rgba(76, 141, 255, 0.1)",
-    border: "1px solid rgba(76, 141, 255, 0.25)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  forgotTitle: {
-    fontSize: "20px",
-    fontWeight: "700",
-    color: "#F2F5F8",
-    margin: 0,
-  },
-  forgotSubtitle: {
-    fontSize: "13px",
-    color: "#98A4B5",
-    lineHeight: 1.45,
-    margin: 0,
-  },
-  forgotActionRow: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  cancelBtn: {
-    width: "100%",
-    height: "38px",
-    backgroundColor: "transparent",
-    border: "1px solid #202A38",
-    borderRadius: "8px",
-    color: "#98A4B5",
-    fontSize: "13px",
-    fontWeight: "500",
-    cursor: "pointer",
-  },
-};

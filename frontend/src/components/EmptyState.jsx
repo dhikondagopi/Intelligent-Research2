@@ -11,7 +11,7 @@ function EmptyState({
   return (
     <div style={styles.container}>
       <div style={styles.iconBox}>
-        <Icon size={28} color="#64748b" />
+        <Icon size={28} color="var(--color-text-muted)" />
       </div>
       <h3 style={styles.title}>{title}</h3>
       <p style={styles.message}>{message}</p>
@@ -27,8 +27,8 @@ function EmptyState({
 
 const styles = {
   container: {
-    background: "#0f172a",
-    border: "1px solid #1e293b",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "48px 24px",
     textAlign: "center",
@@ -41,7 +41,8 @@ const styles = {
     width: "56px",
     height: "56px",
     borderRadius: "14px",
-    background: "#1e293b",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -50,20 +51,20 @@ const styles = {
   title: {
     fontSize: "16px",
     fontWeight: "700",
-    color: "#cbd5e1",
+    color: "var(--color-text)",
     margin: "0 0 6px 0"
   },
   message: {
     fontSize: "13px",
-    color: "#64748b",
+    color: "var(--color-text-muted)",
     maxWidth: "400px",
     margin: "0 0 16px 0",
     lineHeight: "1.4"
   },
   button: {
-    background: "rgba(37, 99, 235, 0.15)",
-    border: "1px solid rgba(59, 130, 246, 0.3)",
-    color: "#60a5fa",
+    background: "rgba(76, 141, 255, 0.12)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-primary)",
     fontSize: "12px",
     fontWeight: "600",
     padding: "8px 16px",

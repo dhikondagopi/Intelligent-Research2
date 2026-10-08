@@ -352,38 +352,38 @@ const styles = {
   th: {
     textAlign: "left",
     padding: "10px 14px",
-    background: "#0B0F17",
-    color: "#98A4B5",
+    background: "var(--color-bg-secondary)",
+    color: "var(--color-text-muted)",
     fontWeight: "500",
     fontSize: "12px",
-    borderBottom: "1px solid #202A38"
+    borderBottom: "1px solid var(--color-border)"
   },
   tr: {
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     transition: "background 0.15s ease"
   },
   tdTitleCell: {
     padding: "12px 14px",
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     minWidth: "260px"
   },
   td: {
     padding: "12px 14px",
-    borderBottom: "1px solid #202A38",
-    color: "#98A4B5",
+    borderBottom: "1px solid var(--color-border)",
+    color: "var(--color-text-muted)",
     verticalAlign: "top"
   },
   tdDate: {
     padding: "12px 14px",
-    borderBottom: "1px solid #202A38",
-    color: "#98A4B5",
+    borderBottom: "1px solid var(--color-border)",
+    color: "var(--color-text-muted)",
     whiteSpace: "nowrap",
     verticalAlign: "top"
   },
   tdAbstract: {
     padding: "12px 14px",
-    borderBottom: "1px solid #202A38",
-    color: "#98A4B5",
+    borderBottom: "1px solid var(--color-border)",
+    color: "var(--color-text-muted)",
     fontSize: "12px",
     maxWidth: "320px",
     verticalAlign: "top"
@@ -391,14 +391,14 @@ const styles = {
   patentTitle: {
     fontSize: "13px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     marginBottom: "4px",
     lineHeight: "1.4"
   },
   idBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     background: "rgba(76, 141, 255, 0.12)",
     border: "1px solid rgba(76, 141, 255, 0.3)",
     padding: "2px 6px",
@@ -409,7 +409,7 @@ const styles = {
   typeBadge: {
     fontSize: "11px",
     fontWeight: "500",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     background: "rgba(76, 141, 255, 0.12)",
     border: "1px solid rgba(76, 141, 255, 0.3)",
     padding: "2px 6px",
@@ -425,25 +425,26 @@ const styles = {
     lineHeight: "1.4"
   },
   sidebarCard: {
-    background: "#101620",
-    border: "1px solid #202A38",
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
     borderRadius: "14px",
     padding: "18px",
     display: "flex",
     flexDirection: "column",
-    gap: "12px"
+    gap: "12px",
+    boxShadow: "var(--shadow-card)"
   },
   sidebarHeader: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    borderBottom: "1px solid #202A38",
+    borderBottom: "1px solid var(--color-border)",
     paddingBottom: "10px"
   },
   sidebarTitle: {
     fontSize: "14px",
     fontWeight: "600",
-    color: "#F2F5F8",
+    color: "var(--color-text)",
     margin: 0
   },
   cpcList: {
@@ -456,14 +457,14 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "8px 10px",
-    background: "#0B0F17",
-    border: "1px solid #202A38",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px"
   },
   cpcBadge: {
     fontSize: "11px",
     fontWeight: "600",
-    color: "#4C8DFF",
+    color: "var(--color-primary)",
     background: "rgba(76, 141, 255, 0.12)",
     padding: "2px 6px",
     borderRadius: "4px"
@@ -471,11 +472,11 @@ const styles = {
   cpcName: {
     fontSize: "12px",
     fontWeight: "500",
-    color: "#F2F5F8"
+    color: "var(--color-text)"
   },
   cpcCount: {
     fontSize: "11px",
-    color: "#4C8DFF"
+    color: "var(--color-primary)"
   }
 };
 
