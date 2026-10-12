@@ -24,3 +24,46 @@ export const getResearchById = async (researchId) => {
   const response = await axios.get(`${API_URL}/${encodeURIComponent(researchId)}`);
   return response.data;
 };
+
+export const getRelatedResearch = async (workId, limit = 6) => {
+  const response = await axios.get(`${API_URL}/related`, {
+    params: {
+      work_id: workId,
+      limit,
+    },
+  });
+  return response.data;
+};
+
+export const getResearchTrends = async (params = {}) => {
+  const response = await axios.get(`${API_URL}/trends`, { params });
+  return response.data;
+};
+
+export const getEmergingTopics = async (params = {}) => {
+  const response = await axios.get(`${API_URL}/trends/emerging`, { params });
+  return response.data;
+};
+
+export const getResearchHotspots = async (params = {}) => {
+  const response = await axios.get(`${API_URL}/trends/hotspots`, { params });
+  return response.data;
+};
+
+export const getTopicAnalytics = async (topic, limit = 10) => {
+  const response = await axios.get(`${API_URL}/trends/topics/${encodeURIComponent(topic)}`, {
+    params: { limit },
+  });
+  return response.data;
+};
+
+export default {
+  searchResearch,
+  getTrendingResearch,
+  getResearchById,
+  getRelatedResearch,
+  getResearchTrends,
+  getEmergingTopics,
+  getResearchHotspots,
+  getTopicAnalytics,
+};
