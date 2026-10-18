@@ -1,19 +1,23 @@
 from app.database.connection import db
+from app.services.technology_service import (
+    resolve_canonical_domain,
+    get_technology_filter
+)
 
 
 patents_collection = db["patents"]
 
 
 def get_technology_data(technology):
+    canonical = resolve_canonical_domain(technology)
+    tech_filter = get_technology_filter(technology)
 
-    patent_count = patents_collection.count_documents({
-        "technology_field": technology
-    })
+    patent_count = patents_collection.count_documents(tech_filter)
 
     organizations = patents_collection.distinct(
         "assignee",
         {
-            "technology_field": technology,
+            **tech_filter,
             "assignee": {
                 "$nin": [None, ""]
             }
@@ -22,15 +26,13 @@ def get_technology_data(technology):
 
     organizations = [
         item for item in organizations
-        if item
+        if item and str(item).strip()
     ]
 
     inventor_result = list(
         patents_collection.aggregate([
             {
-                "$match": {
-                    "technology_field": technology
-                }
+                "$match": tech_filter
             },
             {
                 "$group": {
@@ -50,6 +52,7 @@ def get_technology_data(technology):
     )
 
     return {
+        "canonical_name": canonical,
         "patent_count": patent_count,
         "organization_count": len(organizations),
         "inventor_count": inventor_count
@@ -274,8 +277,11 @@ def get_commercialization_analysis(technology):
         data
     )
 
+    canonical = data.get("canonical_name", technology)
+
     return {
-        "technology": technology,
+        "technology": canonical,
+        "canonical_name": canonical,
 
         "evidence": data,
 

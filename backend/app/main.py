@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes.auth import router as auth_router
+from app.routes.auth import router as auth_router, google_oauth_router
 from app.routes.profile import router as profile_router
 from app.routes.research import router as research_router
 from app.routes.funding import router as funding_router
@@ -60,6 +60,10 @@ app.add_middleware(
 
 app.include_router(
     auth_router
+)
+
+app.include_router(
+    google_oauth_router
 )
 
 app.include_router(
@@ -140,5 +144,5 @@ def health():
             "healthy",
 
         "service":
-            "backend"
+            "Intelligent Research Backend API"
     }

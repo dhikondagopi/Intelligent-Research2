@@ -1,27 +1,81 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Mail, ArrowRight, RefreshCw, AlertCircle, CheckCircle2, KeyRound } from "lucide-react";
 import AuthShell from "../components/auth/AuthShell";
 import AuthCard from "../components/auth/AuthCard";
 import AuthHeader from "../components/auth/AuthHeader";
 import FormField from "../components/auth/FormField";
 import PasswordField from "../components/auth/PasswordField";
+import GoogleAuthButton from "../components/auth/GoogleAuthButton";
 import { loginUser } from "../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Form states
   const [form, setForm] = useState({
-    email: "",
+    email: location.state?.email || "",
     password: "",
   });
 
   // UI & Feedback states
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
-  const [apiSuccess, setApiSuccess] = useState("");
+  const [apiSuccess, setApiSuccess] = useState(location.state?.message || "");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // 1. Process Google OAuth callback query parameters if present
+    const query = new URLSearchParams(location.search);
+    const token = query.get("token");
+    const err = query.get("error");
+    const errDesc = query.get("error_description");
+
+    if (token) {
+      const userPayload = {
+        user_id: query.get("user_id") || "",
+        name: query.get("name") || "",
+        email: query.get("email") || "",
+        role: query.get("role") || "researcher",
+      };
+      localStorage.setItem("access_token", token);
+      localStorage.setItem("user", JSON.stringify(userPayload));
+      setApiSuccess("Google authentication verified. Loading workspace...");
+
+      // Remove query parameters from browser address bar
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      setTimeout(() => {
+        navigate(`/dashboard/${userPayload.role || "researcher"}`);
+      }, 500);
+      return;
+    }
+
+    if (err) {
+      if (err === "account_exists_password" || err === "duplicate_account") {
+        setApiError("An account with this email already exists. Please log in using your original email and password.");
+      } else if (err === "invalid_state") {
+        setApiError("Google authorization session was invalid or expired. Please try again.");
+      } else if (err === "invalid_token") {
+        setApiError("Google ID token verification failed. Please try again.");
+      } else if (err === "access_denied") {
+        setApiError("Google sign-in was cancelled.");
+      } else {
+        setApiError(errDesc || "Google authentication failed. Please try again.");
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
+    // 2. Process route navigation state
+    if (location.state?.message) {
+      setApiSuccess(location.state.message);
+    }
+    if (location.state?.email) {
+      setForm((prev) => ({ ...prev, email: location.state.email }));
+    }
+  }, [location.search, location.state, navigate]);
 
   // Forgot password flow
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -129,6 +183,13 @@ export default function Login() {
                 <span>{apiSuccess}</span>
               </div>
             )}
+
+            {/* Google OAuth 2.0 Sign In */}
+            <GoogleAuthButton
+              text="Continue with Google"
+              disabled={loading}
+              onError={(msg) => setApiError(msg)}
+            />
 
             <form onSubmit={handleSubmit} className="auth-form" noValidate>
               {/* Email Address */}

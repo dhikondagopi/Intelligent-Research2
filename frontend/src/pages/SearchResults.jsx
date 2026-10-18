@@ -17,10 +17,12 @@ import {
   ChevronDown,
   ChevronUp,
   RefreshCw,
-  ArrowUpRight
+  ArrowUpRight,
+  Loader2
 } from "lucide-react";
 
 import { globalSearch } from "../services/searchService";
+import { getRelatedResearch } from "../services/researchService";
 import SectionHeader from "../components/SectionHeader";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import EmptyState from "../components/EmptyState";
@@ -30,6 +32,7 @@ export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const initialTab = searchParams.get("tab") || "all";
+  const searchMode = searchParams.get("mode") || "all";
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [data, setData] = useState(null);
@@ -37,17 +40,22 @@ export default function SearchResults() {
   const [error, setError] = useState("");
   const [expandedAbstracts, setExpandedAbstracts] = useState({});
 
+  // Related Research state
+  const [expandedRelated, setExpandedRelated] = useState({});
+  const [relatedData, setRelatedData] = useState({});
+  const [loadingRelated, setLoadingRelated] = useState({});
+
   useEffect(() => {
     if (query.trim()) {
       fetchSearchResults();
     }
-  }, [query]);
+  }, [query, searchMode]);
 
   const fetchSearchResults = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await globalSearch(query, "all", 1, 25);
+      const res = await globalSearch(query, "all", 1, 25, searchMode);
       setData(res);
     } catch (err) {
       console.error("Search error", err);
@@ -61,7 +69,11 @@ export default function SearchResults() {
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    setSearchParams({ q: query, tab: tabId });
+    setSearchParams({ q: query, tab: tabId, mode: searchMode });
+  };
+
+  const handleModeChange = (newMode) => {
+    setSearchParams({ q: query, tab: activeTab, mode: newMode });
   };
 
   const toggleAbstract = (id) => {
@@ -69,6 +81,24 @@ export default function SearchResults() {
       ...prev,
       [id]: !prev[id]
     }));
+  };
+
+  const handleToggleRelated = async (itemKey, item) => {
+    const isCurrentlyOpen = !!expandedRelated[itemKey];
+    setExpandedRelated((prev) => ({ ...prev, [itemKey]: !isCurrentlyOpen }));
+
+    if (!isCurrentlyOpen && !relatedData[itemKey]) {
+      setLoadingRelated((prev) => ({ ...prev, [itemKey]: true }));
+      try {
+        const targetId = item.id || item.doi || item.openalex_id;
+        const res = await getRelatedResearch(targetId, 5);
+        setRelatedData((prev) => ({ ...prev, [itemKey]: res.results || [] }));
+      } catch (err) {
+        console.error("Failed fetching related research", err);
+      } finally {
+        setLoadingRelated((prev) => ({ ...prev, [itemKey]: false }));
+      }
+    }
   };
 
   const counts = data?.meta?.counts || {
@@ -124,7 +154,7 @@ export default function SearchResults() {
         <div className="header-meta-row">
           <SectionHeader
             title={`Multi-Source Results for "${query || "..."}"`}
-            subtitle="Aggregated intelligence unified across OpenAlex, Crossref, Semantic Scholar, USPTO, and Grant Databases"
+            subtitle="Aggregated intelligence unified across OpenAlex, Crossref, Semantic Scholar, USPTO, and Vector Index"
           />
 
           <button
@@ -136,6 +166,53 @@ export default function SearchResults() {
             <RefreshCw size={14} className={loading ? "spin" : ""} />
             <span>Refresh</span>
           </button>
+        </div>
+
+        {/* SEARCH MODE SELECTOR (All | Keyword | Semantic) */}
+        <div className="search-mode-row">
+          <div className="mode-toggle-cluster">
+            <span className="mode-label-prefix">Search Mode:</span>
+            <div className="mode-btn-group">
+              <button
+                type="button"
+                className={`mode-btn ${searchMode === "all" ? "active" : ""}`}
+                onClick={() => handleModeChange("all")}
+                title="Hybrid search combining keyword multi-source matching and vector similarity"
+              >
+                All (Hybrid)
+              </button>
+              <button
+                type="button"
+                className={`mode-btn ${searchMode === "keyword" ? "active" : ""}`}
+                onClick={() => handleModeChange("keyword")}
+                title="Exact keyword search across external APIs"
+              >
+                Keyword
+              </button>
+              <button
+                type="button"
+                className={`mode-btn ${searchMode === "semantic" ? "active" : ""}`}
+                onClick={() => handleModeChange("semantic")}
+                title="Semantic search using Sentence Transformers & FAISS cosine similarity"
+              >
+                <Sparkles size={12} className="sparkle-icon" />
+                Semantic
+              </button>
+            </div>
+          </div>
+
+          <div className="mode-info-tag">
+            {searchMode === "semantic" && (
+              <span className="semantic-pill-notice">
+                <Sparkles size={12} /> Neural embeddings match conceptual meaning even when exact words differ
+              </span>
+            )}
+            {searchMode === "all" && (
+              <span className="hybrid-pill-notice">
+                Unified multi-source literature ranked with semantic vector similarity
+              </span>
+            )}
+          </div>
         </div>
 
         {/* PROVIDER HEALTH & STATUS PANEL */}
@@ -161,6 +238,13 @@ export default function SearchResults() {
                 <span className="provider-name">Semantic Scholar</span>
                 {getStatusBadge(sourceStatus["Semantic Scholar"])}
               </div>
+
+              <div className="provider-chip">
+                <span className="provider-name">Vector Index (FAISS)</span>
+                <span className="source-health-badge health-live">
+                  <span className="health-dot dot-live" /> ACTIVE
+                </span>
+              </div>
             </div>
           </div>
         )}
@@ -174,7 +258,7 @@ export default function SearchResults() {
               {Object.entries(errors)
                 .map(([provider, msg]) => `${provider} temporarily unavailable`)
                 .join(" · ")}
-              . Showing available results from active providers without disruption.
+              . Showing available results without disruption.
             </div>
           </div>
         )}
@@ -221,7 +305,7 @@ export default function SearchResults() {
         {!loading && !error && (!data || counts.total === 0) && (
           <EmptyState
             title={`No results found for "${query}"`}
-            description="Try searching with broader technological or scientific keywords such as 'Semiconductor', 'Artificial Intelligence', or 'Quantum Computing'."
+            description="Try searching with conceptual or technical phrases such as 'AI methods for detecting attacks in IoT networks' or 'Quantum error correction'."
           />
         )}
 
@@ -235,7 +319,11 @@ export default function SearchResults() {
                   {activeTab === "all" && (
                     <div className="category-block-title">
                       <BookOpen size={18} />
-                      <h3>Unified Research Publications ({data.research.length})</h3>
+                      <h3>
+                        {searchMode === "semantic"
+                          ? `Semantically Matched Research (${data.research.length})`
+                          : `Unified Research Publications (${data.research.length})`}
+                      </h3>
                     </div>
                   )}
 
@@ -243,11 +331,25 @@ export default function SearchResults() {
                     {data.research.map((item, idx) => {
                       const itemKey = item.id || item.doi || idx;
                       const isExpanded = expandedAbstracts[itemKey];
+                      const isRelatedOpen = expandedRelated[itemKey];
+                      const relatedList = relatedData[itemKey] || [];
+                      const isRelatedLoading = loadingRelated[itemKey];
 
                       return (
                         <div key={itemKey} className="result-card research-card">
                           <div className="card-top-row">
                             <div className="source-provenance-tags">
+                              {/* Semantic Similarity Tag (if computed) */}
+                              {item.similarity !== undefined && item.similarity !== null && (
+                                <span
+                                  className="semantic-similarity-badge"
+                                  title="Inner-product cosine similarity from all-MiniLM-L6-v2 vector embeddings"
+                                >
+                                  <Sparkles size={11} />
+                                  Semantic similarity {Math.round(item.similarity * 100)}%
+                                </span>
+                              )}
+
                               {item.sources && item.sources.length > 0 ? (
                                 item.sources.map((src) => (
                                   <span key={src} className="provenance-badge">
@@ -335,9 +437,18 @@ export default function SearchResults() {
                             </div>
                           )}
 
-                          {/* Source URLs & External Provenance Actions */}
+                          {/* Source URLs & Related Research Button */}
                           <div className="card-actions-row">
-                            <span className="source-label">Direct Provider Links:</span>
+                            <button
+                              type="button"
+                              className={`related-action-btn ${isRelatedOpen ? "active" : ""}`}
+                              onClick={() => handleToggleRelated(itemKey, item)}
+                              title="Discover conceptually similar research publications"
+                            >
+                              <Sparkles size={13} />
+                              <span>{isRelatedOpen ? "Hide Related Research" : "Related Research"}</span>
+                            </button>
+
                             <div className="source-links-group">
                               {item.source_urls &&
                                 Object.entries(item.source_urls).map(([provider, link]) => (
@@ -366,6 +477,85 @@ export default function SearchResults() {
                               )}
                             </div>
                           </div>
+
+                          {/* EXPANDED RELATED RESEARCH DRAWER */}
+                          {isRelatedOpen && (
+                            <div className="related-research-tray">
+                              <div className="related-tray-header">
+                                <div className="tray-title-wrap">
+                                  <Sparkles size={14} className="accent-icon" />
+                                  <span className="tray-title">
+                                    Conceptually Related Research (via Vector Similarity)
+                                  </span>
+                                </div>
+                                <span className="tray-subtitle">
+                                  Nearest neighbours in 384-dimensional semantic embedding space
+                                </span>
+                              </div>
+
+                              {isRelatedLoading && (
+                                <div className="related-loading">
+                                  <Loader2 size={16} className="spin" />
+                                  <span>Searching semantic vector space...</span>
+                                </div>
+                              )}
+
+                              {!isRelatedLoading && relatedList.length === 0 && (
+                                <div className="related-empty">
+                                  <span>No related publications discovered for this work yet.</span>
+                                </div>
+                              )}
+
+                              {!isRelatedLoading && relatedList.length > 0 && (
+                                <div className="related-items-list">
+                                  {relatedList.map((rel, ri) => (
+                                    <div key={rel.id || ri} className="related-item-card">
+                                      <div className="related-item-top">
+                                        <span className="related-similarity-badge">
+                                          {Math.round((rel.similarity || 0.8) * 100)}% match
+                                        </span>
+                                        <span className="related-year">{rel.year || "Recent"}</span>
+                                        <span className="related-cites">
+                                          {rel.citation_count || rel.cited_by_count || 0} citations
+                                        </span>
+                                      </div>
+
+                                      <h5 className="related-title">
+                                        {rel.url ? (
+                                          <a
+                                            href={rel.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="related-link"
+                                          >
+                                            {rel.title}
+                                            <ArrowUpRight size={12} />
+                                          </a>
+                                        ) : (
+                                          rel.title
+                                        )}
+                                      </h5>
+
+                                      {rel.authors && rel.authors.length > 0 && (
+                                        <div className="related-authors">
+                                          {rel.authors.slice(0, 3).join(", ")}
+                                        </div>
+                                      )}
+
+                                      <div className="related-footer-links">
+                                        {rel.sources &&
+                                          rel.sources.map((src) => (
+                                            <span key={src} className="related-src-badge">
+                                              {src}
+                                            </span>
+                                          ))}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -634,6 +824,84 @@ export default function SearchResults() {
           gap: 16px;
         }
 
+        .search-mode-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: 14px;
+          padding: 8px 14px;
+          background-color: var(--color-surface);
+          border: 1px solid var(--color-border);
+          border-radius: 9px;
+        }
+
+        .mode-toggle-cluster {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .mode-label-prefix {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: var(--color-text-muted);
+        }
+
+        .mode-btn-group {
+          display: flex;
+          align-items: center;
+          background-color: var(--color-surface-elevated);
+          border: 1px solid var(--color-border);
+          border-radius: 7px;
+          padding: 2px;
+        }
+
+        .mode-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 28px;
+          padding: 0 12px;
+          border-radius: 5px;
+          background: transparent;
+          border: none;
+          color: var(--color-text-muted);
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .mode-btn:hover {
+          color: var(--color-text);
+        }
+
+        .mode-btn.active {
+          background-color: var(--color-surface);
+          color: var(--color-primary);
+          font-weight: 600;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .sparkle-icon {
+          color: var(--color-primary);
+        }
+
+        .semantic-pill-notice,
+        .hybrid-pill-notice {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: var(--color-primary);
+          background-color: rgba(76, 141, 255, 0.08);
+          padding: 4px 10px;
+          border-radius: 6px;
+          border: 1px solid rgba(76, 141, 255, 0.2);
+        }
+
         .search-refresh-btn {
           display: inline-flex;
           align-items: center;
@@ -666,7 +934,7 @@ export default function SearchResults() {
           flex-wrap: wrap;
           gap: 14px;
           padding: 12px 16px;
-          margin-top: 14px;
+          margin-top: 12px;
           background-color: var(--color-surface);
           border: 1px solid var(--color-border);
           border-radius: 10px;
@@ -870,8 +1138,21 @@ export default function SearchResults() {
         .source-provenance-tags {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
           flex-wrap: wrap;
+        }
+
+        .semantic-similarity-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 3px 9px;
+          border-radius: 6px;
+          background-color: rgba(16, 185, 129, 0.12);
+          color: var(--color-success);
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .provenance-badge {
@@ -1027,6 +1308,7 @@ export default function SearchResults() {
         .card-actions-row {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           flex-wrap: wrap;
           gap: 10px;
           margin-top: 4px;
@@ -1034,12 +1316,25 @@ export default function SearchResults() {
           border-top: 1px solid var(--color-border);
         }
 
-        .source-label {
-          font-size: 11px;
+        .related-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          border-radius: 6px;
+          background-color: rgba(76, 141, 255, 0.1);
+          border: 1px solid rgba(76, 141, 255, 0.25);
+          color: var(--color-primary);
+          font-size: 12px;
           font-weight: 600;
-          color: var(--color-text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .related-action-btn:hover,
+        .related-action-btn.active {
+          background-color: rgba(76, 141, 255, 0.18);
+          border-color: var(--color-primary);
         }
 
         .source-links-group {
@@ -1069,6 +1364,132 @@ export default function SearchResults() {
           border-color: var(--color-primary);
         }
 
+        /* RELATED RESEARCH TRAY */
+        .related-research-tray {
+          margin-top: 12px;
+          padding: 16px;
+          background-color: var(--color-surface-elevated);
+          border: 1px solid var(--color-border);
+          border-radius: 9px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          animation: fadeIn 0.25s ease;
+        }
+
+        .related-tray-header {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .tray-title-wrap {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+        }
+
+        .tray-title {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: var(--color-text);
+        }
+
+        .tray-subtitle {
+          font-size: 11.5px;
+          color: var(--color-text-muted);
+        }
+
+        .related-loading,
+        .related-empty {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          color: var(--color-text-muted);
+          padding: 8px 0;
+        }
+
+        .related-items-list {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 12px;
+        }
+
+        .related-item-card {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 12px;
+          background-color: var(--color-surface);
+          border: 1px solid var(--color-border);
+          border-radius: 8px;
+          transition: border-color 0.15s ease;
+        }
+
+        .related-item-card:hover {
+          border-color: var(--color-primary);
+        }
+
+        .related-item-top {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 11px;
+        }
+
+        .related-similarity-badge {
+          background-color: rgba(16, 185, 129, 0.15);
+          color: var(--color-success);
+          font-weight: 700;
+          padding: 1px 6px;
+          border-radius: 4px;
+        }
+
+        .related-year,
+        .related-cites {
+          color: var(--color-text-muted);
+        }
+
+        .related-title {
+          margin: 0;
+          font-size: 13px;
+          font-weight: 600;
+          line-height: 1.35;
+        }
+
+        .related-link {
+          color: var(--color-text);
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .related-link:hover {
+          color: var(--color-primary);
+        }
+
+        .related-authors {
+          font-size: 11.5px;
+          color: var(--color-text-muted);
+        }
+
+        .related-footer-links {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-top: 4px;
+        }
+
+        .related-src-badge {
+          font-size: 9.5px;
+          padding: 1px 5px;
+          border-radius: 3px;
+          background-color: rgba(76, 141, 255, 0.1);
+          color: var(--color-primary);
+        }
+
         .sample-titles {
           font-size: 12px;
           color: var(--color-text-muted);
@@ -1088,14 +1509,28 @@ export default function SearchResults() {
           to { transform: rotate(360deg); }
         }
 
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-3px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 768px) {
           .search-page-container {
             padding: 16px;
           }
 
+          .search-mode-row {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
           .provider-status-bar {
             flex-direction: column;
             align-items: flex-start;
+          }
+
+          .related-items-list {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

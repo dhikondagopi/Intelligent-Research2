@@ -17,6 +17,7 @@ import { getInnovationDashboard } from "../services/innovationService";
 import SectionHeader from "../components/SectionHeader";
 import StatCard from "../components/StatCard";
 import ChartCard from "../components/ChartCard";
+import axios from "axios";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import ErrorState from "../components/ErrorState";
 import EmptyState from "../components/EmptyState";
@@ -26,23 +27,39 @@ function InnovationScoring() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadData = async () => {
+  const loadData = async (signal) => {
     try {
       setLoading(true);
       setError("");
-      const data = await getInnovationDashboard();
+      const data = await getInnovationDashboard(signal);
       setTechnologies(data?.technologies || []);
     } catch (err) {
-      console.error(err);
-      setError(err?.response?.data?.detail || "Unable to load innovation scores.");
+      if (axios.isCancel(err) || err?.name === "CanceledError" || err?.name === "AbortError") {
+        return;
+      }
+      console.error("Failed to load innovation dashboard:", err);
+      const msg =
+        err?.response?.data?.detail ||
+        err?.message ||
+        "Unable to load innovation scores. Please check backend connectivity.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    const controller = new AbortController();
+    loadData(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, []);
+
+  const handleRetry = () => {
+    loadData();
+  };
 
   if (loading) {
     return (
@@ -58,7 +75,20 @@ function InnovationScoring() {
   if (error) {
     return (
       <div style={styles.container}>
-        <ErrorState message={error} onRetry={loadData} />
+        <ErrorState message={error} onRetry={handleRetry} />
+      </div>
+    );
+  }
+
+  if (!technologies || technologies.length === 0) {
+    return (
+      <div style={styles.container}>
+        <EmptyState
+          title="No Innovation Scoring Data Available"
+          message="No classified patent or research technology domains are currently available for evaluation."
+          actionText="Recalculate Analysis"
+          onAction={handleRetry}
+        />
       </div>
     );
   }

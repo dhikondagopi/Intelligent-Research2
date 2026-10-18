@@ -2,11 +2,12 @@ import asyncio
 from datetime import datetime, timezone
 from typing import Dict, List, Any, Optional
 
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.database.connection import db
 from app.services.research_aggregator_service import aggregate_research
+from app.services.semantic_search_service import get_semantic_service
 from app.services.patent_service import search_patents_with_fallback
 from app.services.funding_service import search_funding, format_funding_results
 from app.core.security import decode_access_token
@@ -39,17 +40,105 @@ users_col = db["users"]
 profiles_col = db["research_profiles"]
 
 
+# ============================================================
+# 1. Dedicated Semantic Search Endpoint
+# ============================================================
+
+@router.get("/semantic")
+async def semantic_search_endpoint(
+    q: str = Query(..., min_length=1, description="Semantic meaning-based query for research publications"),
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
+    threshold: float = Query(0.12, ge=0.0, le=1.0, description="Minimum cosine similarity threshold"),
+    user: Optional[Dict[str, Any]] = Depends(get_optional_user)
+):
+    """
+    Search research works by conceptual meaning using SentenceTransformers + FAISS.
+    Returns ranked publications with true cosine similarity scores.
+    """
+    query_str = q.strip()
+    semantic_svc = get_semantic_service()
+
+    if not semantic_svc.is_available:
+        # Graceful fallback to keyword search without 500 failure
+        keyword_data = await aggregate_research(query=query_str, page=page, per_page=per_page)
+        return {
+            "query": query_str,
+            "mode": "fallback_keyword",
+            "results": keyword_data.get("results", []),
+            "meta": {
+                "total": len(keyword_data.get("results", [])),
+                "model": "keyword-fallback",
+                "notice": "Semantic search temporarily unavailable. Showing keyword results.",
+                "retrieved_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+
+    # Execute vector similarity search
+    results = semantic_svc.search(query=query_str, top_k=per_page, threshold=threshold)
+
+    # If vector index has few/no matches (e.g. index cold or query not yet cached),
+    # query live multi-source providers, index results, and re-search!
+    if len(results) == 0:
+        try:
+            live_data = await aggregate_research(query=query_str, page=1, per_page=15)
+            live_results = live_data.get("results", [])
+            if live_results:
+                semantic_svc.add_records(live_results)
+                # Re-run vector search now that new papers are embedded
+                results = semantic_svc.search(query=query_str, top_k=per_page, threshold=threshold)
+                if not results:
+                    results = live_results
+        except Exception as exc:
+            print(f"[Semantic fallback error] {exc}")
+
+    return {
+        "query": query_str,
+        "mode": "semantic",
+        "results": results,
+        "meta": {
+            "total": len(results),
+            "model": "all-MiniLM-L6-v2",
+            "retrieved_at": datetime.now(timezone.utc).isoformat()
+        }
+    }
+
+
+# ============================================================
+# 2. Administrative Vector Index Rebuild Endpoint
+# ============================================================
+
+@router.post("/semantic/reindex")
+async def reindex_vector_database(
+    limit: int = Query(1500, ge=10, le=10000),
+    user: Optional[Dict[str, Any]] = Depends(get_optional_user)
+):
+    """Rebuild the FAISS vector index from normalized MongoDB research_works."""
+    semantic_svc = get_semantic_service()
+    if not semantic_svc.is_available:
+        raise HTTPException(status_code=503, detail="Vector search dependencies unavailable.")
+
+    res = semantic_svc.rebuild_index(limit=limit)
+    return res
+
+
+# ============================================================
+# 3. Global Search with Hybrid / Semantic / Keyword Mode
+# ============================================================
+
 @router.get("")
 @router.get("/")
 async def global_search(
     q: str = Query(..., min_length=1, description="Global search query across research, patents, grants, etc."),
     type: Optional[str] = Query(None, description="Optional category filter: all, research, patents, funding, technology, organizations, researchers"),
+    mode: Optional[str] = Query("all", description="Search mode: all (hybrid), keyword, semantic"),
     page: int = Query(1, ge=1),
     per_page: int = Query(15, ge=1, le=100),
     user: Optional[Dict[str, Any]] = Depends(get_optional_user)
 ):
     query_str = q.strip()
     category = (type or "all").strip().lower()
+    search_mode = (mode or "all").strip().lower()
 
     # Containers for results
     research_results: List[Dict[str, Any]] = []
@@ -66,22 +155,69 @@ async def global_search(
         "errors": {}
     }
 
+    semantic_svc = get_semantic_service()
+
     # Helper search functions
     async def fetch_research():
         nonlocal research_results, research_meta
-        if category in ("all", "research"):
-            try:
-                data = await aggregate_research(query=query_str, page=page, per_page=per_page)
-                research_results = data.get("results", [])
-                research_meta = data.get("meta", {})
-            except Exception as e:
-                research_meta["errors"] = {"aggregator": str(e)}
+        if category not in ("all", "research"):
+            return
+
+        if search_mode == "semantic" and semantic_svc.is_available:
+            # 1. Pure semantic search
+            sem_results = semantic_svc.search(query=query_str, top_k=per_page, threshold=0.15)
+            if sem_results:
+                research_results = sem_results
+                research_meta["sources"] = ["Semantic Vector Index (FAISS)"]
+                research_meta["source_status"] = {"Semantic Search": "LIVE"}
+                return
+
+        # 2. Keyword or Hybrid search
+        try:
+            kw_data = await aggregate_research(query=query_str, page=page, per_page=per_page)
+            kw_results = kw_data.get("results", [])
+            research_meta = kw_data.get("meta", {})
+
+            if search_mode == "all" and semantic_svc.is_available:
+                # Hybrid Mode: Score results with semantic similarity
+                sem_results = semantic_svc.search(query=query_str, top_k=per_page, threshold=0.15)
+                sem_sim_map = {}
+                for s in sem_results:
+                    key = s.get("id") or s.get("doi") or s.get("title")
+                    if key:
+                        sem_sim_map[key] = s.get("similarity", 0.0)
+
+                # Attach similarity score if available
+                merged = []
+                seen_keys = set()
+                for r in kw_results:
+                    key = r.get("id") or r.get("doi") or r.get("title")
+                    if key:
+                        seen_keys.add(key)
+                    if key in sem_sim_map:
+                        r["similarity"] = sem_sim_map[key]
+                    merged.append(r)
+
+                # Append any strong semantic matches not present in keyword results
+                for s in sem_results:
+                    key = s.get("id") or s.get("doi") or s.get("title")
+                    if key and key not in seen_keys:
+                        seen_keys.add(key)
+                        merged.append(s)
+
+                # Sort hybrid results by similarity descending if present, else citations
+                merged.sort(key=lambda item: (item.get("similarity", 0.0), item.get("citation_count", 0)), reverse=True)
+                research_results = merged[:per_page]
+            else:
+                research_results = kw_results
+
+        except Exception as e:
+            research_meta["errors"] = {"aggregator": str(e)}
 
     async def fetch_patents():
         nonlocal patent_results
         if category in ("all", "patents"):
             try:
-                # search_patents_with_fallback is sync, run in executor
                 loop = asyncio.get_event_loop()
                 data = await loop.run_in_executor(
                     None,
@@ -89,7 +225,7 @@ async def global_search(
                 )
                 patent_results = data.get("patents", [])
             except Exception as e:
-                print(f"[Patent Search Error in Global Search] {e}")
+                print(f"[Patent Search Error] {e}")
 
     async def fetch_funding():
         nonlocal funding_results
@@ -98,7 +234,6 @@ async def global_search(
                 raw_data = await search_funding(query=query_str, page=page, limit=min(per_page, 20))
                 funding_results = format_funding_results(raw_data)
             except Exception as e:
-                # Fallback to local MongoDB funding_projects
                 try:
                     cursor = funding_col.find({
                         "$or": [
@@ -193,7 +328,6 @@ async def global_search(
         nonlocal researcher_results
         if category in ("all", "researchers", "researcher"):
             try:
-                # 1. Search existing user research profiles
                 profiles = list(profiles_col.find({
                     "$or": [
                         {"affiliation": {"$regex": query_str, "$options": "i"}},
@@ -218,7 +352,6 @@ async def global_search(
                         "source": "Platform Profiles"
                     })
 
-                # 2. Extract matching authors from patents
                 pipeline = [
                     {
                         "$match": {
@@ -270,7 +403,7 @@ async def global_search(
     if patent_results:
         active_sources.append("USPTO Patents")
     if funding_results:
-        active_sources.append("Federal RePORTER")
+        active_sources.append("NIH RePORTER")
     if tech_results or org_results or researcher_results:
         active_sources.append("Knowledge Graph")
 
@@ -296,6 +429,7 @@ async def global_search(
     return {
         "query": query_str,
         "category": category,
+        "mode": search_mode,
         "research": research_results,
         "patents": patent_results,
         "funding": funding_results,
@@ -311,6 +445,7 @@ async def global_search(
             },
             "counts": counts,
             "errors": research_meta.get("errors") or {},
+            "model": "all-MiniLM-L6-v2" if search_mode in ("all", "semantic") else "keyword",
             "retrieved_at": datetime.now(timezone.utc).isoformat()
         }
     }

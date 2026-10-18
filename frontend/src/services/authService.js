@@ -34,3 +34,32 @@ export const getCurrentUser = () => {
   const user = localStorage.getItem("user");
   return user ? JSON.parse(user) : null;
 };
+
+/**
+ * Retrieves the Google OAuth authorization URL from backend.
+ */
+export const getGoogleAuthUrl = async () => {
+  const frontendUrl = window.location.origin;
+  const response = await axios.get(`${API_URL}/google/url`, {
+    params: { frontend_url: frontendUrl }
+  });
+  return response.data;
+};
+
+/**
+ * Initiates the Google OAuth 2.0 flow by fetching the stateful authorization
+ * URL from the backend or redirecting directly to the initiate endpoint.
+ */
+export const initiateGoogleLogin = async () => {
+  try {
+    const data = await getGoogleAuthUrl();
+    if (data && data.authorization_url) {
+      window.location.href = data.authorization_url;
+      return;
+    }
+  } catch (err) {
+    console.warn("Could not retrieve authorization URL via JSON endpoint, falling back to direct redirect:", err);
+  }
+  const frontendUrl = encodeURIComponent(window.location.origin);
+  window.location.href = `${API_BASE_URL}/auth/google/login?frontend_url=${frontendUrl}`;
+};

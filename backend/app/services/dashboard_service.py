@@ -54,7 +54,8 @@ def get_common_statistics():
         {
             "$match": {
                 "technology_field": {
-                    "$nin": [None, ""]
+                    "$nin": [None, ""],
+                    "$regex": r"\S"
                 }
             }
         },

@@ -41,3 +41,14 @@ yarn-error.log*
 data/*.csv
 data/2025_patents.csv
 
+# Vector search indexes and models
+backend/data/vector_index/
+data/vector_index/
+*.index
+
+# Scratch and debug files
+scratch/
+backend/scratch/
+backend/migrate_grant_year.py
+backend/test_pv_api.py
+

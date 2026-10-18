@@ -144,15 +144,19 @@ def merge_two_records(base: Dict[str, Any], incoming: Dict[str, Any]) -> Dict[st
 
     # 11. Topics & Concepts
     topics = merged.get("topics") or []
+    existing_topics_lower = {x.lower().strip() for x in topics if isinstance(x, str)}
     for t in (incoming.get("topics") or []):
-        if t not in topics:
-            topics.append(t)
+        if isinstance(t, str) and t.strip() and t.lower().strip() not in existing_topics_lower:
+            topics.append(t.strip())
+            existing_topics_lower.add(t.lower().strip())
     merged["topics"] = topics
 
     concepts = merged.get("concepts") or []
+    existing_concepts_lower = {x.lower().strip() for x in concepts if isinstance(x, str)}
     for c in (incoming.get("concepts") or []):
-        if c not in concepts:
-            concepts.append(c)
+        if isinstance(c, str) and c.strip() and c.lower().strip() not in existing_concepts_lower:
+            concepts.append(c.strip())
+            existing_concepts_lower.add(c.lower().strip())
     merged["concepts"] = concepts
 
     # 12. Identifiers & Funders
@@ -254,6 +258,14 @@ def cache_records_in_mongo(records: List[Dict[str, Any]], query: str = ""):
             )
         except Exception as exc:
             print(f"[Mongo Cache Error] Failed to cache record: {exc}")
+
+    # Incrementally add newly fetched records to semantic FAISS index
+    try:
+        from app.services.semantic_search_service import get_semantic_service
+        semantic_svc = get_semantic_service()
+        semantic_svc.add_records(records)
+    except Exception as exc:
+        print(f"[Semantic Index Error] {exc}")
 
 
 def get_cached_records(query: str, limit: int = 20) -> List[Dict[str, Any]]:

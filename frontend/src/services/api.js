@@ -18,8 +18,11 @@ export const API_BASE_URL = rawUrl.endsWith("/api")
   ? rawUrl.slice(0, -4)
   : rawUrl;
 
+axios.defaults.timeout = 20000; // 20s default timeout to prevent infinite hangs
+
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 20000,
 });
 
 // Request Interceptor: Automatically attach Bearer token to request headers if available

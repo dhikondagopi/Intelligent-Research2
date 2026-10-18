@@ -1,5 +1,6 @@
 bcrypt
 email-validator
+faiss-cpu
 fastapi
 httpx
 numpy
@@ -12,4 +13,5 @@ pymongo
 python-dotenv
 python-jose[cryptography]
 reportlab
+sentence-transformers
 uvicorn

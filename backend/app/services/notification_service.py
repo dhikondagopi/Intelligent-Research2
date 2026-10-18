@@ -239,6 +239,16 @@ def generate_user_alerts(user_id: str) -> List[dict]:
     """
     created_alerts = []
 
+    # Fetch existing deduplication keys for this user to avoid redundant alerts and lookups
+    existing_keys = set(
+        doc["deduplication_key"]
+        for doc in notifications_collection.find(
+            {"user_id": user_id, "deduplication_key": {"$exists": True}},
+            {"deduplication_key": 1}
+        )
+        if doc.get("deduplication_key")
+    )
+
     # 1. Fetch user research profile
     profile = research_profiles_collection.find_one({"user_id": user_id}) or {}
     user_doc = users_collection.find_one({"_id": ObjectId(user_id)}) if ObjectId.is_valid(user_id) else None
@@ -255,9 +265,13 @@ def generate_user_alerts(user_id: str) -> List[dict]:
     funding_coll = db["funding_projects"]
     funding_docs = list(funding_coll.find().sort("_id", -1).limit(20))
     for project in funding_docs:
+        p_id = project.get("application_id") or project.get("project_number") or str(project.get("_id"))
+        dedup_key = f"{user_id}_FUNDING_{p_id}"
+        if dedup_key in existing_keys:
+            continue
+
         p_title = project.get("title") or project.get("project_title") or ""
         p_abstract = project.get("abstract") or project.get("abstract_text") or ""
-        p_id = project.get("application_id") or project.get("project_number") or str(project.get("_id"))
         p_amount = project.get("award_amount", 0)
 
         text = f"{p_title} {p_abstract}".lower()
@@ -273,14 +287,19 @@ def generate_user_alerts(user_id: str) -> List[dict]:
                 metadata={"amount": p_amount, "matched_keyword": matched_kw}
             )
             if alert:
+                existing_keys.add(dedup_key)
                 created_alerts.append(alert)
 
     # 3. Check Patents
     patents_coll = db["patents"]
     patent_docs = list(patents_coll.find().sort("_id", -1).limit(20))
     for patent in patent_docs:
-        p_title = patent.get("patent_title") or patent.get("title") or ""
         p_id = patent.get("patent_id") or patent.get("patent_number") or str(patent.get("_id"))
+        dedup_key = f"{user_id}_PATENT_{p_id}"
+        if dedup_key in existing_keys:
+            continue
+
+        p_title = patent.get("patent_title") or patent.get("title") or ""
         p_assignee = patent.get("organization") or (patent.get("assignees")[0] if patent.get("assignees") else "")
 
         text = f"{p_title} {p_assignee}".lower()
@@ -295,14 +314,19 @@ def generate_user_alerts(user_id: str) -> List[dict]:
                 metadata={"patent_id": p_id, "assignee": p_assignee}
             )
             if alert:
+                existing_keys.add(dedup_key)
                 created_alerts.append(alert)
 
     # 4. Check Research Trends
     research_coll = db["research_works"]
     research_docs = list(research_coll.find().sort("cited_by_count", -1).limit(15))
     for work in research_docs:
-        w_title = work.get("title") or ""
         w_id = str(work.get("id") or work.get("_id"))
+        dedup_key = f"{user_id}_RESEARCH_TREND_{w_id}"
+        if dedup_key in existing_keys:
+            continue
+
+        w_title = work.get("title") or ""
         w_cites = work.get("cited_by_count", 0)
 
         text = f"{w_title}".lower()
@@ -317,6 +341,7 @@ def generate_user_alerts(user_id: str) -> List[dict]:
                 metadata={"citations": w_cites, "title": w_title}
             )
             if alert:
+                existing_keys.add(dedup_key)
                 created_alerts.append(alert)
 
     # 5. Check Emerging & Field Technologies from real technology and commercialization services
@@ -329,41 +354,52 @@ def generate_user_alerts(user_id: str) -> List[dict]:
         db_tech_fields = ["Artificial Intelligence", "Quantum Computing", "CRISPR Gene Editing", "Solid-State Batteries"]
 
     for tech in db_tech_fields:
+        clean_tech = tech.strip()
+        t_dedup_key = f"{user_id}_TECHNOLOGY_{clean_tech}"
+        c_dedup_key = f"{user_id}_COMMERCIALIZATION_{clean_tech}"
+
         t_low = tech.lower()
         if any(kw in t_low or t_low in kw for kw in keywords) or not user_interests:
-            t_alert = create_technology_alert(
-                user_id=user_id,
-                title=f"Emerging Technology Update: {tech}",
-                message=f"Active patent activity and technology monitoring detected in field '{tech}'",
-                technology_name=tech,
-                priority="high",
-                metadata={"technology": tech}
-            )
-            if t_alert:
-                created_alerts.append(t_alert)
+            if t_dedup_key not in existing_keys:
+                t_alert = create_technology_alert(
+                    user_id=user_id,
+                    title=f"Emerging Technology Update: {tech}",
+                    message=f"Active patent activity and technology monitoring detected in field '{tech}'",
+                    technology_name=tech,
+                    priority="high",
+                    metadata={"technology": tech}
+                )
+                if t_alert:
+                    existing_keys.add(t_dedup_key)
+                    created_alerts.append(t_alert)
 
-            comm_analysis = get_commercialization_analysis(tech)
-            readiness = comm_analysis.get("pathways", {}).get("productization", {}).get("readiness", "Opportunity")
-            c_alert = create_commercialization_alert(
-                user_id=user_id,
-                title=f"Commercial Opportunity: {tech}",
-                message=f"Productization readiness ({readiness}) identified for '{tech}'",
-                technology_name=tech,
-                priority="medium",
-                metadata={"technology": tech, "readiness": readiness}
-            )
-            if c_alert:
-                created_alerts.append(c_alert)
+            if c_dedup_key not in existing_keys:
+                comm_analysis = get_commercialization_analysis(tech)
+                readiness = comm_analysis.get("pathways", {}).get("productization", {}).get("readiness", "Opportunity")
+                c_alert = create_commercialization_alert(
+                    user_id=user_id,
+                    title=f"Commercial Opportunity: {tech}",
+                    message=f"Productization readiness ({readiness}) identified for '{tech}'",
+                    technology_name=tech,
+                    priority="medium",
+                    metadata={"technology": tech, "readiness": readiness}
+                )
+                if c_alert:
+                    existing_keys.add(c_dedup_key)
+                    created_alerts.append(c_alert)
 
     # 6. Platform notification
     if user_doc:
-        create_platform_notification(
-            user_id=user_id,
-            title="System Alert Monitor Active",
-            message=f"Welcome {user_doc.get('name', 'User')}. Your real-time research and funding alerts are active.",
-            related_module="profile",
-            priority="low"
-        )
+        platform_dedup = f"{user_id}_PLATFORM_system"
+        if platform_dedup not in existing_keys:
+            create_platform_notification(
+                user_id=user_id,
+                title="System Alert Monitor Active",
+                message=f"Welcome {user_doc.get('name', 'User')}. Your real-time research and funding alerts are active.",
+                related_module="profile",
+                priority="low"
+            )
+            existing_keys.add(platform_dedup)
 
     return created_alerts
 

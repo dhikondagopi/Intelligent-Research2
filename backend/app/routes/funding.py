@@ -181,7 +181,13 @@ def funding_statistics():
 def top_organizations():
 
     pipeline = [
-
+        {
+            "$match": {
+                "organization": {
+                    "$nin": [None, ""]
+                }
+            }
+        },
         {
             "$group": {
 

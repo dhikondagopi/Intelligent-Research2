@@ -137,14 +137,18 @@ def generate_pdf_report(report_data: Dict[str, Any]) -> bytes:
     story = []
 
     # 1. Header & Title Block
-    story.append(Paragraph(report_data.get("title", "Platform Intelligence Report"), title_style))
-    story.append(Paragraph(f"REPORT TYPE: {report_data.get('report_type', '').upper()} INTELLIGENCE", subtitle_style))
+    title_text = report_data.get("title") or "Platform Intelligence Report"
+    report_type_text = (report_data.get('report_type') or '').upper()
+    story.append(Paragraph(title_text, title_style))
+    story.append(Paragraph(f"REPORT TYPE: {report_type_text} INTELLIGENCE", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#2563EB"), spaceAfter=12))
 
     # 2. Metadata Box
-    user_name = report_data.get("user_name", "Authorized User")
-    gen_time = report_data.get("generated_at", datetime.now().isoformat())[:19].replace("T", " ")
-    filters_text = ", ".join([f"{k}: {v}" for k, v in report_data.get("filters_applied", {}).items() if v]) or "None"
+    user_name = report_data.get("user_name") or "Authorized User"
+    raw_gen_time = report_data.get("generated_at") or datetime.now().isoformat()
+    gen_time = str(raw_gen_time)[:19].replace("T", " ")
+    filters_dict = report_data.get("filters_applied") or {}
+    filters_text = ", ".join([f"{k}: {v}" for k, v in filters_dict.items() if v]) or "None"
 
     meta_table_data = [
         [
@@ -168,20 +172,24 @@ def generate_pdf_report(report_data: Dict[str, Any]) -> bytes:
     story.append(Spacer(1, 14))
 
     # 3. Executive Summary
+    summary_text = report_data.get("summary") or "Synthesis of platform intelligence metrics."
     story.append(Paragraph("Executive Summary", h2_style))
-    story.append(Paragraph(report_data.get("summary", "Synthesis of platform intelligence metrics."), body_style))
+    story.append(Paragraph(summary_text, body_style))
     story.append(Spacer(1, 12))
 
     # 4. Key Metrics KPI Table
-    metrics = report_data.get("metrics", [])
+    metrics = report_data.get("metrics") or []
     if metrics:
         story.append(Paragraph("Key Performance Analytics", h2_style))
         kpi_cells = []
         for m in metrics[:4]:
+            m_label = str(m.get('label') or 'Metric')
+            m_val = str(m.get('value') if m.get('value') is not None else 'N/A')
+            m_sub = str(m.get('subtext') or '')
             text_p = Paragraph(
-                f"<font size=8 color='#64748B'>{m.get('label')}</font><br/>"
-                f"<font size=13 color='#0F172A'><b>{m.get('value')}</b></font><br/>"
-                f"<font size=7 color='#2563EB'>{m.get('subtext', '')}</font>",
+                f"<font size=8 color='#64748B'>{m_label}</font><br/>"
+                f"<font size=13 color='#0F172A'><b>{m_val}</b></font><br/>"
+                f"<font size=7 color='#2563EB'>{m_sub}</font>",
                 body_style
             )
             kpi_cells.append(text_p)
@@ -241,7 +249,8 @@ def generate_pdf_report(report_data: Dict[str, Any]) -> bytes:
         for r in records[:35]: # top 35 in PDF
             row_cells = []
             for k in row_keys:
-                val = str(r.get(k, ""))
+                cell_val = r.get(k)
+                val = str(cell_val) if cell_val is not None else "-"
                 row_cells.append(Paragraph(val, table_body_style))
             table_rows.append(row_cells)
 
@@ -259,9 +268,10 @@ def generate_pdf_report(report_data: Dict[str, Any]) -> bytes:
     story.append(Spacer(1, 14))
 
     # 6. Methodology & Disclaimer
+    methodology_text = report_data.get("methodology") or "Data synthesized from active platform datasets."
     story.append(KeepTogether([
         Paragraph("Methodology & Analytical Framework", h2_style),
-        Paragraph(report_data.get("methodology", "Data synthesized from active platform datasets."), body_style),
+        Paragraph(methodology_text, body_style),
         Spacer(1, 6),
         Paragraph("<font color='#64748B' size=8>This report is generated automatically by the Intelligent Research Platform for analytical decision support. Information should be verified against official primary sources.</font>", body_style)
     ]))

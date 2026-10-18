@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   User,
   Mail,
@@ -16,10 +16,12 @@ import AuthCard from "../components/auth/AuthCard";
 import AuthHeader from "../components/auth/AuthHeader";
 import FormField from "../components/auth/FormField";
 import PasswordField from "../components/auth/PasswordField";
-import { registerUser, loginUser } from "../services/authService";
+import GoogleAuthButton from "../components/auth/GoogleAuthButton";
+import { registerUser } from "../services/authService";
 
 export default function Register() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Form states
   const [form, setForm] = useState({
@@ -36,6 +38,45 @@ export default function Register() {
   const [apiError, setApiError] = useState("");
   const [apiSuccess, setApiSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const token = query.get("token");
+    const err = query.get("error");
+    const errDesc = query.get("error_description");
+
+    if (token) {
+      const userPayload = {
+        user_id: query.get("user_id") || "",
+        name: query.get("name") || "",
+        email: query.get("email") || "",
+        role: query.get("role") || "researcher",
+      };
+      localStorage.setItem("access_token", token);
+      localStorage.setItem("user", JSON.stringify(userPayload));
+      setApiSuccess("Google authentication verified. Loading workspace...");
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => {
+        navigate(`/dashboard/${userPayload.role || "researcher"}`);
+      }, 500);
+      return;
+    }
+
+    if (err) {
+      if (err === "account_exists_password" || err === "duplicate_account") {
+        setApiError("An account with this email already exists. Please log in using your original email and password.");
+      } else if (err === "invalid_state") {
+        setApiError("Google authorization session was invalid or expired. Please try again.");
+      } else if (err === "invalid_token") {
+        setApiError("Google ID token verification failed. Please try again.");
+      } else if (err === "access_denied") {
+        setApiError("Google sign-in was cancelled.");
+      } else {
+        setApiError(errDesc || "Google authentication failed. Please try again.");
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [location.search, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -103,25 +144,22 @@ export default function Register() {
         role: safeRole,
       });
 
-      setApiSuccess("Account created successfully. Authenticating workspace...");
+      // Ensure no tokens or active sessions are stored
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
 
-      // 2. Automatically log in to obtain JWT access token
-      try {
-        await loginUser({
-          email: form.email.trim(),
-          password: form.password,
+      const successMsg = "Account created successfully. Please log in.";
+      setApiSuccess(successMsg);
+
+      // Redirect user to the Login page after displaying the confirmation message
+      setTimeout(() => {
+        navigate("/login", {
+          state: {
+            message: successMsg,
+            email: form.email.trim(),
+          },
         });
-
-        // 3. Redirect to designated dashboard
-        setTimeout(() => {
-          navigate(`/dashboard/${safeRole}`);
-        }, 500);
-      } catch (loginErr) {
-        console.warn("Auto-login error:", loginErr);
-        setTimeout(() => {
-          navigate("/login");
-        }, 700);
-      }
+      }, 1000);
     } catch (error) {
       console.error("Registration error:", error);
       const detail =
@@ -156,6 +194,13 @@ export default function Register() {
             <span>{apiSuccess}</span>
           </div>
         )}
+
+        {/* Google OAuth 2.0 Registration */}
+        <GoogleAuthButton
+          text="Continue with Google"
+          disabled={loading}
+          onError={(msg) => setApiError(msg)}
+        />
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {/* Full Name */}

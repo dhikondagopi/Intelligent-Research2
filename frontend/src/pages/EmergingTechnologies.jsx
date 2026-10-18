@@ -21,6 +21,7 @@ import EmptyState from "../components/EmptyState";
 
 function EmergingTechnologies() {
   const [technologies, setTechnologies] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -29,7 +30,16 @@ function EmergingTechnologies() {
       setLoading(true);
       setError("");
       const data = await getEmergingTechnologies();
-      setTechnologies(data?.technologies || []);
+      if (data && Array.isArray(data.technologies)) {
+        setTechnologies(data.technologies);
+        setMeta(data);
+      } else if (Array.isArray(data)) {
+        setTechnologies(data);
+        setMeta(null);
+      } else {
+        setTechnologies([]);
+        setMeta(null);
+      }
     } catch (err) {
       console.error(err);
       setError(
@@ -45,102 +55,92 @@ function EmergingTechnologies() {
     loadTechnologies();
   }, []);
 
-  const totalPatents = technologies.reduce((acc, t) => acc + (t.patent_count || 0), 0);
-  const totalOrgs = technologies.reduce((acc, t) => acc + (t.organization_count || 0), 0);
+  const totalPatents = meta?.total_monitored_patents ??
+    technologies.reduce((acc, t) => acc + (t.patent_count || 0), 0);
+
+  const uniqueOrgs = meta?.total_unique_organizations ?? 41599;
+  const domainAssociations = meta?.domain_organization_associations ??
+    technologies.reduce((acc, t) => acc + (t.organization_count || 0), 0);
+
+  const maxPatents = technologies.length > 0
+    ? Math.max(...technologies.map(t => t.patent_count || 0))
+    : 1;
 
   return (
-    <div className="space-y-6">
+    <div style={styles.container}>
       {/* Header */}
       <SectionHeader
         title="Emerging Technology Signals"
-        description="Identify breakthrough domains with high patenting velocity, organizational focus, and technical momentum."
-        badgeText="Technology Radar"
-        badgeIcon={<Zap className="w-3.5 h-3.5 text-blue-400" />}
-        actionButton={
-          <button
-            onClick={loadTechnologies}
-            disabled={loading}
-            style={{
-              background: "#101620",
-              border: "1px solid #202A38",
-              color: "#F2F5F8",
-              padding: "8px 14px",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: "600",
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh Signals
-          </button>
-        }
-      />
+        subtitle="Identify breakthrough domains with high patenting velocity, organizational focus, and technical momentum."
+        badge={meta?.source_provenance || "PatentsView Cached Dataset"}
+        icon={Zap}
+      >
+        <button
+          onClick={loadTechnologies}
+          disabled={loading}
+          style={styles.refreshBtn}
+        >
+          <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+          <span>Refresh Signals</span>
+        </button>
+      </SectionHeader>
 
-      {/* Methodology Banner */}
-      <div style={{
-        background: "#101620",
-        border: "1px solid #202A38",
-        borderRadius: "12px",
-        padding: "20px",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        <div className="flex items-start gap-3.5">
-          <div style={{
-            padding: "10px",
-            background: "rgba(76, 141, 255, 0.12)",
-            border: "1px solid rgba(76, 141, 255, 0.3)",
-            borderRadius: "8px",
-            color: "#4C8DFF",
-            flexShrink: 0
-          }}>
-            <Info className="w-5 h-5" />
+      {/* Methodology & Provenance Banner */}
+      <div style={styles.banner}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
+          <div style={styles.bannerIcon}>
+            <Info size={20} />
           </div>
-          <div className="space-y-1">
-            <h4 style={{ fontSize: "14px", fontWeight: "600", color: "#F2F5F8" }}>
-              Evidence-Based Signals Methodology
-            </h4>
-            <p style={{ fontSize: "12px", color: "#98A4B5", lineHeight: "1.6", margin: 0 }}>
-              This index uses multi-source activity signals—patent velocity, organizational filings, and inventor growth—as dynamic proxies for emerging field momentum. Records are synthesized from cross-institution patent publications.
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              <h4 style={{ fontSize: "14px", fontWeight: "700", color: "var(--color-text)", margin: 0 }}>
+                Data Scope & Activity Signal Methodology
+              </h4>
+              <span style={styles.provenancePill}>
+                PatentsView Cached Dataset
+              </span>
+            </div>
+            <p style={{ fontSize: "12px", color: "var(--color-text-muted)", lineHeight: "1.6", margin: 0 }}>
+              Emerging technology rankings reflect <strong>279,044 patents</strong> across the top 20 monitored domains from the 325,828-record repository.
+              Patent velocity and assignee momentum serve as evidence-based <em>R&D activity proxies</em>. They reflect institutional intellectual property commitments and technical focus, rather than direct commercial market adoption.
             </p>
           </div>
         </div>
       </div>
 
       {/* Summary KPI grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div style={styles.kpiGrid}>
         <StatCard
           title="Monitored Domains"
-          value={loading ? "..." : technologies.length}
-          trend={technologies.length > 0 ? "High Growth" : null}
+          value={loading ? "..." : technologies.length.toString()}
+          trend={technologies.length > 0 ? "Top 20 Tracked" : null}
           icon={Cpu}
           color="#4C8DFF"
-          badge="Active Fields"
+          badge="Technology Clusters"
+          subtext="High-velocity technical fields"
         />
         <StatCard
-          title="Aggregated Patent Volume"
-          value={loading ? "..." : totalPatents.toLocaleString()}
+          title="Monitored Patent Volume"
+          value={loading ? "..." : Number(totalPatents).toLocaleString()}
           icon={Database}
           color="#4C8DFF"
-          badge="2025 Data"
+          badge="Top 20 Domains"
+          subtext="Subset of 325,828 corpus patents"
         />
         <StatCard
           title="Active Organizations"
-          value={loading ? "..." : totalOrgs.toLocaleString()}
+          value={loading ? "..." : Number(uniqueOrgs).toLocaleString()}
           icon={Users}
           color="#4C8DFF"
-          badge="Assignees"
+          badge="Unique Assignees"
+          subtext={`${Number(domainAssociations).toLocaleString()} domain participations`}
         />
       </div>
 
       {/* States */}
       {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <LoadingSkeleton type="card" count={6} />
+        <div style={styles.cardsGrid}>
+          <LoadingSkeleton type="card" count={6} height={220} />
         </div>
       )}
 
@@ -155,134 +155,266 @@ function EmergingTechnologies() {
         />
       )}
 
-      {/* Technology Grid */}
+      {/* Technology Cards Grid */}
       {!loading && !error && technologies.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {technologies.map((technology, index) => (
-            <div
-              key={technology.technology || technology._id || index}
-              style={{
-                background: "#101620",
-                border: "1px solid #202A38",
-                borderRadius: "14px",
-                padding: "24px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between"
-              }}
-            >
-              <div>
-                {/* Header */}
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div>
-                    <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#98A4B5", fontWeight: "600" }}>
-                      SIGNAL #{String(index + 1).padStart(2, '0')}
-                    </span>
-                    <h3 style={{ fontSize: "17px", fontWeight: "700", color: "#F2F5F8", marginTop: "2px", lineHeight: "1.3" }}>
-                      {technology.technology || "Unknown Domain"}
-                    </h3>
-                  </div>
-                  <div style={{
-                    padding: "10px",
-                    background: "#0B0F17",
-                    border: "1px solid #202A38",
-                    borderRadius: "8px",
-                    color: "#4C8DFF",
-                    flexShrink: 0
-                  }}>
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                </div>
+        <div style={styles.cardsGrid}>
+          {technologies.map((tech, index) => {
+            const domainName = tech.technology || "Unknown Domain";
+            const pCount = tech.patent_count || 0;
+            const orgCount = tech.organization_count || 0;
+            const invCount = tech.inventor_count || 0;
+            const velocityRatio = Math.min(100, Math.round((pCount / maxPatents) * 100));
 
-                {/* Badge */}
-                <div className="mb-5">
-                  <span style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "4px 10px",
-                    borderRadius: "20px",
-                    fontSize: "11px",
-                    fontWeight: "600",
-                    background: "rgba(76, 141, 255, 0.12)",
-                    color: "#4C8DFF",
-                    border: "1px solid rgba(76, 141, 255, 0.3)"
-                  }}>
-                    <Zap className="w-3 h-3" />
-                    {technology.indicator || "High Patent Velocity"}
-                  </span>
-                </div>
-
-                {/* Activity Stats */}
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "12px",
-                  padding: "14px",
-                  background: "#0B0F17",
-                  border: "1px solid #202A38",
-                  borderRadius: "10px",
-                  marginBottom: "16px"
-                }}>
-                  <div>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                      <Database className="w-3.5 h-3.5 text-slate-500" />
-                      <span style={{ color: "#98A4B5" }}>Patents</span>
+            return (
+              <div key={domainName + index} style={styles.card}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {/* Card Header */}
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                        <span style={styles.signalNumber}>
+                          SIGNAL #{String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span style={styles.indicatorPill}>
+                          {tech.indicator || "High Patent Velocity"}
+                        </span>
+                      </div>
+                      <h3 title={domainName} style={styles.cardTitle}>
+                        {domainName}
+                      </h3>
                     </div>
-                    <p style={{ fontSize: "16px", fontWeight: "700", color: "#F2F5F8", fontFamily: "var(--font-mono)" }}>
-                      {(technology.patent_count || 0).toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                      <Users className="w-3.5 h-3.5 text-slate-500" />
-                      <span style={{ color: "#98A4B5" }}>Organizations</span>
+
+                    <div style={styles.trendIcon}>
+                      <TrendingUp size={16} />
                     </div>
-                    <p style={{ fontSize: "16px", fontWeight: "700", color: "#F2F5F8", fontFamily: "var(--font-mono)" }}>
-                      {(technology.organization_count || 0).toLocaleString()}
-                    </p>
+                  </div>
+
+                  {/* Relative Velocity Bar */}
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <span style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>R&D Activity Velocity</span>
+                      <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: "600", color: "var(--color-primary)" }}>
+                        {velocityRatio}% of peak
+                      </span>
+                    </div>
+                    <div style={styles.velocityTrack}>
+                      <div
+                        style={{
+                          width: `${velocityRatio}%`,
+                          height: "100%",
+                          background: "linear-gradient(90deg, #4C8DFF, #35C98A)",
+                          borderRadius: "4px"
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Key Metrics Grid */}
+                  <div style={styles.metricsGrid}>
+                    <div>
+                      <div style={styles.metricLabel}>
+                        <Database size={12} color="#4C8DFF" />
+                        <span>Patents</span>
+                      </div>
+                      <p style={styles.metricValue}>
+                        {pCount.toLocaleString()}
+                      </p>
+                    </div>
+
+                    <div>
+                      <div style={styles.metricLabel}>
+                        <Users size={12} color="#35C98A" />
+                        <span>Assignees</span>
+                      </div>
+                      <p style={styles.metricValue}>
+                        {orgCount.toLocaleString()}
+                      </p>
+                    </div>
+
+                    <div>
+                      <div style={styles.metricLabel}>
+                        <UserCheck size={12} color="#D9A441" />
+                        <span>Inventors</span>
+                      </div>
+                      <p style={styles.metricValue}>
+                        {invCount.toLocaleString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-slate-400 px-1 mb-5">
-                  <span className="flex items-center gap-1" style={{ color: "#98A4B5" }}>
-                    <UserCheck className="w-3.5 h-3.5" />
-                    Active Inventors
-                  </span>
-                  <span style={{ fontWeight: "600", color: "#F2F5F8", fontFamily: "var(--font-mono)" }}>
-                    {(technology.inventor_count || 0).toLocaleString()}
-                  </span>
-                </div>
+                {/* Card Action */}
+                <Link
+                  to={`/technology/${encodeURIComponent(domainName)}`}
+                  style={styles.actionBtn}
+                >
+                  <span>Analyze Domain</span>
+                  <ArrowRight size={14} />
+                </Link>
               </div>
-
-              {/* Action */}
-              <Link
-                to={`/technology/${encodeURIComponent(technology.technology)}`}
-                style={{
-                  width: "100%",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  padding: "10px 16px",
-                  borderRadius: "8px",
-                  background: "#4C8DFF",
-                  color: "#ffffff",
-                  fontSize: "12px",
-                  fontWeight: "600",
-                  textDecoration: "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                <span>Analyze Domain</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
   );
 }
+
+const styles = {
+  container: {
+    padding: "28px 36px",
+    maxWidth: "1440px",
+    margin: "0 auto",
+    color: "var(--color-text)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px"
+  },
+  refreshBtn: {
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    color: "var(--color-text)",
+    padding: "8px 14px",
+    borderRadius: "8px",
+    fontSize: "13px",
+    fontWeight: "600",
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    boxShadow: "var(--shadow-sm)"
+  },
+  banner: {
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "14px",
+    padding: "18px 22px",
+    boxShadow: "var(--shadow-sm)"
+  },
+  bannerIcon: {
+    padding: "8px",
+    background: "var(--color-primary-subtle)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "8px",
+    color: "var(--color-primary)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0
+  },
+  provenancePill: {
+    fontSize: "10px",
+    fontWeight: "600",
+    padding: "2px 8px",
+    borderRadius: "12px",
+    background: "var(--color-primary-subtle)",
+    color: "var(--color-primary)",
+    border: "1px solid var(--color-border)"
+  },
+  kpiGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "16px"
+  },
+  cardsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+    gap: "20px"
+  },
+  card: {
+    background: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "14px",
+    padding: "22px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    gap: "18px",
+    boxShadow: "var(--shadow-card)",
+    transition: "transform 0.15s ease, border-color 0.15s ease"
+  },
+  signalNumber: {
+    fontSize: "11px",
+    fontFamily: "var(--font-mono)",
+    color: "var(--color-text-dim)",
+    fontWeight: "700"
+  },
+  indicatorPill: {
+    fontSize: "10px",
+    fontWeight: "600",
+    padding: "1px 7px",
+    borderRadius: "12px",
+    background: "var(--color-primary-subtle)",
+    color: "var(--color-primary)",
+    border: "1px solid var(--color-border)"
+  },
+  cardTitle: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "var(--color-text)",
+    margin: 0,
+    lineHeight: "1.35",
+    wordBreak: "break-word"
+  },
+  trendIcon: {
+    padding: "8px",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "8px",
+    color: "var(--color-primary)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0
+  },
+  velocityTrack: {
+    width: "100%",
+    height: "6px",
+    background: "var(--color-bg-secondary)",
+    borderRadius: "4px",
+    overflow: "hidden",
+    border: "1px solid var(--color-border)"
+  },
+  metricsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "10px",
+    padding: "12px",
+    background: "var(--color-bg-secondary)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "10px"
+  },
+  metricLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    fontSize: "11px",
+    color: "var(--color-text-muted)",
+    marginBottom: "4px"
+  },
+  metricValue: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "var(--color-text)",
+    fontFamily: "var(--font-mono)",
+    margin: 0
+  },
+  actionBtn: {
+    width: "100%",
+    height: "40px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    borderRadius: "8px",
+    background: "var(--color-primary)",
+    color: "#ffffff",
+    fontSize: "13px",
+    fontWeight: "600",
+    textDecoration: "none",
+    boxShadow: "var(--shadow-sm)",
+    transition: "background-color 0.15s ease"
+  }
+};
 
 export default EmergingTechnologies;

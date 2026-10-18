@@ -58,6 +58,8 @@ class TestPatentIntelligence(unittest.TestCase):
             self.assertEqual(res.status_code, 200)
             data = res.json()
             self.assertEqual(data["source"], "USPTO Live Data")
+            self.assertEqual(data["delivery_status"], "LIVE")
+            self.assertEqual(data["source_provenance"], "USPTO Open Data Portal")
             self.assertFalse(data["is_cached"])
             self.assertEqual(len(data["results"]), 1)
             self.assertEqual(data["results"][0]["patent_number"], "US11234567B2")
@@ -190,7 +192,8 @@ class TestPatentIntelligence(unittest.TestCase):
             self.assertEqual(res.status_code, 200)
             data = res.json()
             self.assertTrue(data["is_cached"])
-            self.assertIn("MongoDB Cache", data["source"])
+            self.assertEqual(data["delivery_status"], "CACHED")
+            self.assertEqual(data["source_provenance"], "PatentsView")
 
     # 11. Cached Data Fallback Test
     @patch("app.services.patent_service.fetch_live_patents")
@@ -212,7 +215,8 @@ class TestPatentIntelligence(unittest.TestCase):
 
         data = search_patents_with_fallback("Superconductor", 1, 10)
         self.assertTrue(data["is_cached"])
-        self.assertEqual(data["source"], "MongoDB Cache (Fallback)")
+        self.assertEqual(data["delivery_status"], "CACHED")
+        self.assertEqual(data["source_provenance"], "PatentsView")
         self.assertGreaterEqual(len(data["results"]), 1)
 
     # 12. Unauthorized Access / Missing Key Test
@@ -243,6 +247,180 @@ class TestPatentIntelligence(unittest.TestCase):
         from app.services import patent_service
         self.assertTrue(hasattr(patent, "router"))
         self.assertTrue(hasattr(patent_service, "search_patents_with_fallback"))
+
+    # 15. Abstract Mapping Test
+    def test_15_abstract_mapping(self):
+        # Test USPTO ODP nested format
+        item_odp = {
+            "applicationMetaData": {
+                "patentNumber": "US1010101",
+                "abstractText": "Detailed description of a photonic quantum processor."
+            }
+        }
+        norm_odp = normalize_patent_record(item_odp)
+        self.assertEqual(norm_odp["abstract"], "Detailed description of a photonic quantum processor.")
+        self.assertEqual(norm_odp["patent_abstract"], "Detailed description of a photonic quantum processor.")
+
+        # Test flat PatentsView format
+        item_pv = {
+            "patent_id": "US2020202",
+            "patent_abstract": "A superconducting qubit coupler system."
+        }
+        norm_pv = normalize_patent_record(item_pv)
+        self.assertEqual(norm_pv["abstract"], "A superconducting qubit coupler system.")
+
+    # 16. Missing Optional Fields Handling (No fabricated data)
+    def test_16_missing_optional_fields(self):
+        sparse_item = {
+            "applicationMetaData": {
+                "patentNumber": "US3030303"
+            }
+        }
+        norm = normalize_patent_record(sparse_item)
+        self.assertEqual(norm["patent_number"], "US3030303")
+        self.assertIsNone(norm["title"])
+        self.assertIsNone(norm["patent_title"])
+        self.assertIsNone(norm["abstract"])
+        self.assertIsNone(norm["patent_abstract"])
+        self.assertEqual(norm["inventors"], [])
+        self.assertEqual(norm["assignees"], [])
+
+    # 17. Preserving Valid Cached Values During Upsert
+    def test_17_preserving_valid_cached_values(self):
+        # Insert initial high-quality record
+        patents_collection.update_one(
+            {"patent_number": "US4040404"},
+            {
+                "$set": {
+                    "patent_number": "US4040404",
+                    "patent_title": "Original High Quality Title",
+                    "patent_abstract": "Original rich abstract summary.",
+                    "assignee": "Original Corp"
+                }
+            },
+            upsert=True
+        )
+
+        # Incoming update has None for title and abstract
+        incomplete_record = {
+            "patent_number": "US4040404",
+            "patent_title": None,
+            "patent_abstract": None,
+            "country": "US"
+        }
+        cache_patents_in_mongo([incomplete_record])
+
+        # Verify existing title and abstract were NOT overwritten
+        stored = patents_collection.find_one({"patent_number": "US4040404"})
+        self.assertEqual(stored["patent_title"], "Original High Quality Title")
+        self.assertEqual(stored["patent_abstract"], "Original rich abstract summary.")
+        self.assertEqual(stored["country"], "US")
+
+    # 18. Assignee Normalization Test
+    def test_18_assignee_normalization(self):
+        from app.services.patent_service import _extract_organizations
+        # Dict list (USPTO assignmentBag)
+        orgs_bag = [{"organizationName": "Google LLC"}, {"organization": "Alphabet Inc"}]
+        self.assertEqual(_extract_organizations(orgs_bag), ["Google LLC", "Alphabet Inc"])
+
+        # String list
+        orgs_str_list = ["IBM Corp", "IBM Corp", "Red Hat"]
+        self.assertEqual(_extract_organizations(orgs_str_list), ["IBM Corp", "Red Hat"])
+
+        # Single string
+        self.assertEqual(_extract_organizations("Microsoft Corp"), ["Microsoft Corp"])
+
+    # 19. Patent Search Behavior Test
+    def test_19_patent_search_behavior(self):
+        patents_collection.update_one(
+            {"patent_number": "US5050505"},
+            {
+                "$set": {
+                    "patent_number": "US5050505",
+                    "patent_title": "Neuromorphic Vision Sensor",
+                    "assignee": "VisionTech Labs",
+                    "grant_year": 2024
+                }
+            },
+            upsert=True
+        )
+
+        from app.services.patent_service import search_cached_patents
+        total, results = search_cached_patents("Neuromorphic", 1, 10)
+        self.assertGreaterEqual(total, 1)
+        found = [r for r in results if r["patent_number"] == "US5050505"]
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["patent_title"], "Neuromorphic Vision Sensor")
+
+    # 20. Classification Filter Behavior Test (null, empty, whitespace exclusion)
+    def test_20_classification_filter_behavior(self):
+        # Insert test records representing various classification states
+        test_records = [
+            {"patent_number": "TEST_CLS_VALID_1", "technology_field": "Computer Technology"},
+            {"patent_number": "TEST_CLS_NULL", "technology_field": None},
+            {"patent_number": "TEST_CLS_EMPTY", "technology_field": ""},
+            {"patent_number": "TEST_CLS_WHITESPACE", "technology_field": "   \t  "},
+            {"patent_number": "TEST_CLS_MISSING"} # No technology_field key
+        ]
+        for r in test_records:
+            patents_collection.update_one({"patent_number": r["patent_number"]}, {"$set": r}, upsert=True)
+
+        try:
+            # Query matching classified: non-null, non-empty, and contains non-whitespace
+            classified_filter = {
+                "patent_number": {"$regex": "^TEST_CLS_"},
+                "technology_field": {"$nin": [None, ""], "$regex": r"\S"}
+            }
+            classified_docs = list(patents_collection.find(classified_filter))
+            self.assertEqual(len(classified_docs), 1)
+            self.assertEqual(classified_docs[0]["patent_number"], "TEST_CLS_VALID_1")
+
+            # Query matching unclassified
+            unclassified_filter = {
+                "patent_number": {"$regex": "^TEST_CLS_"},
+                "$or": [
+                    {"technology_field": {"$exists": False}},
+                    {"technology_field": None},
+                    {"technology_field": ""},
+                    {"technology_field": {"$not": {"$regex": r"\S"}}}
+                ]
+            }
+            unclassified_docs = list(patents_collection.find(unclassified_filter))
+            self.assertEqual(len(unclassified_docs), 4)
+
+            # Reconcile sum of subsets against total test records
+            total_test = patents_collection.count_documents({"patent_number": {"$regex": "^TEST_CLS_"}})
+            self.assertEqual(total_test, len(classified_docs) + len(unclassified_docs))
+        finally:
+            # Clean up test records
+            patents_collection.delete_many({"patent_number": {"$regex": "^TEST_CLS_"}})
+
+    # 21. Real Database Count Reconciliation and Uniqueness Test
+    def test_21_database_reconciliation_and_uniqueness(self):
+        total_count = patents_collection.count_documents({})
+        self.assertGreater(total_count, 0)
+
+        # Classified count: must strictly have non-whitespace content
+        classified_count = patents_collection.count_documents({
+            "technology_field": {"$nin": [None, ""], "$regex": r"\S"}
+        })
+
+        # Unclassified count: missing, null, empty or whitespace-only
+        unclassified_count = patents_collection.count_documents({
+            "$or": [
+                {"technology_field": {"$exists": False}},
+                {"technology_field": None},
+                {"technology_field": ""},
+                {"technology_field": {"$not": {"$regex": r"\S"}}}
+            ]
+        })
+
+        # Verification: classified + unclassified must strictly reconcile to total
+        self.assertEqual(
+            total_count,
+            classified_count + unclassified_count,
+            f"Counts do not reconcile: {total_count} != {classified_count} + {unclassified_count}"
+        )
 
 
 if __name__ == "__main__":

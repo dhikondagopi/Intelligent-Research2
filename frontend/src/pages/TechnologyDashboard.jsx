@@ -62,8 +62,8 @@ function TechnologyDashboard() {
 
   const fields = data?.technology_fields || [];
   const sectors = data?.technology_sectors || [];
-  const organizations = data?.top_organizations || [];
-  const cpcAreas = data?.cpc_areas || [];
+  const organizations = data?.top_organizations || data?.organizations || [];
+  const cpcAreas = data?.cpc_sections || data?.cpc_areas || [];
 
   const fieldsChartData = fields.slice(0, 8).map((f) => ({
     name: f.technology,
@@ -79,9 +79,9 @@ function TechnologyDashboard() {
     <div style={styles.container}>
       <SectionHeader
         title="Technology Intelligence"
-        subtitle="Analyze technology fields, patent concentration, market adoption signals, and competitive assignees."
+        subtitle="Analyze technology fields, patent concentration, market activity signals, and competitive assignees."
         icon={Cpu}
-        badge="WIPO / USPTO Data"
+        badge={data?.source_provenance || "PatentsView Cached Data"}
       >
         <div style={{ display: "flex", gap: "10px" }}>
           <Link to="/technology/emerging" style={styles.emergingBtn}>
@@ -101,7 +101,7 @@ function TechnologyDashboard() {
           title="Total Patents Analyzed"
           value={Number(data?.total_patents || 0).toLocaleString()}
           icon={FileText}
-          subtext="Patent repository"
+          subtext="325,017 classified in WIPO fields"
           color="#4C8DFF"
         />
 
@@ -109,7 +109,7 @@ function TechnologyDashboard() {
           title="Technology Fields"
           value={fields.length.toString()}
           icon={Cpu}
-          subtext="Categorized fields"
+          subtext="Active technical domains"
           color="#4C8DFF"
         />
 
@@ -117,15 +117,15 @@ function TechnologyDashboard() {
           title="Technology Sectors"
           value={sectors.length.toString()}
           icon={Layers}
-          subtext="Identified sectors"
+          subtext="Macro sectors mapped"
           color="#4C8DFF"
         />
 
         <StatCard
-          title="Leading Organizations"
-          value={organizations.length.toString()}
+          title="Active Organizations"
+          value={Number(data?.total_organizations || organizations.length || 0).toLocaleString()}
           icon={Building2}
-          subtext="Patent holders"
+          subtext="Unique patent assignees"
           color="#4C8DFF"
         />
       </div>

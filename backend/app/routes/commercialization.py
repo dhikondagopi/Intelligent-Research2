@@ -1,3 +1,4 @@
+from urllib.parse import unquote
 from fastapi import APIRouter, HTTPException
 
 from app.services.commercialization_service import (
@@ -20,16 +21,16 @@ def commercialization_dashboard(
     technology: str
 ):
 
-    technology = technology.strip()
+    clean_tech = unquote(technology).strip()
 
-    if not technology:
+    if not clean_tech:
         raise HTTPException(
             status_code=400,
             detail="Technology name is required"
         )
 
     return get_commercialization_analysis(
-        technology
+        clean_tech
     )
 
 
@@ -38,16 +39,16 @@ def commercialization_analysis(
     technology: str
 ):
 
-    technology = technology.strip()
+    clean_tech = unquote(technology).strip()
 
-    if not technology:
+    if not clean_tech:
         raise HTTPException(
             status_code=400,
             detail="Technology name is required"
         )
 
     return get_commercialization_analysis(
-        technology
+        clean_tech
     )
 
 
@@ -57,7 +58,7 @@ def productization(
 ):
 
     return get_productization(
-        technology.strip()
+        unquote(technology).strip()
     )
 
 
@@ -67,7 +68,7 @@ def licensing(
 ):
 
     return get_licensing(
-        technology.strip()
+        unquote(technology).strip()
     )
 
 
@@ -77,7 +78,7 @@ def startup(
 ):
 
     return get_startup(
-        technology.strip()
+        unquote(technology).strip()
     )
 
 
@@ -87,5 +88,5 @@ def partnerships(
 ):
 
     return get_partnerships(
-        technology.strip()
+        unquote(technology).strip()
     )

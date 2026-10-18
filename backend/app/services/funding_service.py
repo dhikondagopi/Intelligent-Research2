@@ -27,28 +27,9 @@ async def search_funding(
 
                 "search_text": query
 
-            },
-
-            "include_active_projects": True
+            }
 
         },
-
-        "include_fields": [
-
-            "ApplId",
-            "ProjectNum",
-            "ProjectTitle",
-            "AbstractText",
-            "OrgName",
-            "OrgCountry",
-            "OrgState",
-            "FiscalYear",
-            "AwardAmount",
-            "FundingMechanism",
-            "ActivityCode",
-            "PrincipalInvestigators"
-
-        ],
 
         "offset": offset,
 
@@ -60,62 +41,90 @@ async def search_funding(
 
     }
 
+    try:
+        async with httpx.AsyncClient(
+            timeout=30.0
+        ) as client:
 
-    async with httpx.AsyncClient(
-        timeout=30.0
-    ) as client:
+            response = await client.post(
+                REPORTER_URL,
+                json=payload
+            )
 
-        response = await client.post(
-            REPORTER_URL,
-            json=payload
-        )
+            response.raise_for_status()
 
-        response.raise_for_status()
+            data = response.json()
 
-        return response.json()
+            # Ensure data is a dict and results is a list (never None)
+            if not isinstance(data, dict):
+                return {"results": [], "meta": {"total": 0}}
+
+            if data.get("results") is None:
+                data["results"] = []
+
+            return data
+
+    except httpx.HTTPStatusError as exc:
+        raise RuntimeError(
+            f"NIH RePORTER API returned {exc.response.status_code}: {exc.response.text[:200]}"
+        ) from exc
+    except httpx.RequestError as exc:
+        raise RuntimeError(
+            f"NIH RePORTER API request failed: {exc}"
+        ) from exc
 
 
 def format_funding_results(data):
 
     results = []
 
+    if not data or not isinstance(data, dict):
+        return results
 
-    for project in data.get(
-        "results",
-        []
-    ):
+    raw_results = data.get("results")
+
+    # Guard: results may be None if API returns null
+    if not raw_results:
+        return results
+
+    for project in raw_results:
+
+        if not isinstance(project, dict):
+            continue
+
+        # Organization data is nested inside an "organization" object
+        org = project.get("organization") or {}
+        if not isinstance(org, dict):
+            org = {}
 
         investigators = []
 
+        pi_list = project.get("principal_investigators")
+        if pi_list and isinstance(pi_list, list):
+            for investigator in pi_list:
 
-        for investigator in project.get(
-            "principal_investigators",
-            []
-        ):
+                if isinstance(
+                    investigator,
+                    dict
+                ):
 
-            if isinstance(
-                investigator,
-                dict
-            ):
-
-                name = investigator.get(
-                    "full_name"
-                )
-
-                if name:
-                    investigators.append(
-                        name
+                    name = investigator.get(
+                        "full_name"
                     )
 
-            elif isinstance(
-                investigator,
-                str
-            ):
+                    if name:
+                        investigators.append(
+                            name.strip()
+                        )
 
-                investigators.append(
-                    investigator
-                )
+                elif isinstance(
+                    investigator,
+                    str
+                ):
 
+                    investigators.append(
+                        investigator.strip()
+                    )
 
         results.append({
 
@@ -139,30 +148,26 @@ def format_funding_results(data):
                     "abstract_text"
                 ),
 
+            # Correct: org data is inside the nested "organization" object
             "organization":
-                project.get(
-                    "org_name"
-                ),
+                org.get("org_name"),
 
             "country":
-                project.get(
-                    "org_country"
-                ),
+                org.get("org_country"),
 
             "state":
-                project.get(
-                    "org_state"
-                ),
+                org.get("org_state"),
 
             "fiscal_year":
                 project.get(
                     "fiscal_year"
                 ),
 
-            "award_amount":
-                project.get(
-                    "award_amount"
-                ) or 0,
+            "award_amount": (
+                int(float(project["award_amount"]))
+                if project.get("award_amount") is not None and str(project.get("award_amount")).strip().replace(".", "", 1).replace("-", "", 1).isdigit()
+                else (int(project["award_amount"]) if isinstance(project.get("award_amount"), (int, float)) else 0)
+            ),
 
             "funding_mechanism":
                 project.get(

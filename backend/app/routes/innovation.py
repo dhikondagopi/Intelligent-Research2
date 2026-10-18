@@ -1,3 +1,4 @@
+from urllib.parse import unquote
 from fastapi import APIRouter, HTTPException
 
 from app.services.innovation_service import (
@@ -23,9 +24,9 @@ def innovation_details(
     technology: str
 ):
 
-    technology = technology.strip()
+    technology_clean = unquote(technology).strip()
 
-    if not technology:
+    if not technology_clean:
 
         raise HTTPException(
             status_code=400,
@@ -33,5 +34,5 @@ def innovation_details(
         )
 
     return get_innovation_score(
-        technology
+        technology_clean
     )

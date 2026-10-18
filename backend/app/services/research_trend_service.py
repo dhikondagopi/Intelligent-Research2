@@ -96,6 +96,7 @@ def _extract_citations(record: Dict[str, Any]) -> Tuple[bool, int]:
 def _extract_topics_and_concepts(record: Dict[str, Any]) -> List[str]:
     """Extract unified list of clean topic and concept names from a record."""
     topics_found: List[str] = []
+    seen_lower = set()
 
     for key in ["topics", "concepts", "keywords"]:
         val = record.get(key)
@@ -103,15 +104,19 @@ def _extract_topics_and_concepts(record: Dict[str, Any]) -> List[str]:
             for item in val:
                 if isinstance(item, str) and item.strip():
                     cleaned = item.strip()
+                    lower = cleaned.lower()
                     # Skip noise or single characters
-                    if len(cleaned) >= 2 and cleaned not in topics_found:
+                    if len(cleaned) >= 2 and lower not in seen_lower:
                         topics_found.append(cleaned)
+                        seen_lower.add(lower)
                 elif isinstance(item, dict):
                     name = item.get("display_name") or item.get("name") or item.get("keyword")
                     if name and isinstance(name, str) and len(name.strip()) >= 2:
                         cleaned = name.strip()
-                        if cleaned not in topics_found:
+                        lower = cleaned.lower()
+                        if lower not in seen_lower:
                             topics_found.append(cleaned)
+                            seen_lower.add(lower)
 
     return topics_found
 
@@ -424,9 +429,10 @@ class ResearchTrendService:
             institutions = r.get("institutions") or []
 
             for t in topics:
-                if t not in topic_data:
-                    topic_data[t] = {
-                        "name": t,
+                t_key = t.strip().lower()
+                if t_key not in topic_data:
+                    topic_data[t_key] = {
+                        "name": t.strip(),
                         "volume": 0,
                         "years": [],
                         "citations": 0,
@@ -437,8 +443,10 @@ class ResearchTrendService:
                         "recent_volume": 0,
                         "prior_volume": 0
                     }
+                elif (t.strip()[0].isupper() and not topic_data[t_key]["name"][0].isupper()) or len(t.strip()) > len(topic_data[t_key]["name"]):
+                    topic_data[t_key]["name"] = t.strip()
 
-                t_entry = topic_data[t]
+                t_entry = topic_data[t_key]
                 t_entry["volume"] += 1
                 for s in sources:
                     t_entry["sources"].add(s)
@@ -498,7 +506,7 @@ class ResearchTrendService:
             avg_cit = round(data["citations"] / data["citation_records"], 1) if data["citation_records"] > 0 else None
 
             hotspots.append({
-                "topic": t,
+                "topic": data["name"],
                 "publication_volume": data["volume"],
                 "time_period": time_period,
                 "recent_volume": recent_vol,
@@ -566,9 +574,10 @@ class ResearchTrendService:
                 all_sources.add(s)
 
             for t in topics:
-                if t not in topic_stats:
-                    topic_stats[t] = {
-                        "name": t,
+                t_key = t.strip().lower()
+                if t_key not in topic_stats:
+                    topic_stats[t_key] = {
+                        "name": t.strip(),
                         "total_volume": 0,
                         "recent_count": 0,
                         "prior_count": 0,
@@ -579,8 +588,10 @@ class ResearchTrendService:
                         "latest_year": year,
                         "sources": set()
                     }
+                elif (t.strip()[0].isupper() and not topic_stats[t_key]["name"][0].isupper()) or len(t.strip()) > len(topic_stats[t_key]["name"]):
+                    topic_stats[t_key]["name"] = t.strip()
 
-                entry = topic_stats[t]
+                entry = topic_stats[t_key]
                 entry["total_volume"] += 1
                 for s in sources:
                     entry["sources"].add(s)
@@ -664,7 +675,7 @@ class ResearchTrendService:
                 rationale = "Insufficient records in comparable periods to establish growth trajectory."
 
             emerging_topics.append({
-                "topic": t,
+                "topic": stat["name"],
                 "classification": classification,
                 "emerging_score": emerging_score,
                 "growth_rate_pct": growth_pct,

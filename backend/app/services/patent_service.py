@@ -9,25 +9,39 @@ load_dotenv()
 
 logger = logging.getLogger("patent_service")
 
+# USPTO Open Data Portal – patent application search (requires API key)
 PATENT_API_URL = "https://api.uspto.gov/api/v1/patent/applications/search"
+
+# PatentsView Search API – public, no API key required; provides titles & abstracts
+PATENTSVIEW_API_URL = "https://search.patentsview.org/api/v1/patent/"
+
 patents_collection = db["patents"]
 
 
+# ---------------------------------------------------------------------------
+# Header helpers
+# ---------------------------------------------------------------------------
+
 def get_headers():
     """
-    Retrieves request headers for the USPTO Open Data Portal API.
+    Returns request headers for the USPTO Open Data Portal API.
     Raises RuntimeError if USPTO_API_KEY is not configured.
     """
     api_key = os.getenv("USPTO_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "USPTO_API_KEY is missing from environment variables."
+            "USPTO_API_KEY is missing from environment variables. "
+            "Register at https://developer.uspto.gov/ to obtain a key."
         )
     return {
         "accept": "application/json",
         "X-API-KEY": api_key
     }
 
+
+# ---------------------------------------------------------------------------
+# Extraction helpers
+# ---------------------------------------------------------------------------
 
 def _first_value(data, keys):
     if not isinstance(data, dict):
@@ -118,14 +132,36 @@ def _extract_cpc_sections(items):
     return list(dict.fromkeys(clean_sections))
 
 
+def _parse_grant_year(date_str):
+    """Extract an integer year from any year-containing string. Returns None on failure."""
+    if date_str is None:
+        return None
+    year_match = re.search(r"\b(19\d\d|20\d\d)\b", str(date_str))
+    if year_match:
+        try:
+            return int(year_match.group(1))
+        except ValueError:
+            pass
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Normalize a raw USPTO / PatentsView record
+# ---------------------------------------------------------------------------
+
 def normalize_patent_record(item, source_label="USPTO Live Data"):
     """
     Normalizes a single patent application/patent record into the application's
     MongoDB patent document schema.
+
+    Field resolution order (most-specific → fallback):
+      * USPTO ODP response:   item → item.applicationMetaData
+      * PatentsView response: item (flat, snake_case keys)
     """
     if not isinstance(item, dict):
         return None
 
+    # ---- Locate the metadata sub-dict (USPTO ODP nesting) -------------------
     metadata = (
         item.get("applicationMetaData")
         or item.get("applicationMetadata")
@@ -135,51 +171,61 @@ def normalize_patent_record(item, source_label="USPTO Live Data"):
     if not isinstance(metadata, dict):
         metadata = item if isinstance(item, dict) else {}
 
+    # ---- Patent number / ID --------------------------------------------------
     patent_number = _first_value(
         metadata,
         ["patentNumber", "publicationNumber", "applicationNumberText", "patent_number", "patent_id"]
     )
     if not patent_number:
-        patent_number = _first_value(item, ["patentNumber", "publicationNumber", "applicationNumberText", "patent_id"])
+        patent_number = _first_value(
+            item,
+            ["patentNumber", "publicationNumber", "applicationNumberText", "patent_id"]
+        )
 
     if not patent_number:
         return None
 
-    title = _first_value(
-        metadata,
-        ["inventionTitle", "inventionTitleText", "title", "patent_title"]
-    ) or "Untitled Patent Document"
+    # ---- Title ---------------------------------------------------------------
+    # Try nested metadata first, then top-level item fields
+    title = (
+        _first_value(metadata, ["inventionTitle", "inventionTitleText", "title", "patent_title"])
+        or _first_value(item, ["patent_title", "title", "inventionTitle"])
+    )
+    # Use patent number as display fallback — never fabricate a title
+    display_title = title if title else None
 
+    # ---- Dates ---------------------------------------------------------------
     filing_date = _first_value(
         metadata,
         ["filingDate", "filingDateText", "filing_date"]
+    ) or _first_value(item, ["filing_date"])
+
+    grant_date = (
+        _first_value(metadata, ["grantDate", "grantDateText", "publicationDate", "patent_date", "grant_date"])
+        or _first_value(item, ["patent_date", "grant_date"])
     )
 
-    grant_date = _first_value(
-        metadata,
-        ["grantDate", "grantDateText", "publicationDate", "patent_date", "grant_date"]
+    # grant_year — always store as int
+    grant_year = (
+        _parse_grant_year(grant_date)
+        or _parse_grant_year(filing_date)
+        or _parse_grant_year(_first_value(metadata, ["grant_year", "application_year"]))
+        or _parse_grant_year(_first_value(item, ["grant_year", "application_year"]))
     )
 
-    grant_year = None
-    date_str = grant_date or filing_date or _first_value(metadata, ["grant_year", "application_year"])
-    if date_str:
-        year_match = re.search(r"\b(19\d\d|20\d\d)\b", str(date_str))
-        if year_match:
-            try:
-                grant_year = int(year_match.group(1))
-            except ValueError:
-                grant_year = None
-
+    # ---- Status / type -------------------------------------------------------
     status = _first_value(
         metadata,
         ["applicationStatusDescriptionText", "applicationStatusText", "status", "patent_type"]
-    ) or "Granted Patent"
+    ) or _first_value(item, ["patent_type"]) or "Granted Patent"
 
-    abstract = _first_value(
-        metadata,
-        ["abstractText", "abstract", "patent_abstract"]
+    # ---- Abstract ------------------------------------------------------------
+    abstract = (
+        _first_value(metadata, ["abstractText", "abstract", "patent_abstract"])
+        or _first_value(item, ["patent_abstract", "abstract"])
     )
 
+    # ---- Inventors -----------------------------------------------------------
     inventors = _extract_inventors(
         item.get("inventorBag")
         or item.get("inventors")
@@ -187,6 +233,7 @@ def normalize_patent_record(item, source_label="USPTO Live Data"):
         or []
     )
 
+    # ---- Assignees -----------------------------------------------------------
     assignees = _extract_organizations(
         item.get("assignmentBag")
         or item.get("assigneeBag")
@@ -195,8 +242,9 @@ def normalize_patent_record(item, source_label="USPTO Live Data"):
         or metadata.get("assignee")
         or []
     )
-    top_assignee = assignees[0] if assignees else _first_value(metadata, ["assignee"])
+    top_assignee = assignees[0] if assignees else _first_value(metadata, ["assignee"]) or _first_value(item, ["assignee"])
 
+    # ---- CPC sections --------------------------------------------------------
     cpc_sections = _extract_cpc_sections(
         item.get("cpcClassificationBag")
         or item.get("cpcClassifications")
@@ -204,21 +252,25 @@ def normalize_patent_record(item, source_label="USPTO Live Data"):
         or []
     )
 
-    wipo_field = _first_value(
-        metadata,
-        ["first_wipo_field_title", "wipo_field", "technology_field", "fieldTitle"]
-    ) or item.get("technology_field")
+    # ---- WIPO / technology fields --------------------------------------------
+    wipo_field = (
+        _first_value(metadata, ["first_wipo_field_title", "wipo_field", "technology_field", "fieldTitle"])
+        or item.get("technology_field")
+    )
 
-    wipo_sector = _first_value(
-        metadata,
-        ["first_wipo_sector_title", "wipo_sector", "technology_sector", "sectorTitle"]
-    ) or item.get("technology_sector")
+    wipo_sector = (
+        _first_value(metadata, ["first_wipo_sector_title", "wipo_sector", "technology_sector", "sectorTitle"])
+        or item.get("technology_sector")
+    )
 
-    country = _first_value(
-        metadata,
-        ["country", "countryCode", "applicantCountryCode"]
-    ) or "US"
+    # ---- Country -------------------------------------------------------------
+    country = (
+        _first_value(metadata, ["country", "countryCode", "applicantCountryCode"])
+        or _first_value(item, ["country"])
+        or "US"
+    )
 
+    # ---- Citations -----------------------------------------------------------
     citations_count = 0
     citations = item.get("citations") or metadata.get("citations")
     if isinstance(citations, list):
@@ -231,15 +283,16 @@ def normalize_patent_record(item, source_label="USPTO Live Data"):
     document = {
         "patent_id": str(patent_number),
         "patent_number": str(patent_number),
-        "application_number": _first_value(metadata, ["applicationNumberText", "application_number"]),
-        "patent_title": title,
-        "title": title,
+        "application_number": _first_value(metadata, ["applicationNumberText", "application_number"])
+                               or _first_value(item, ["application_number"]),
+        "patent_title": display_title,
+        "title": display_title,
         "patent_abstract": abstract,
         "abstract": abstract,
         "filing_date": filing_date,
         "grant_date": grant_date,
         "patent_date": grant_date or filing_date or (str(grant_year) if grant_year else None),
-        "grant_year": grant_year,
+        "grant_year": grant_year,          # always int or None
         "patent_type": status,
         "inventors": inventors,
         "inventor_count": len(inventors),
@@ -260,12 +313,17 @@ def normalize_patent_record(item, source_label="USPTO Live Data"):
     return document
 
 
+# ---------------------------------------------------------------------------
+# Live USPTO ODP fetch
+# ---------------------------------------------------------------------------
+
 def fetch_live_patents(query: str, page: int = 1, size: int = 20):
     """
     Executes a live request to the USPTO Open Data Portal API.
-    Raises Exception if API key is missing or request fails.
+    Raises RuntimeError if API key is missing.
+    Raises httpx.HTTPStatusError for 4xx/5xx responses.
     """
-    headers = get_headers()
+    headers = get_headers()   # raises RuntimeError if key missing
     offset = (page - 1) * size
 
     params = {
@@ -279,16 +337,23 @@ def fetch_live_patents(query: str, page: int = 1, size: int = 20):
 
         if response.status_code in (401, 403):
             raise RuntimeError(
-                f"USPTO API Authentication/Authorization error ({response.status_code}). Check USPTO_API_KEY."
+                f"USPTO API authentication error ({response.status_code}). "
+                "Verify your USPTO_API_KEY at https://developer.uspto.gov/."
             )
 
         response.raise_for_status()
         return response.json()
 
 
+# ---------------------------------------------------------------------------
+# MongoDB cache helpers
+# ---------------------------------------------------------------------------
+
 def cache_patents_in_mongo(records):
     """
     Upserts normalized patent records into the MongoDB patents collection.
+    IMPORTANT: Uses $set with only non-None fields to avoid overwriting
+    existing good data with null values from incomplete live responses.
     """
     if not records or not isinstance(records, list):
         return 0
@@ -301,10 +366,13 @@ def cache_patents_in_mongo(records):
         if not patent_num:
             continue
 
+        # Only set fields that have actual values to avoid overwriting good cache data
+        update_fields = {k: v for k, v in record.items() if v is not None and v != "" and v != []}
+
         try:
             patents_collection.update_one(
                 {"patent_number": patent_num},
-                {"$set": record},
+                {"$set": update_fields},
                 upsert=True
             )
             upserted_count += 1
@@ -317,6 +385,7 @@ def cache_patents_in_mongo(records):
 def search_cached_patents(query: str, page: int = 1, size: int = 20):
     """
     Searches cached patent records in MongoDB matching the query string.
+    Sorts by grant_year (integer) descending for consistent ordering.
     """
     skip = (page - 1) * size
     query_str = query.strip() if query else ""
@@ -354,19 +423,53 @@ def search_cached_patents(query: str, page: int = 1, size: int = 20):
     return total, results
 
 
+def _determine_data_source_label():
+    """
+    Returns a concise, honest label describing the active data source.
+    Since the USPTO ODP API requires a key that is currently unconfigured,
+    this helper checks key presence so callers can report status accurately.
+    """
+    api_key = os.getenv("USPTO_API_KEY")
+    if not api_key:
+        return "USPTO API key not configured"
+    return "USPTO API key present but request failed"
+
+
+def _determine_cache_provenance(records):
+    """
+    Determines source provenance for cached patent records.
+    Returns 'PatentsView' for bulk-imported data, or 'USPTO Open Data Portal'
+    only if verified by the record source.
+    """
+    if not records:
+        return "PatentsView"
+    for r in records:
+        src = str(r.get("source") or "")
+        if "PatentsView" in src:
+            return "PatentsView"
+        if "USPTO Live Data" in src:
+            return "USPTO Open Data Portal"
+    return "PatentsView"
+
+
+# ---------------------------------------------------------------------------
+# Primary search with fallback
+# ---------------------------------------------------------------------------
+
 def search_patents_with_fallback(query: str, page: int = 1, size: int = 20):
     """
     Primary service method for patent search:
     1. Attempts live query from USPTO Open Data Portal API.
-    2. Normalizes & caches results in MongoDB.
-    3. If API succeeds, returns live results.
-    4. If API fails (e.g. key missing/invalid/network down), attempts fallback
-       to MongoDB cached data and clearly flags response as cached.
+    2. On success: normalizes, caches, and returns live results with delivery_status='LIVE',
+       source_provenance='USPTO Open Data Portal'.
+    3. On failure: falls back to MongoDB cached data with delivery_status='CACHED'
+       and source_provenance reflecting actual record origin (e.g. 'PatentsView').
+    4. If no cached records exist either, raises an informative RuntimeError.
     """
     live_error = None
     try:
         raw_data = fetch_live_patents(query, page, size)
-        
+
         raw_items = []
         if isinstance(raw_data, dict):
             for key in ["results", "patentApplicationData", "patentApplicationDataBag", "applications", "applicationDataBag"]:
@@ -390,7 +493,6 @@ def search_patents_with_fallback(query: str, page: int = 1, size: int = 20):
             if norm:
                 normalized_records.append(norm)
 
-        # Upsert records into local cache
         cache_patents_in_mongo(normalized_records)
 
         return {
@@ -398,7 +500,10 @@ def search_patents_with_fallback(query: str, page: int = 1, size: int = 20):
             "page": page,
             "size": size,
             "query": query,
+            "delivery_status": "LIVE",
+            "source_provenance": "USPTO Open Data Portal",
             "source": "USPTO Live Data",
+            "source_detail": "Live data from USPTO Open Data Portal",
             "is_cached": False,
             "results": normalized_records
         }
@@ -407,8 +512,21 @@ def search_patents_with_fallback(query: str, page: int = 1, size: int = 20):
         live_error = str(e)
         logger.warning(f"Live patent API failed: {live_error}. Falling back to MongoDB cache.")
 
-    # Fallback to local MongoDB cache
+    # ---- Fallback to local MongoDB cache ------------------------------------
     total, cached_records = search_cached_patents(query, page, size)
+
+    provenance = _determine_cache_provenance(cached_records)
+    api_key_present = bool(os.getenv("USPTO_API_KEY"))
+    if not api_key_present:
+        warning_msg = (
+            f"Live USPTO data is unavailable: USPTO_API_KEY is not configured. "
+            f"Showing cached patent records from {provenance}."
+        )
+    else:
+        warning_msg = (
+            f"Live USPTO data is temporarily unavailable ({live_error}). "
+            f"Showing cached patent records from {provenance}."
+        )
 
     if cached_records or query == "":
         return {
@@ -416,13 +534,15 @@ def search_patents_with_fallback(query: str, page: int = 1, size: int = 20):
             "page": page,
             "size": size,
             "query": query,
-            "source": "MongoDB Cache (Fallback)",
+            "delivery_status": "CACHED",
+            "source_provenance": provenance,
+            "source": f"{provenance} (Cached)",
+            "source_detail": warning_msg,
             "is_cached": True,
-            "warning": f"Live USPTO API unavailable: {live_error}",
+            "warning": warning_msg,
             "results": cached_records
         }
 
-    # If no cached records exist and API failed, raise informative exception
     raise RuntimeError(
-        f"Unable to fetch live USPTO patents ({live_error}) and no matching cached records were found in MongoDB."
+        f"Unable to fetch live USPTO patents and no matching cached records found. {live_error}"
     )
